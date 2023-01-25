@@ -3,7 +3,7 @@ from World import *
 class Story():
 
     @staticmethod
-    def Tutorial():
+    def Introduction():
         GMtalk.write (f'''
     Welcome, Player - to Project RPG. Shortly, you will be free to explore the city of Piston, meet its inhabitants, and find your way to the fighting tournament to earn your fortune. 
     But first, a little about how the game works.
@@ -11,7 +11,8 @@ class Story():
     In the game world, you will be presented with menus that looks like this:
         ''')
         time.sleep(0.5)
-        Tutorial.Menu()
+        Tutorial.__init__()
+        Tutorial.Screen()
         time.sleep(1)
         GMtalk.write ('''
     Whenever you see a list like the one above, just enter the number of the option you wish to select. It's that easy!
