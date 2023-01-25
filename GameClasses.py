@@ -498,13 +498,7 @@ class LowLvlBadGuy(Battle):
 
 ##### GAME FUNCTION CLASSES FOR USE IN THE GAME WORLD
 
-class PlayerLocation():
-    xPos = 0
-    xLimit = 20
-    yPos = 0
-    yLimit = 20
-
-class GameWorld():
+class World():
 
     def TutorialLocation():
         GMnarrate.write('''
@@ -530,20 +524,49 @@ class GameWorld():
     0: Go back where I just came from
         ''')
 
-    def TrainCarriage():
-        PlayerLocation.xPos = 0
-        PlayerLocation.yPos = 0
-        GMnarrate.write ('''
-You have entered the skytrain passenger carriage. 
-It is lined either side with battered leather seats, with a brass ringed port hole facing the outside world.
-        ''')
+    def Train():
+        print("you are on the train")
+        playerchoice = int(input("where to go? \n 1)station\n"))
+        if playerchoice == 1:
+            World.Station()
 
-    def TrainCorridor():
-        GMnarrate.write ("You have etered the skytrain passenger corridor")
-        PlayerLocation.xPos = 1
-        PlayerLocation.yPos = 0
+    def Station():
+        print("you have arrived at the station")
+        playerchoice = int(input("where to go? \n 2) Plant 2) Train\n"))
+        if playerchoice == 1:
+            World.PowerPlant()
+        elif playerchoice == 2:
+            World.Train()
 
+    def PowerPlant():
+        print ("you have arrived at the power plant")
+        playerchoice = int(input("where to go? \n 1) Arena \n 2) Medic \n 3) Bazaar \n 0) back to the station"))
+        if playerchoice == 1:
+            World.Arena()
+        elif playerchoice == 2:
+            World.Medic()
+        elif playerchoice == 3:
+            World.Bazaar()
+        elif playerchoice == 0:
+            World.Station()
+    
+    def Arena():
+        print ("you have arrived at the arena. you aren't fighting today, kid!")
+        playerchoice = int(input("where to go? \n 1) Back to Plant \n "))
+        if playerchoice == 1:
+            World.PowerPlant()
+    
+    def Medic():
+        print ("you have arrived at the Medic. No healing just yet!")
+        playerchoice = int(input("where to go? \n 1) Back to plant\n "))
+        if playerchoice == 1:
+            World.PowerPlant()
 
+    def Bazaar():
+        print ("You have arrived at the bazaar")
+        playerchoice = int(input("where to go? \n 1) Back to plant\n "))
+        if playerchoice == 1:
+            World.PowerPlant()
 
 ########## STORY TIME!!!
 
@@ -558,7 +581,7 @@ class Story():
     In the game world, you will be presented with menus that looks like this:
         ''')
         time.sleep(0.5)
-        GameWorld.TutorialLocation()
+        World.TutorialLocation()
         time.sleep(1)
         GMtalk.write ('''
     Whenever you see a list like the one above, just enter the number of the option you wish to select. It's that easy!
@@ -570,7 +593,7 @@ class Story():
    
     @staticmethod
     def StoryBegins():
-        GameWorld.TrainCarriage()
+        World.TrainCarriage()
         GMnarrate.write ('''
 You're riding the skytrain to Piston, a city on the Southern Alliance's edge. You served the Alliance during it's last war against the Northern Commonwealth. 
 The Empire won, but you were cast aside afterwards, just like the rest of the conscriptions.
