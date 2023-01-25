@@ -1,8 +1,5 @@
-import random
-from TypewriterText import *
-from Characters import *
 from World import *
-
+import random
 class Battle():
     battlestart = True
     #runs at the start to determine who goes first 

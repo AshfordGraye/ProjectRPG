@@ -1,9 +1,5 @@
+from ScreenSystem import *
 import random
-
-from TypewriterText import *
-from World import *
-from StoryElements import *
-from BattleSystem import *
 
 class Player():
     
