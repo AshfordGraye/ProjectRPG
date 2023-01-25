@@ -37,7 +37,6 @@ class Location:
     def Screen():
         if Location.firstvisit:
             GMnarrate.write (f"{Location.describe1}\n")
-            Location.firstvisit = False
         else:
             GMnarrate.write (f"{Location.describe2}\n")
         Location.lastlocation = Location.holdlocation
@@ -106,6 +105,7 @@ class PlayerSelection:
             if Location.lastlocation == "":
                 PlayerSelection.InvalidChoice()
             else:
+                Location.firstvisit = False
                 Location.holdlocation = Location.currentlocation  
                 Location.lastlocation()   
         elif selection == "1":
