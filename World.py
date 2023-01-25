@@ -1,8 +1,36 @@
-from Characters import *
+from ScreenSystem import *
 
-class Tutorial (Location, PlayerSelection):
+# FRAMEWORK FOR CLASS
+
+# class X (Location):
+#     firstvisit = True
+#     def __init__():
+#         Location.currentlocation = XXXXX.__init__
+#         if XXXXX.firstvisit:
+#             Location.firstvisit = True
+#             Station.firstvisit = False
+#         Location.describe1 = "XXXXX"
+#         Location.describe2 = "XXXXX"
+#         Location.name = "XXXXX"
+#         Location.option1 = "-"
+#         Location.option2 = "-"
+#         Location.option3 = "-"
+#         Location.travel1 = "-"
+#         Location.travel2 = "-"
+#         Location.travel3 = "-"
+#         PlayerSelection.option1 = ""
+#         PlayerSelection.option2 = ""
+#         PlayerSelection.option3 = ""
+#         PlayerSelection.option4 = ""
+#         PlayerSelection.option5 = ""
+#         PlayerSelection.option6 = ""
+#         XXXXX.Screen()
+
+
+class Tutorial (Location):
     firstvisit = True
     def __init__():
+        Location.currentlocation = Tutorial.__init__
         if Tutorial.firstvisit:
             Location.firstvisit = True
             Tutorial.firstvisit = False
@@ -11,24 +39,21 @@ class Tutorial (Location, PlayerSelection):
         Location.name = "The name of your location"
         Location.option1 = "Talk to NPC"
         Location.option2 = "Look at item of interest"
-        Location.travel1 = "Go in one direction"
-        Location.travel2 = "Go in another direction"
-        PlayerSelection.option0 = Train.__init__
-        PlayerSelection.option1 = ""
+        Location.travel1 = "Go in that direction"
+        Location.travel2 = "Go in the other direction"
+
+        PlayerSelection.option1 = Train.__init__
         PlayerSelection.option2 = ""
         PlayerSelection.option3 = ""
         PlayerSelection.option4 = ""
         PlayerSelection.option5 = ""
         PlayerSelection.option6 = ""
-        PlayerSelection.option7 = ""
-        PlayerSelection.option8 = ""
-        PlayerSelection.option9 = ""
         Tutorial.Screen()
 
-class Train (Location, PlayerSelection):
+class Train (Location):
     firstvisit = True
-    selection = ""
     def __init__():
+        Location.currentlocation = Train.__init__
         if Train.firstvisit:
             Location.firstvisit = True
             Train.firstvisit = False
@@ -41,44 +66,36 @@ class Train (Location, PlayerSelection):
         Location.travel1 = "Leave the Skytrain"
         Location.travel2 = "-"
         Location.travel3 = "-"
-        PlayerSelection.option0 = Tutorial.__init__
         PlayerSelection.option1 = Station.__init__
         PlayerSelection.option2 = ""
         PlayerSelection.option3 = ""
         PlayerSelection.option4 = ""
         PlayerSelection.option5 = ""
         PlayerSelection.option6 = ""
-        PlayerSelection.option7 = ""
-        PlayerSelection.option8 = ""
-        PlayerSelection.option9 = ""
         Train.Screen()
 
-class Station (Location, PlayerSelection):
+class Station (Location):
     firstvisit = True
-    selection = ""
     def __init__():
+        Location.currentlocation = Station.__init__
         if Station.firstvisit:
             Location.firstvisit = True
             Station.firstvisit = False
         Location.describe1 = "You step off the Skytrain onto the Station dock. It stinks of smoke and diesel, and you can barely see in the smog."
         Location.describe2 = "Back at the station, you see the magnificent Skytrain docked - they always amazed you, as a boy you had never imagined they would one day take off from the rails."
-        Location.name = "Skytrain"
+        Location.name = "Skytrain Dock Station"
         Location.option1 = "-"
         Location.option2 = "-"
         Location.option3 = "-"
-        Location.travel1 = "Leave the Skytrain"
+        Location.travel1 = "-"
         Location.travel2 = "-"
         Location.travel3 = "-"
-        PlayerSelection.option0 = Tutorial.__init__
         PlayerSelection.option1 = ""
         PlayerSelection.option2 = ""
         PlayerSelection.option3 = ""
         PlayerSelection.option4 = ""
         PlayerSelection.option5 = ""
         PlayerSelection.option6 = ""
-        PlayerSelection.option7 = ""
-        PlayerSelection.option8 = ""
-        PlayerSelection.option9 = ""
         Train.Screen()
     
 
