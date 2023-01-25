@@ -1,4 +1,4 @@
-from ScreenSystem import *
+from TypewriterText import *
 import random
 
 class Player():
@@ -197,20 +197,7 @@ Would you like to select this class, or view another?
             else:
                 GMtalk.write ("Please enter the number of your selection")
     
-    def StatsMenu():
-        GMnarrate.write(f'''
-Your current stats are:
-    Health:                 {Player.hp}/{Player.hpmax}
 
-    Physical Strength:      {Player.phystr}
-    Physical Defense:       {Player.phydef}
-    Magetek Strength:       {Player.magstr}
-    Magetek Defense:        {Player.magdef}
-
-You currently have the following equipped:
-    Physical Weapon:        {Player.physequip}
-    Magetek Weapon:         {Player.magequip}
-        ''')
 
     @staticmethod
     def AbilitySelect():
