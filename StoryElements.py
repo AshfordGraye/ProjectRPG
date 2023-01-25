@@ -1,6 +1,4 @@
-from TypewriterText import *
-from Characters import *
-from World import *
+from MenuSystem import *
 
 class Story():
 

@@ -1,9 +1,5 @@
-import random
-
 from TypewriterText import *
-from World import *
-from StoryElements import *
-from BattleSystem import *
+import random
 
 class Player():
     

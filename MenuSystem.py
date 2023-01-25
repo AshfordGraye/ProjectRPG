@@ -3,7 +3,7 @@ from Characters import *
 # Location Menus. The menu items will be adjusted dynamically based on location
 class Location:
 
-    place = ("")
+    name = ("")
     option1 = ("")
     option2 = ("")
     option3 = ("")
@@ -12,7 +12,7 @@ class Location:
     travel3 = ("")    
     
     def Menu():
-        MenuTitle.write (f"{Location.place}\n")
+        MenuTitle.write (f"{Location.name}\n")
         MenuTitle.write ("Action Menu")
         PlayerInput.write (f"1: {Location.option1}")
         PlayerInput.write (f"2: {Location.option2}")

@@ -1,4 +1,7 @@
-from TypewriterText import *
+from StoryElements import *
+
+class Tutorial (Location):
+    Location.name = "Tutorial Area"
 
 class World():
 
