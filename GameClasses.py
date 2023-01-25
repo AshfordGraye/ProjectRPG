@@ -42,7 +42,7 @@ class Player():
     
     @staticmethod
     def ClassChoice():
-        PlayerMsg.write ('''
+        GMtalk.write ('''
 Different roles will affect your how strong your Physical and Magetek abilities are, and how well you can defend against them. 
 As you progress in the game you will have the option of usig different weapons and items that also influence these stats.
 
@@ -65,7 +65,7 @@ What was your role in the military? Enter a role number to view it's stats.
             Player.phystr += (Player.phystr /100 *30)
             Player.magdef -= (Player.magdef /100 *30)
             Player.moves = {"Attack": random.randint(25,35) + Player.phystr}
-            Narration.write (f'''
+            GMnarrate.write (f'''
 A former {Player.job}, you fought in the Alliance Army as a Shock Trooper.
 The Army's excellent training has given you great strength when fighting. 
 
@@ -83,7 +83,7 @@ Would you like to select this class, or view another?
             if roleselect == "1":
                 print ("selected")
             elif roleselect == "2":
-                PlayerMsg.write ("Okay, this section of the tutorial will restart so you can choose another class.")
+                GMtalk.write ("Okay, this section of the tutorial will restart so you can choose another class.")
                 Player.job = ""
                 Player.phystr = 10
                 Player.phydef = 10
@@ -91,7 +91,7 @@ Would you like to select this class, or view another?
                 Player.magdef = 10
                 Player.ClassChoice()
             else:
-                PlayerMsg.write ("Please enter the number of your selection")
+                GMtalk.write ("Please enter the number of your selection")
 
         ############################################################################################################
 
@@ -100,7 +100,7 @@ Would you like to select this class, or view another?
             Player.magstr += (Player.magstr /100 *30)
             Player.phydef -= (Player.phydef /100 *30)
             Player.moves = {"Attack": random.randint(25,35) + Player.phystr}
-            Narration.write (f'''
+            GMnarrate.write (f'''
 A former {Player.job}, you designed weaponry to be used against the enemy.
 Your knowledge of Magetek gives you an advantage when using Magetek abilities.
 
@@ -118,7 +118,7 @@ Would you like to select this class, or view another?
             if roleselect == "1":
                 print ("selected")
             elif roleselect == "2":
-                PlayerMsg.write ("Okay, this section of the tutorial will restart so you can choose another class.")
+                GMtalk.write ("Okay, this section of the tutorial will restart so you can choose another class.")
                 Player.job = ""
                 Player.phystr = 10
                 Player.phydef = 10
@@ -126,7 +126,7 @@ Would you like to select this class, or view another?
                 Player.magdef = 10
                 Player.ClassChoice()
             else:
-                PlayerMsg.write ("Please enter the number of your selection")
+                GMtalk.write ("Please enter the number of your selection")
 
 
         ############################################################################################################
@@ -136,7 +136,7 @@ Would you like to select this class, or view another?
             Player.phydef += (Player.phydef /100 *30)
             Player.phystr -= (Player.phystr /100 *30)
             Player.moves = {"Attack": random.randint(25,35) + Player.phystr}
-            Narration.write (f'''
+            GMnarrate.write (f'''
 A former {Player.job} you served and saved alongside you solder brothers. 
 Your hardiness earned in battle has given you stronger physical defense.
 
@@ -154,7 +154,7 @@ Would you like to select this class, or view another?
             if roleselect == "1":
                 print ("selected")
             elif roleselect == "2":
-                PlayerMsg.write ("Okay, this section of the tutorial will restart so you can choose another class.")
+                GMtalk.write ("Okay, this section of the tutorial will restart so you can choose another class.")
                 Player.job = ""
                 Player.phystr = 10
                 Player.phydef = 10
@@ -162,7 +162,7 @@ Would you like to select this class, or view another?
                 Player.magdef = 10
                 Player.ClassChoice()
             else:
-                PlayerMsg.write ("Please enter the number of your selection")
+                GMtalk.write ("Please enter the number of your selection")
 
 
         ############################################################################################################
@@ -172,7 +172,7 @@ Would you like to select this class, or view another?
             Player.magdef += (Player.magdef /100 *30)
             Player.magstr -= (Player.magstr /100 *30)
             Player.moves = {"Attack": random.randint(25,35) + Player.phystr}
-            Narration.write (f'''
+            GMnarrate.write (f'''
 A former {Player.job} in the Alliance Navy, you commanded SkyCruiser fleets against the Commonwealth.
 Your officer's training gave you increased defense against Magetek abilities. 
 
@@ -190,7 +190,7 @@ Would you like to select this class, or view another?
             if roleselect == "1":
                 print ("selected")
             elif roleselect == "2":
-                PlayerMsg.write ("Okay, this section of the tutorial will restart so you can choose another class.")
+                GMtalk.write ("Okay, this section of the tutorial will restart so you can choose another class.")
                 Player.job = ""
                 Player.phystr = 10
                 Player.phydef = 10
@@ -198,10 +198,10 @@ Would you like to select this class, or view another?
                 Player.magdef = 10
                 Player.ClassChoice()
             else:
-                PlayerMsg.write ("Please enter the number of your selection")
+                GMtalk.write ("Please enter the number of your selection")
     
     def StatsMenu():
-        Narration.write(f'''
+        GMnarrate.write(f'''
 Your current stats are:
     Health:                 {Player.hp}/{Player.hpmax}
 
@@ -227,21 +227,21 @@ You currently have the following equipped:
             if Player.misschance in range (1,90):
                 damage = Player.moves["Attack"]
                 Enemy.hp = Enemy.hp - damage
-                Narration.write (f"You used 'Attack' to inflict {damage} damage.")
+                GMnarrate.write (f"You used 'Attack' to inflict {damage} damage.")
             elif Player.misschance in range (90,101):
-                Narration.write  ("You tried to attack with your weapon, but missed!")
+                GMnarrate.write  ("You tried to attack with your weapon, but missed!")
         else:
-            PlayerMsg.write ("Invalid Input")
+            GMtalk.write ("Invalid Input")
             Player.AbilitySelect()
 
     @staticmethod
     def StatsDisplay():
         if Enemy.hp > (Enemy.hpmax /100 *70):
-            Narration.write("The foe stands strong! Don't give up!   \n")
+            GMnarrate.write("The foe stands strong! Don't give up!   \n")
         elif Enemy.hp > (Enemy.hpmax /100 *30):
-            Narration.write("Your foe grows weaker! Keep it up!  \n")
+            GMnarrate.write("Your foe grows weaker! Keep it up!  \n")
         elif Enemy.hp <= (Enemy.hpmax /100 *30):
-            Narration.write("your enemy grows weak! Almost there!    \n")
+            GMnarrate.write("your enemy grows weak! Almost there!    \n")
 
         MenuTitle.write (f"{Player.name} Status:")
         if Player.hp > (Player.hpmax /100 * 25):
@@ -368,14 +368,14 @@ class Enemy():
                 if Enemy.misschance in range (1,90):
                     damage = Enemy.moves["Attack"]
                     Player.hp -= Enemy.moves["Attack"]
-                    Narration.write (f'The {Enemy.job} swiped at you with a broken bottle, causing {damage} damage')
+                    GMnarrate.write (f'The {Enemy.job} swiped at you with a broken bottle, causing {damage} damage')
                 elif Enemy.misschance in range (90,101):
-                    Narration.write (f"The {Enemy.job} tried to attack you, but missed!")    
+                    GMnarrate.write (f"The {Enemy.job} tried to attack you, but missed!")    
             elif Enemy.movechoice in range (5,6):
                 damage = Enemy.moves["Strong Attack"]
                 Player.hp -= Enemy.moves["Strong Attack"]
                 Player.hp -= Enemy.moves["Attack"]
-                Narration.write (f'The {Enemy.job} made a strong lunge at you with its weapon, causing {damage} damage')
+                GMnarrate.write (f'The {Enemy.job} made a strong lunge at you with its weapon, causing {damage} damage')
         Player.playerturn = not Player.playerturn
 
 ##### BATTLE CLASSES - BASE BATTLE CLASS DETERMINES HOW THEY WORK, SUBCLASSES DEETERMINE THE DIFFICULTY (AND EVENTUALLY WHO)
@@ -388,35 +388,35 @@ class Battle():
         cointoss = random.randint(1,2)
         if cointoss == 1:
             Player.playerturn = True
-            Narration.write(f'You move fast for the first strike!   \n')
+            GMnarrate.write(f'You move fast for the first strike!   \n')
             Player.BattlePhase()
         elif cointoss == 2:
             Player.playerturn = False
-            Narration.write(f'Your opponent strikes first!   \n')
+            GMnarrate.write(f'Your opponent strikes first!   \n')
             Enemy.BattlePhase()
     
     @staticmethod
     def PlayerVictory():
 
-        PlayerMsg.write (f'\nDecide quickly: yes or no?\n')
+        GMtalk.write (f'\nDecide quickly: yes or no?\n')
         answer = input(("")) ; print("\n")
         if answer.lower() in ("no"):
-            Narration.write ("Your enemy stumbles to his feet and braces himself, steadying his weapon with renewed vigor. He has a cold steel in his eye... this could be his last chance to survive. \n")
+            GMnarrate.write ("Your enemy stumbles to his feet and braces himself, steadying his weapon with renewed vigor. He has a cold steel in his eye... this could be his last chance to survive. \n")
             time.sleep(1)
-            PlayerMsg.write (f'Brace Yourself! \n')
+            GMtalk.write (f'Brace Yourself! \n')
             time.sleep(1)
             Enemy.hp = Enemy.hpmax /100 *60
             Battle.FirstStrike()
         elif answer.lower() in ("yes"):
-            Narration.write ("With a final swing of your weapon, you dispatch your foe's soul to the gods. May they have more mercy than you did... \n")
+            GMnarrate.write ("With a final swing of your weapon, you dispatch your foe's soul to the gods. May they have more mercy than you did... \n")
             time.sleep(1)
-            Narration.write ("It was a harsh ordeal, but you have emerged victorious, and earned your freedom. Well done, warrior. \n")
+            GMnarrate.write ("It was a harsh ordeal, but you have emerged victorious, and earned your freedom. Well done, warrior. \n")
             time.sleep(1)
-            Narration.write("Thank you for playing. The game will close itself in five seconds. \n")
+            GMnarrate.write("Thank you for playing. The game will close itself in five seconds. \n")
             time.sleep(5)
             quit()
         else: 
-            PlayerMsg.write ("your mind is racing...  but you must focus! \n")
+            GMtalk.write ("your mind is racing...  but you must focus! \n")
             Battle.PlayerVictory()
 
     @staticmethod
@@ -424,30 +424,30 @@ class Battle():
         global firsthit
         global playerturn
         
-        Narration.write ("You feel shattered and broken... but do you have the strength to go on? You must decide, one way or the other... \n")
-        PlayerMsg.write (f"He won't wait long... Yes or No? \n")
+        GMnarrate.write ("You feel shattered and broken... but do you have the strength to go on? You must decide, one way or the other... \n")
+        GMtalk.write (f"He won't wait long... Yes or No? \n")
         answer = input(str("")) ; print()
         if answer.lower() in ("yes"):
             firsthit = True
             playerturn = False
-            Narration.write ("Your enemy, allowing a brief show of his military honour, allows you a moment to stand and steady your weapon. Take this chance - it could be your last. \n")
+            GMnarrate.write ("Your enemy, allowing a brief show of his military honour, allows you a moment to stand and steady your weapon. Take this chance - it could be your last. \n")
             time.sleep(1)
-            PlayerMsg.write ("Brace Yourself! \n")
+            GMtalk.write ("Brace Yourself! \n")
             time.sleep(1)
             Player.Reset()
             Battle.FirstStrike()
         elif answer.lower() in ("no"):
-            Narration.write("You enemy looks upon you with disdain.\n")
+            GMnarrate.write("You enemy looks upon you with disdain.\n")
             time.sleep(1)
-            foetalk.write (f"'hm... pathetic. I had expected more of you.' \n")
+            NPCtalk.write (f"'hm... pathetic. I had expected more of you.' \n")
             time.sleep(1)
-            Narration.write ("With a final thrust of his weapon, your foe dispatches your dream of freedom to the gods - and your soul with it.\n")
+            GMnarrate.write ("With a final thrust of his weapon, your foe dispatches your dream of freedom to the gods - and your soul with it.\n")
             time.sleep(1)
-            Narration.write("Thank you for playing. The app will close itself in five seconds\n")
+            GMnarrate.write("Thank you for playing. The app will close itself in five seconds\n")
             time.sleep(5)
             quit()
         else:
-            PlayerMsg.write ("Your mind is racing... focus! \n")
+            GMtalk.write ("Your mind is racing... focus! \n")
             Battle.EnemyVictory()
 
     @staticmethod
@@ -456,16 +456,16 @@ class Battle():
         global enemyhp
         if Player.hp <= 0:
             Player.hp = 0
-            Narration.write (f'Seeing an opening, the enemy rushes forward and strikes you with a vicious fury, knocking you to the ground. He stands above you and bellows for the crowd: \n')
+            GMnarrate.write (f'Seeing an opening, the enemy rushes forward and strikes you with a vicious fury, knocking you to the ground. He stands above you and bellows for the crowd: \n')
             time.sleep(1)
-            foetalk.write (f"   'ARE YOU DEFEATED ALREADY?!'\n")
+            NPCtalk.write (f"   'ARE YOU DEFEATED ALREADY?!'\n")
             time.sleep(1)
             Battle.EnemyVictory()
         elif Enemy.hp <= 0:
             Enemy.hp = 0
-            Narration.write ("Your enemy stumbles back, and then falls to the ground.\n")
+            GMnarrate.write ("Your enemy stumbles back, and then falls to the ground.\n")
             time.sleep(1)
-            Narration.write ("You look down at your enemy - do you strike him down and finish the task?")
+            GMnarrate.write ("You look down at your enemy - do you strike him down and finish the task?")
             time.sleep(1)
             Battle.PlayerVictory()
     
@@ -477,7 +477,7 @@ class Battle():
         if Battle.battlestart == True:
             Battle.battlestart = False
             Enemy.SetDifficulty()
-            Narration.write (f"An enemy {Enemy.job} appeared!")
+            GMnarrate.write (f"An enemy {Enemy.job} appeared!")
             Battle.FirstStrike()
         if Player.playerturn == True:
             Player.BattlePhase()
@@ -498,16 +498,10 @@ class LowLvlBadGuy(Battle):
 
 ##### GAME FUNCTION CLASSES FOR USE IN THE GAME WORLD
 
-class PlayerLocation():
-    xPos = 0
-    xLimit = 20
-    yPos = 0
-    yLimit = 20
-
-class GameWorld():
+class World():
 
     def TutorialLocation():
-        Narration.write('''
+        GMnarrate.write('''
     A description of your locationand the things around you.
         ''')
         MenuTitle.write("Action Menu")
@@ -530,20 +524,49 @@ class GameWorld():
     0: Go back where I just came from
         ''')
 
-    def TrainCarriage():
-        PlayerLocation.xPos = 0
-        PlayerLocation.yPos = 0
-        Narration.write ('''
-You have entered the skytrain passenger carriage. 
-It is lined either side with battered leather seats, with a brass ringed port hole facing the outside world.
-        ''')
+    def Train():
+        print("you are on the train")
+        playerchoice = int(input("where to go? \n 1)station\n"))
+        if playerchoice == 1:
+            World.Station()
 
-    def TrainCorridor():
-        Narration.write ("You have etered the skytrain passenger corridor")
-        PlayerLocation.xPos = 1
-        PlayerLocation.yPos = 0
+    def Station():
+        print("you have arrived at the station")
+        playerchoice = int(input("where to go? \n 2) Plant 2) Train\n"))
+        if playerchoice == 1:
+            World.PowerPlant()
+        elif playerchoice == 2:
+            World.Train()
 
+    def PowerPlant():
+        print ("you have arrived at the power plant")
+        playerchoice = int(input("where to go? \n 1) Arena \n 2) Medic \n 3) Bazaar \n 0) back to the station"))
+        if playerchoice == 1:
+            World.Arena()
+        elif playerchoice == 2:
+            World.Medic()
+        elif playerchoice == 3:
+            World.Bazaar()
+        elif playerchoice == 0:
+            World.Station()
+    
+    def Arena():
+        print ("you have arrived at the arena. you aren't fighting today, kid!")
+        playerchoice = int(input("where to go? \n 1) Back to Plant \n "))
+        if playerchoice == 1:
+            World.PowerPlant()
+    
+    def Medic():
+        print ("you have arrived at the Medic. No healing just yet!")
+        playerchoice = int(input("where to go? \n 1) Back to plant\n "))
+        if playerchoice == 1:
+            World.PowerPlant()
 
+    def Bazaar():
+        print ("You have arrived at the bazaar")
+        playerchoice = int(input("where to go? \n 1) Back to plant\n "))
+        if playerchoice == 1:
+            World.PowerPlant()
 
 ########## STORY TIME!!!
 
@@ -551,16 +574,16 @@ class Story():
 
     @staticmethod
     def Tutorial():
-        PlayerMsg.write (f'''
+        GMtalk.write (f'''
     Welcome, Player - to Project RPG. Shortly, you will be free to explore the city of Piston, meet its inhabitants, and find your way to the fighting tournament to earn your fortune. 
     But first, a little about how the game works.
 
     In the game world, you will be presented with menus that looks like this:
         ''')
         time.sleep(0.5)
-        GameWorld.TutorialLocation()
+        World.TutorialLocation()
         time.sleep(1)
-        PlayerMsg.write ('''
+        GMtalk.write ('''
     Whenever you see a list like the one above, just enter the number of the option you wish to select. It's that easy!
 
     Further hints like will appear like this as the game continues. 
@@ -570,63 +593,63 @@ class Story():
    
     @staticmethod
     def StoryBegins():
-        GameWorld.TrainCarriage()
-        Narration.write ('''
+        World.TrainCarriage()
+        GMnarrate.write ('''
 You're riding the skytrain to Piston, a city on the Southern Alliance's edge. You served the Alliance during it's last war against the Northern Commonwealth. 
 The Empire won, but you were cast aside afterwards, just like the rest of the conscriptions.
 Now you're barely getting by - but an underground fight tournament in Piston may give you just enough fortune to start the new life you deserve...
 While looking out the brass port hole you notice the stranger opposite peering at you through his goggles. After meeting your eyes, he introduces himself with a familiar Pistonian drawl:
         ''')
-        npctalk.write ('''
+        NPCtalk.write ('''
     'Well hey there friend, Armish Cornwall's the name - Who do I got the pleasure of acquantancin' today?'
         ''')
         Player.Naming()
-        npctalk.write (f'''
+        NPCtalk.write (f'''
     'Howdy, {Player.name} - a pleasure. You go' dat stern look about yer feller, one only an Alliance vet could git. 
     I were a low rank soldier in the war, how'd they git you to serve?'
         ''')
         Player.ClassChoice()
         if Player.job == "Soldier":
-            npctalk.write ('''
+            NPCtalk.write ('''
     Well I'll be, I had feelings yer might be a brother in arms
         ''')
         elif Player.job == "Scientist":
-            npctalk.write ('''
+            NPCtalk.write ('''
     Shoot, you one o' dem fancy science types huh?
     Well I'm grateful fer the tech you nerds done worked up fer us!
         ''')
         elif Player.job == "Medic":
-            npctalk.write ('''
+            NPCtalk.write ('''
     Hell, you boys were all whut kept us going some days... thank you, brother.
         ''')
         elif Player.job == "Officer":
-            npctalk.write ('''
+            NPCtalk.write ('''
     Officer, huh... higher ups always lookin' down on us rank and file...
     I suppose yer orders kept us alive.
         ''')
-        Narration.write ("Armish leans back in his chair and studies you")
-        npctalk.write ('''
+        GMnarrate.write ("Armish leans back in his chair and studies you")
+        NPCtalk.write ('''
     ... Yer never been ter Piston, have yer? Rough place, no Alliance peacekeepers around this far out. I gotta spare knife. Not much, but it's better than yer fists. A healing salve too, in case someone manages to get too close.
     ''')
-        Narration.write ('''
+        GMnarrate.write ('''
 Armish hands you a knife. The blade is serrated, but rusted. Handle seems sturdy enough.
 He also hands you a healing salve. Looks like a standard spray applicator.
         ''')
         Player.phyweapons.append("Knife")
         Player.items.append ("Healing Salve")
-        PlayerMsg.write ('''
+        GMtalk.write ('''
     A Knife has been added to your weapons list.
     A Healing Salve has been added to your items list.
         ''')
-        Narration.write ('''
+        GMnarrate.write ('''
 Armish looks out the window. You are nearing Piston now, the gleaming metal superstructures piercing the clouds you are now descending towards.
 He stands to leave and turns to you:
         ''')
-        npctalk.write (f'''
+        NPCtalk.write (f'''
     It were good makin' yer acquaintanceship the day, friend - maybe we'll see each other round the way.
     Stay safe, now, {Player.name}.
         ''')
-        Narration.write (f'''
+        GMnarrate.write (f'''
 After watching Armish leave, you look around the skytrain cabin. 
 The battered leather seats haven't been fixed in years, and the once polished brass has started to rust in places.
 You glance out of the port hole one last time at the incoming city - the skytrain is on it's landing approach. 

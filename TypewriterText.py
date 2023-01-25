@@ -57,13 +57,17 @@ class type():
 #####
 
 # These are message classes that format text automatically
-class Narration(type):
+class GMtalk(type):
     def write (mytext):
         type.write(f'{mytext}\n')
 
-class PlayerMsg(type):
+class GMnarrate(type):
     def write (mytext):
         type.write(f'{type.fg_orange}{type.italic}{mytext}{type.reset}\n')
+
+class NPCtalk(type):
+    def write (mytext):
+        type.write(f'{type.fg_green}{type.italic}{mytext}{type.reset}\n')
 
 class PlayerInput(type):
     def write (mytext):
@@ -72,25 +76,3 @@ class PlayerInput(type):
 class MenuTitle(type):
     def write(mytext):
         type.write(f'{type.fg_purple}{mytext}{type.reset}\n')
-
-
-
-class MenuTitle(type):
-    def write (mytext):
-        type.write(f'{type.fg_purple}{mytext}{type.reset}\n')
-
-class FoeStatus(type):
-    def write (mytext):
-        type.write(f'{type.fg_orange}{mytext}{type.reset}\n')
-
-class FoeGame(type):
-    def write (mytext):
-        type.write(f'{type.fg_orange}{type.italic}{mytext}{type.reset}\n')
-
-class npctalk(type):
-    def write (mytext):
-        type.write(f'{type.fg_green}{type.italic}{mytext}{type.reset}\n')
-
-class foetalk(type):
-    def write (mytext):
-        type.write(f'{type.fg_orange}{type.italic}{mytext}{type.reset}\n')
