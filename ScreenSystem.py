@@ -27,12 +27,12 @@ class Location:
     describe1 = ""
     describe2 = ""
     name = ""
-    option1 = ""
-    option2 = ""
-    option3 = ""
-    travel1 = ""
-    travel2 = ""
-    travel3 = ""    
+    option1 = "-"
+    option2 = "-"
+    option3 = "-"
+    travel1 = "-"
+    travel2 = "-"
+    travel3 = "-"    
     
     def Screen():
         if Location.firstvisit:
@@ -54,9 +54,8 @@ class Location:
         PlayerInput.write (f"7: Check Items")
         PlayerInput.write (f"8: Check Weapons")
         PlayerInput.write (f"9: Check Stats")
-        PlayerInput.write (f"0: Go back where I just came from")
         print ()
-        PlayerSelection.__init__()
+        PlayerSelection.init()
 
 #  Screens that load with player information
 class PlayerScreens:
@@ -97,7 +96,7 @@ class PlayerSelection:
     option8 = PlayerScreens.WeaponScreen
     option9 = PlayerScreens.StatScreen
 
-    def __init__():
+    def init():
 
         selection = input("What would you like to do?   \n")
         print()

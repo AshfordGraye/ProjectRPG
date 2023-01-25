@@ -4,8 +4,8 @@ from ScreenSystem import *
 
 # class X (Location):
 #     firstvisit = True
-#     def __init__():
-#         Location.currentlocation = XXXXX.__init__
+#     def init():
+#         Location.currentlocation = XXXXX.init
 #         if XXXXX.firstvisit:
 #             Location.firstvisit = True
 #             Station.firstvisit = False
@@ -28,8 +28,8 @@ from ScreenSystem import *
 
 
 class Tutorial (Location):
-    def __init__():
-        Location.currentlocation = Tutorial.__init__
+    def init():
+        Location.currentlocation = Tutorial.init
         if Tutorial.firstvisit:
             Location.firstvisit = True
             Tutorial.firstvisit = False
@@ -38,109 +38,148 @@ class Tutorial (Location):
         Location.name = "The name of your location"
         Location.option1 = "Talk to NPC"
         Location.option2 = "Look at item of interest"
+        Location.option3 = "-"
         Location.travel1 = "Go in that direction"
         Location.travel2 = "Go in the other direction"
-
-        PlayerSelection.option1 = Train.__init__
-        PlayerSelection.option2 = ""
-        PlayerSelection.option3 = ""
-        PlayerSelection.option4 = ""
-        PlayerSelection.option5 = ""
-        PlayerSelection.option6 = ""
+        Location.travel3 = "-"
         Tutorial.Screen()
 
-class Train (Location):
+# EDIT THIS SUBCLASS TO ADD A HIDDEN ITEM AFTER LEAVING FOR THE FIRST TIME
+class Train (Location): 
     firstvisit = True
-    def __init__():
-        Location.currentlocation = Train.__init__
+    def init():
+        Location.currentlocation = Train.init
         if Train.firstvisit:
             Location.firstvisit = True
             Train.firstvisit = False
         Location.describe1 = "You are in a Skytrain cabin. The battered leather seats haven't been fixed in years, and the once polished brass has started to rust in places."
         Location.describe2 = "Once again you enter the Skytrain and find a cabin."
         Location.name = "Skytrain"
-        Location.option1 = "-"
-        Location.option2 = "-"
-        Location.option3 = "-"
         Location.travel1 = "Leave the Skytrain"
         Location.travel2 = "-"
         Location.travel3 = "-"
-        PlayerSelection.option1 = Station.__init__
-        PlayerSelection.option2 = ""
-        PlayerSelection.option3 = ""
-        PlayerSelection.option4 = ""
-        PlayerSelection.option5 = ""
-        PlayerSelection.option6 = ""
+        Location.option1 = "-"
+        Location.option2 = "-"
+        Location.option3 = "-"
+        PlayerSelection.option1 = Station.init
         Train.Screen()
 
 class Station (Location):
     firstvisit = True
-    def __init__():
-        Location.currentlocation = Station.__init__
+    def init():
+        Location.currentlocation = Station.init
         if Station.firstvisit:
             Location.firstvisit = True
             Station.firstvisit = False
         Location.describe1 = "You step off the Skytrain onto the Station dock. It stinks of smoke and diesel, and you can barely see in the smog."
         Location.describe2 = "Back at the station, you see the magnificent Skytrain docked - they always amazed you, as a boy you had never imagined they would one day take off from the rails."
         Location.name = "Skytrain Dock Station"
+        Location.travel1 = "Proceed to the Power Station"
+        Location.travel2 = "-"
+        Location.travel3 = "-"
         Location.option1 = "-"
         Location.option2 = "-"
         Location.option3 = "-"
-        Location.travel1 = "-"
-        Location.travel2 = "-"
-        Location.travel3 = "-"
-        PlayerSelection.option1 = ""
+        PlayerSelection.option1 = PowerStation.init
         PlayerSelection.option2 = ""
         PlayerSelection.option3 = ""
         PlayerSelection.option4 = ""
         PlayerSelection.option5 = ""
         PlayerSelection.option6 = ""
         Train.Screen()
-    
 
+class PowerStation (Location):
+    firstvisit = True
+    def init():
+        Location.currentlocation = PowerStation.init
+        if PowerStation.firstvisit:
+            Location.firstvisit = True
+            PowerStation.firstvisit = False
+        Location.describe1 = "The hulking mass of concrete, steel and towering chimneys stands before you"
+        Location.describe2 = "You stand in the grounds of the old Power Station"
+        Location.name = "Old Power Station - Grounds"
+        Location.travel1 = "Visit the Medic"
+        Location.travel2 = "Visit the makeshift Bazaar in the Station lobby"
+        Location.travel3 = "Head up to the Power Station workfloor"
+        Location.option1 = "-"
+        Location.option2 = "-"
+        Location.option3 = "-"
+        PlayerSelection.option1 = Medic.init
+        PlayerSelection.option2 = Bazaar.init
+        PlayerSelection.option3 = StationFloor.init
+        PlayerSelection.option4 = ""
+        PlayerSelection.option5 = ""
+        PlayerSelection.option6 = ""
+        PowerStation.Screen()
 
-class World():
+class Medic (Location):
+    firstvisit = True
+    def init():
+        Location.currentlocation = Medic.init
+        if Medic.firstvisit:
+            Location.firstvisit = True
+            Medic.firstvisit = False
+        Location.describe1 = "The Medic's area seems to be staffed only by an old man and a beaten up droid."
+        Location.describe2 = "The Medic sits in the corner. You hear the beeps and whirs of the Field Droid busying itself around the area."
+        Location.name = "Old Power Station - Medic's Area"
+        Location.travel1 = "-"
+        Location.travel2 = "-"
+        Location.travel3 = "-"
+        Location.option1 = "Talk to the Medic"
+        Location.option2 = "Approach the Field Droid"
+        Location.option3 = "-"
+        PlayerSelection.option1 = ""
+        PlayerSelection.option2 = ""
+        PlayerSelection.option3 = ""
+        PlayerSelection.option4 = ""
+        PlayerSelection.option5 = ""
+        PlayerSelection.option6 = ""
+        Medic.Screen()
 
-    def Train():
-        print("you are on the train")
-        playerchoice = int(input("where to go? \n 1)station\n"))
-        if playerchoice == 1:
-            World.Station()
+class Bazaar (Location):
+    firstvisit = True
+    def init():
+        Location.currentlocation = Bazaar.init
+        if Bazaar.firstvisit:
+            Location.firstvisit = True
+            Bazaar.firstvisit = False
+        Location.describe1 = "You enter the Bazaar"
+        Location.describe2 = "The bazaar are is full of people"
+        Location.name = "Old Power Station - Makeshift Bazaar"
+        Location.travel1 = "-"
+        Location.travel2 = "-"
+        Location.travel3 = "-"
+        Location.option1 = "Talk to the Magetek Vendor"
+        Location.option2 = "Talk to the Physical Vendor"
+        Location.option3 = "Talk to the Item Vendor"
+        PlayerSelection.option1 = ""
+        PlayerSelection.option2 = ""
+        PlayerSelection.option3 = ""
+        PlayerSelection.option4 = ""
+        PlayerSelection.option5 = ""
+        PlayerSelection.option6 = ""
+        Bazaar.Screen()
 
-    def Station():
-        print("you have arrived at the station")
-        playerchoice = int(input("where to go? \n 2) Plant 2) Train\n"))
-        if playerchoice == 1:
-            World.PowerPlant()
-        elif playerchoice == 2:
-            World.Train()
-
-    def PowerPlant():
-        print ("you have arrived at the power plant")
-        playerchoice = int(input("where to go? \n 1) Arena \n 2) Medic \n 3) Bazaar \n 0) back to the station"))
-        if playerchoice == 1:
-            World.Arena()
-        elif playerchoice == 2:
-            World.Medic()
-        elif playerchoice == 3:
-            World.Bazaar()
-        elif playerchoice == 0:
-            World.Station()
-    
-    def Arena():
-        print ("you have arrived at the arena. you aren't fighting today, kid!")
-        playerchoice = int(input("where to go? \n 1) Back to Plant \n "))
-        if playerchoice == 1:
-            World.PowerPlant()
-    
-    def Medic():
-        print ("you have arrived at the Medic. No healing just yet!")
-        playerchoice = int(input("where to go? \n 1) Back to plant\n "))
-        if playerchoice == 1:
-            World.PowerPlant()
-
-    def Bazaar():
-        print ("You have arrived at the bazaar")
-        playerchoice = int(input("where to go? \n 1) Back to plant\n "))
-        if playerchoice == 1:
-            World.PowerPlant()
+class StationFloor (Location):
+    firstvisit = True
+    def init():
+        Location.currentlocation = StationFloor.init
+        if StationFloor.firstvisit:
+            Location.firstvisit = True
+            StationFloor.firstvisit = False
+        Location.describe1 = "You enter the Power Station Floor"
+        Location.describe2 = "Once again into the Arena area... here goes. "
+        Location.name = "Old Power Station - Work Floor"
+        Location.travel1 = "-"
+        Location.travel2 = "-"
+        Location.travel3 = "-"
+        Location.option1 = "Approach the Arena Cage"
+        Location.option2 = "-"
+        Location.option3 = "-"
+        PlayerSelection.option1 = ""
+        PlayerSelection.option2 = ""
+        PlayerSelection.option3 = ""
+        PlayerSelection.option4 = ""
+        PlayerSelection.option5 = ""
+        PlayerSelection.option6 = ""
+        StationFloor.Screen()
