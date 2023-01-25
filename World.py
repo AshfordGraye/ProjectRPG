@@ -28,7 +28,6 @@ from ScreenSystem import *
 
 
 class Tutorial (Location):
-    firstvisit = True
     def __init__():
         Location.currentlocation = Tutorial.__init__
         if Tutorial.firstvisit:
