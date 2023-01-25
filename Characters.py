@@ -1,4 +1,4 @@
-from TypewriterText import *
+from ScreenSystem import *
 import random
 
 class Player():

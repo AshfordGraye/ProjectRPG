@@ -1,4 +1,4 @@
-from MenuSystem import *
+from World import *
 
 class Story():
 
@@ -11,7 +11,7 @@ class Story():
     In the game world, you will be presented with menus that looks like this:
         ''')
         time.sleep(0.5)
-        World.TutorialLocation()
+        Tutorial.Menu()
         time.sleep(1)
         GMtalk.write ('''
     Whenever you see a list like the one above, just enter the number of the option you wish to select. It's that easy!

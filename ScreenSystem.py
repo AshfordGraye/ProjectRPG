@@ -1,4 +1,4 @@
-from Characters import *
+from TypewriterText import *
 
 # Location Menus. The menu items will be adjusted dynamically based on location
 class Location:
