@@ -1,6 +1,6 @@
 from TypewriterText import *
+from Characters import *
 from World import *
-from GameClasses import *
 
 class Story():
 
