@@ -1,6 +1,6 @@
 from Characters import *
 
-class Tutorial (Location):
+class Tutorial (Location, PlayerSelection):
     firstvisit = True
     def __init__():
         if Tutorial.firstvisit:
@@ -13,9 +13,21 @@ class Tutorial (Location):
         Location.option2 = "Look at item of interest"
         Location.travel1 = "Go in one direction"
         Location.travel2 = "Go in another direction"
+        PlayerSelection.option0 = Train.__init__
+        PlayerSelection.option1 = ""
+        PlayerSelection.option2 = ""
+        PlayerSelection.option3 = ""
+        PlayerSelection.option4 = ""
+        PlayerSelection.option5 = ""
+        PlayerSelection.option6 = ""
+        PlayerSelection.option7 = ""
+        PlayerSelection.option8 = ""
+        PlayerSelection.option9 = ""
+        Tutorial.Screen()
 
-class Train (Location):
+class Train (Location, PlayerSelection):
     firstvisit = True
+    selection = ""
     def __init__():
         if Train.firstvisit:
             Location.firstvisit = True
@@ -29,6 +41,46 @@ class Train (Location):
         Location.travel1 = "Leave the Skytrain"
         Location.travel2 = "-"
         Location.travel3 = "-"
+        PlayerSelection.option0 = Tutorial.__init__
+        PlayerSelection.option1 = Station.__init__
+        PlayerSelection.option2 = ""
+        PlayerSelection.option3 = ""
+        PlayerSelection.option4 = ""
+        PlayerSelection.option5 = ""
+        PlayerSelection.option6 = ""
+        PlayerSelection.option7 = ""
+        PlayerSelection.option8 = ""
+        PlayerSelection.option9 = ""
+        Train.Screen()
+
+class Station (Location, PlayerSelection):
+    firstvisit = True
+    selection = ""
+    def __init__():
+        if Station.firstvisit:
+            Location.firstvisit = True
+            Station.firstvisit = False
+        Location.describe1 = "You step off the Skytrain onto the Station dock. It stinks of smoke and diesel, and you can barely see in the smog."
+        Location.describe2 = "Back at the station, you see the magnificent Skytrain docked - they always amazed you, as a boy you had never imagined they would one day take off from the rails."
+        Location.name = "Skytrain"
+        Location.option1 = "-"
+        Location.option2 = "-"
+        Location.option3 = "-"
+        Location.travel1 = "Leave the Skytrain"
+        Location.travel2 = "-"
+        Location.travel3 = "-"
+        PlayerSelection.option0 = Tutorial.__init__
+        PlayerSelection.option1 = ""
+        PlayerSelection.option2 = ""
+        PlayerSelection.option3 = ""
+        PlayerSelection.option4 = ""
+        PlayerSelection.option5 = ""
+        PlayerSelection.option6 = ""
+        PlayerSelection.option7 = ""
+        PlayerSelection.option8 = ""
+        PlayerSelection.option9 = ""
+        Train.Screen()
+    
 
 
 class World():
