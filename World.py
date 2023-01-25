@@ -1,33 +1,27 @@
-from StoryElements import *
+from Characters import *
 
 class Tutorial (Location):
-    Location.name = "Tutorial Area"
+    Location.describe1 = "A description of your location and the world around you"
+    Location.describe2 = "A description of your location and the world around you"
+    Location.name = "The name of your location"
+    Location.option1 = "Talk to NPC"
+    Location.option2 = "Look at item of interest"
+    Location.travel1 = "Go in one direction"
+    Location.travel2 = "Go in another direction"
+
+class Train(Location):
+    Location.describe1 = "You are in the Skytrain cabin. The battered leather seats haven't been fixed in years, and the once polished brass has started to rust in places."
+    Location.describe2 = "Once again you enter the Skytrain and find a cabin."
+    Location.name = "Skytrain"
+    Location.option1 = "-"
+    Location.option2 = "-"
+    Location.option3 = "-"
+    Location.travel1 = "Leave the Skytrain"
+    Location.travel2 = "-"
+    Location.travel3 = "-"
+
 
 class World():
-
-    def TutorialLocation():
-        GMnarrate.write('''
-    A description of your locationand the things around you.
-        ''')
-        MenuTitle.write("Action Menu")
-        PlayerInput.write('''
-    1: Talk to NPC
-    2: Look at item of interest
-    3: Talk to a different NPC
-        ''')
-        MenuTitle.write("Player Menu")
-        PlayerInput.write('''
-    4: Stats
-    5: Items
-    6: Equipment
-        ''')
-        MenuTitle.write("Travel Menu")
-        PlayerInput.write('''
-    7: Go in one direction
-    8: Go in another direction
-    9: Go in yet another direction
-    0: Go back where I just came from
-        ''')
 
     def Train():
         print("you are on the train")
