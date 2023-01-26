@@ -55,7 +55,7 @@ class Location:
         PlayerInput.write (f"8: Check Weapons")
         PlayerInput.write (f"9: Check Stats")
         print ()
-        PlayerSelection.init()
+        LocationScreenSelect.init()
 
 #  Screens that load with player information
 class PlayerScreens:
@@ -85,16 +85,14 @@ You currently have the following in your inventory:
     ''')
 
 # Basic setup for player selections in the world 
-class PlayerSelection:
+class LocationScreenSelect:
+
     option1 = ""
     option2 = ""
     option3 = ""
     option4 = ""
     option5 = ""
     option6 = ""
-    option7 = PlayerScreens.ItemScreen
-    option8 = PlayerScreens.WeaponScreen
-    option9 = PlayerScreens.StatScreen
 
     def init():
 
@@ -102,58 +100,134 @@ class PlayerSelection:
         print()
         if selection == "0":
             if Location.lastlocation == "":
-                PlayerSelection.InvalidChoice()
+                LocationScreenSelect.InvalidChoice()
             else:
                 Location.firstvisit = False
                 Location.holdlocation = Location.currentlocation  
                 Location.lastlocation()   
         elif selection == "1":
-            if PlayerSelection.option1 == "-":
-                PlayerSelection.InvalidChoice()
+            if LocationScreenSelect.option1 == "-":
+                LocationScreenSelect.InvalidChoice()
             else:
                 Location.firstvisit = False
                 Location.holdlocation = Location.currentlocation
-                PlayerSelection.option1()
+                LocationScreenSelect.option1()
         elif selection == "2":
-            if PlayerSelection.option2 == "-":
-                PlayerSelection.InvalidChoice()
+            if LocationScreenSelect.option2 == "-":
+                LocationScreenSelect.InvalidChoice()
             else:
                 Location.firstvisit = False
                 Location.holdlocation = Location.currentlocation
-                PlayerSelection.option2()
+                LocationScreenSelect.option2()
         elif selection == "3":
-            if PlayerSelection.option3 == "-":
-                PlayerSelection.InvalidChoice()
+            if LocationScreenSelect.option3 == "-":
+                LocationScreenSelect.InvalidChoice()
             else:
                 Location.firstvisit = False
                 Location.holdlocation = Location.currentlocation
-                PlayerSelection.option3()
+                LocationScreenSelect.option3()
         elif selection == "4":
-            PlayerSelection.option4()
+            LocationScreenSelect.option4()
         elif selection == "5":
-            PlayerSelection.option5()
+            LocationScreenSelect.option5()
         elif selection == "6":
-            PlayerSelection.option6()
+            LocationScreenSelect.option6()
         elif selection == "7":
-            PlayerSelection.option7()
+            PlayerScreens.ItemScreen
             input ("Press Enter to go back")
             ClearScreen()
             Location.Screen()
         elif selection == "8":
-            PlayerSelection.option8()
+            PlayerScreens.WeaponScreen
             input ("Press Enter to go back")
             ClearScreen()
             Location.Screen()
         elif selection == "9":
-            PlayerSelection.option9()
+            PlayerScreens.StatScreen
             input ("Press Enter to go back")
             ClearScreen()
             Location.Screen()
         else:
-            PlayerSelection.InvalidChoice()
+            LocationScreenSelect.InvalidChoice()
     
     def InvalidChoice():
         GMtalk.write ("That won't work here... Try something else.")
         input("Press Enter to go back")
         ClearScreen()
         Location.Screen()
+
+class Chat:
+
+    firstvisit = True
+    name = ""
+    greeting1 = ""
+    greeting2 = ""
+    items = {}
+    option1 = "-"
+    option2 = "-"
+    option3 = "-"
+    
+    def Screen():
+        MenuTitle.write (f"{Chat.name}")
+        MenuTitle.write ("Chat Menu")
+        PlayerInput.write (f"0: Leave this conversation")
+        PlayerInput.write (f"1: {Chat.option1}")
+        PlayerInput.write (f"2: {Chat.option2}")
+        PlayerInput.write (f"3: {Chat.option3}")
+        MenuTitle.write ("Player Menu")
+        PlayerInput.write (f"7: Check Items")
+        PlayerInput.write (f"8: Check Weapons")
+        PlayerInput.write (f"9: Check Stats")
+        print ()
+        ChatScreenSelect.init()
+
+class ChatScreenSelect:
+
+    option1 = "chat1"
+    option2 = "chat2"
+    option3 = "chat3"
+
+    def init():
+
+        selection = input("What would you like to do?   \n")
+        print()
+        if selection == "0":
+            Location.currentlocation()
+        elif selection == "1":
+            if ChatScreenSelect.option1 == "-":
+                ChatScreenSelect.InvalidChoice()
+            else:
+                ChatScreenSelect.option1()
+        elif selection == "2":
+            if ChatScreenSelect.option2 == "-":
+                ChatScreenSelect.InvalidChoice()
+            else:
+                ChatScreenSelect.option2()
+        elif selection == "3":
+            if ChatScreenSelect.option3 == "-":
+                ChatScreenSelect.InvalidChoice()
+            else:
+                ChatScreenSelect.option3()
+        elif selection == "7":
+            PlayerScreens.ItemScreen
+            input ("Press Enter to go back")
+            ClearScreen()
+            Chat.Screen()
+        elif selection == "8":
+            PlayerScreens.WeaponScreen
+            input ("Press Enter to go back")
+            ClearScreen()
+            Chat.Screen()
+        elif selection == "9":
+            PlayerScreens.StatScreen
+            input ("Press Enter to go back")
+            ClearScreen()
+            Chat.Screen()
+        else:
+            ChatScreenSelect.InvalidChoice()
+    
+    def InvalidChoice():
+        GMtalk.write ("That won't work here... Try something else.")
+        input("Press Enter to go back")
+        ClearScreen()
+        Chat.Screen()

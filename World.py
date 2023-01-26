@@ -1,4 +1,5 @@
 from ScreenSystem import *
+from NPCs import *
 
 # FRAMEWORK FOR CLASS
 
@@ -18,12 +19,12 @@ from ScreenSystem import *
 #         Location.travel1 = "-"
 #         Location.travel2 = "-"
 #         Location.travel3 = "-"
-#         PlayerSelection.option1 = ""
-#         PlayerSelection.option2 = ""
-#         PlayerSelection.option3 = ""
-#         PlayerSelection.option4 = ""
-#         PlayerSelection.option5 = ""
-#         PlayerSelection.option6 = ""
+#         LocationScreenSelect.option1 = ""
+#         LocationScreenSelect.option2 = ""
+#         LocationScreenSelect.option3 = ""
+#         LocationScreenSelect.option4 = ""
+#         LocationScreenSelect.option5 = ""
+#         LocationScreenSelect.option6 = ""
 #         XXXXX.Screen()
 
 
@@ -61,7 +62,7 @@ class Train (Location):
         Location.option1 = "-"
         Location.option2 = "-"
         Location.option3 = "-"
-        PlayerSelection.option1 = Station.init
+        LocationScreenSelect.option1 = Station.init
         Train.Screen()
 
 class Station (Location):
@@ -80,12 +81,12 @@ class Station (Location):
         Location.option1 = "-"
         Location.option2 = "-"
         Location.option3 = "-"
-        PlayerSelection.option1 = PowerStation.init
-        PlayerSelection.option2 = ""
-        PlayerSelection.option3 = ""
-        PlayerSelection.option4 = ""
-        PlayerSelection.option5 = ""
-        PlayerSelection.option6 = ""
+        LocationScreenSelect.option1 = PowerStation.init
+        LocationScreenSelect.option2 = ""
+        LocationScreenSelect.option3 = ""
+        LocationScreenSelect.option4 = ""
+        LocationScreenSelect.option5 = ""
+        LocationScreenSelect.option6 = ""
         Train.Screen()
 
 class PowerStation (Location):
@@ -98,43 +99,43 @@ class PowerStation (Location):
         Location.describe1 = "The hulking mass of concrete, steel and towering chimneys stands before you"
         Location.describe2 = "You stand in the grounds of the old Power Station"
         Location.name = "Old Power Station - Grounds"
-        Location.travel1 = "Visit the Medic"
+        Location.travel1 = "Visit the MedicStation"
         Location.travel2 = "Visit the makeshift Bazaar in the Station lobby"
         Location.travel3 = "Head up to the Power Station workfloor"
         Location.option1 = "-"
         Location.option2 = "-"
         Location.option3 = "-"
-        PlayerSelection.option1 = Medic.init
-        PlayerSelection.option2 = Bazaar.init
-        PlayerSelection.option3 = StationFloor.init
-        PlayerSelection.option4 = ""
-        PlayerSelection.option5 = ""
-        PlayerSelection.option6 = ""
+        LocationScreenSelect.option1 = MedicStation.init
+        LocationScreenSelect.option2 = Bazaar.init
+        LocationScreenSelect.option3 = StationFloor.init
+        LocationScreenSelect.option4 = ""
+        LocationScreenSelect.option5 = ""
+        LocationScreenSelect.option6 = ""
         PowerStation.Screen()
 
-class Medic (Location):
+class MedicStation (Location):
     firstvisit = True
     def init():
-        Location.currentlocation = Medic.init
-        if Medic.firstvisit:
+        Location.currentlocation = MedicStation.init
+        if MedicStation.firstvisit:
             Location.firstvisit = True
-            Medic.firstvisit = False
-        Location.describe1 = "The Medic's area seems to be staffed only by an old man and a beaten up droid."
-        Location.describe2 = "The Medic sits in the corner. You hear the beeps and whirs of the Field Droid busying itself around the area."
+            MedicStation.firstvisit = False
+        Location.describe1 = "The Medic's Station area seems to be staffed only by an old man and a beaten up droid."
+        Location.describe2 = "The MedicStation sits in the corner. You hear the beeps and whirs of the Field Droid busying itself around the area."
         Location.name = "Old Power Station - Medic's Area"
         Location.travel1 = "-"
         Location.travel2 = "-"
         Location.travel3 = "-"
-        Location.option1 = "Talk to the Medic"
+        Location.option1 = "Talk to the MedicStation"
         Location.option2 = "Approach the Field Droid"
         Location.option3 = "-"
-        PlayerSelection.option1 = ""
-        PlayerSelection.option2 = ""
-        PlayerSelection.option3 = ""
-        PlayerSelection.option4 = ""
-        PlayerSelection.option5 = ""
-        PlayerSelection.option6 = ""
-        Medic.Screen()
+        LocationScreenSelect.option1 = ""
+        LocationScreenSelect.option2 = ""
+        LocationScreenSelect.option3 = ""
+        LocationScreenSelect.option4 = Medic.init
+        LocationScreenSelect.option5 = ""
+        LocationScreenSelect.option6 = ""
+        MedicStation.Screen()
 
 class Bazaar (Location):
     firstvisit = True
@@ -152,12 +153,12 @@ class Bazaar (Location):
         Location.option1 = "Talk to the Magetek Vendor"
         Location.option2 = "Talk to the Physical Vendor"
         Location.option3 = "Talk to the Item Vendor"
-        PlayerSelection.option1 = ""
-        PlayerSelection.option2 = ""
-        PlayerSelection.option3 = ""
-        PlayerSelection.option4 = ""
-        PlayerSelection.option5 = ""
-        PlayerSelection.option6 = ""
+        LocationScreenSelect.option1 = ""
+        LocationScreenSelect.option2 = ""
+        LocationScreenSelect.option3 = ""
+        LocationScreenSelect.option4 = ""
+        LocationScreenSelect.option5 = ""
+        LocationScreenSelect.option6 = ""
         Bazaar.Screen()
 
 class StationFloor (Location):
@@ -176,10 +177,10 @@ class StationFloor (Location):
         Location.option1 = "Approach the Arena Cage"
         Location.option2 = "-"
         Location.option3 = "-"
-        PlayerSelection.option1 = ""
-        PlayerSelection.option2 = ""
-        PlayerSelection.option3 = ""
-        PlayerSelection.option4 = ""
-        PlayerSelection.option5 = ""
-        PlayerSelection.option6 = ""
+        LocationScreenSelect.option1 = ""
+        LocationScreenSelect.option2 = ""
+        LocationScreenSelect.option3 = ""
+        LocationScreenSelect.option4 = ""
+        LocationScreenSelect.option5 = ""
+        LocationScreenSelect.option6 = ""
         StationFloor.Screen()
