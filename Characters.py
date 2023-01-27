@@ -258,7 +258,7 @@ Would you like to select this class, or view another?
         Player.mp = Player.mpmax
 
 class Enemy():
-    
+
     level = ""
     job = ""
 
@@ -361,3 +361,9 @@ class Enemy():
                 Player.hp -= Enemy.moves["Attack"]
                 GMnarrate.write (f'The {Enemy.job} made a strong lunge at you with its weapon, causing {damage} damage')
         Player.playerturn = not Player.playerturn
+        
+class NPC:
+    name = ""
+    greeting1 = ""
+    greeting2 = ""
+    items = {}
