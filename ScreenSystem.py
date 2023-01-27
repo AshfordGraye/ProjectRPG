@@ -35,12 +35,12 @@ class Location:
     travel3 = "-"    
     
     def Screen():
+        ScreenTitle.write (f"{Location.name}\n")
         if Location.firstvisit:
             GMnarrate.write (f"{Location.describe1}\n")
         else:
             GMnarrate.write (f"{Location.describe2}\n")
         Location.lastlocation = Location.holdlocation
-        MenuTitle.write (f"{Location.name}\n")
         MenuTitle.write ("Travel Menu")
         PlayerInput.write (f"0: Go back to where I was")
         PlayerInput.write (f"1: {Location.travel1}")
@@ -102,13 +102,15 @@ class LocationScreenSelect:
             if Location.lastlocation == "":
                 LocationScreenSelect.InvalidChoice()
             else:
+                ClearScreen()
                 Location.firstvisit = False
-                Location.holdlocation = Location.currentlocation  
+                Location.holdlocation = Location.currentlocation
                 Location.lastlocation()   
         elif selection == "1":
             if LocationScreenSelect.option1 == "-":
                 LocationScreenSelect.InvalidChoice()
             else:
+                ClearScreen()
                 Location.firstvisit = False
                 Location.holdlocation = Location.currentlocation
                 LocationScreenSelect.option1()
@@ -116,6 +118,7 @@ class LocationScreenSelect:
             if LocationScreenSelect.option2 == "-":
                 LocationScreenSelect.InvalidChoice()
             else:
+                ClearScreen()
                 Location.firstvisit = False
                 Location.holdlocation = Location.currentlocation
                 LocationScreenSelect.option2()
@@ -123,6 +126,7 @@ class LocationScreenSelect:
             if LocationScreenSelect.option3 == "-":
                 LocationScreenSelect.InvalidChoice()
             else:
+                ClearScreen()
                 Location.firstvisit = False
                 Location.holdlocation = Location.currentlocation
                 LocationScreenSelect.option3()
@@ -168,7 +172,7 @@ class Chat:
     option3 = "-"
     
     def Screen():
-        MenuTitle.write (f"{Chat.name}")
+        ScreenTitle.write (f"{Chat.name}")
         MenuTitle.write ("Chat Menu")
         PlayerInput.write (f"0: Leave this conversation")
         PlayerInput.write (f"1: {Chat.option1}")
