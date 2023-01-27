@@ -4,7 +4,7 @@ import time
 
 ##### THIS CLASS IS STOLEN CODE! SHHHHH!
 class type():
-    def write(text, speed=0.05):
+    def write(text, speed=0.01):
         for char in text:
             sys.stdout.write(char)
             sys.stdout.flush()
@@ -55,7 +55,7 @@ class type():
     reset = '\033[0m'
 
 class quicktype():
-    def write(text, speed=0.02):
+    def write(text, speed=0.005):
         for char in text:
             sys.stdout.write(char)
             sys.stdout.flush()
@@ -111,7 +111,7 @@ class quicktype():
 # These are message classes that format text automatically
 class GMtalk(type):
     def write (mytext):
-        type.write(f'{mytext}\n')
+        type.write(f'{type.italic}{mytext}{type.reset}\n')
 
 class GMnarrate(type):
     def write (mytext):

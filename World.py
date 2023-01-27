@@ -87,7 +87,7 @@ class Station (Location):
         LocationScreenSelect.option4 = ""
         LocationScreenSelect.option5 = ""
         LocationScreenSelect.option6 = ""
-        Train.Screen()
+        Station.Screen()
 
 class PowerStation (Location):
     firstvisit = True
@@ -99,7 +99,7 @@ class PowerStation (Location):
         Location.describe1 = "The hulking mass of concrete, steel and towering chimneys stands before you"
         Location.describe2 = "You stand in the grounds of the old Power Station"
         Location.name = "Old Power Station - Grounds"
-        Location.travel1 = "Visit the MedicStation"
+        Location.travel1 = "Visit the Medic Station"
         Location.travel2 = "Visit the makeshift Bazaar in the Station lobby"
         Location.travel3 = "Head up to the Power Station workfloor"
         Location.option1 = "-"
@@ -121,12 +121,12 @@ class MedicStation (Location):
             Location.firstvisit = True
             MedicStation.firstvisit = False
         Location.describe1 = "The Medic's Station area seems to be staffed only by an old man and a beaten up droid."
-        Location.describe2 = "The MedicStation sits in the corner. You hear the beeps and whirs of the Field Droid busying itself around the area."
+        Location.describe2 = "The Medic sits in the corner. You hear the beeps and whirs of the Field Droid busying itself around the area."
         Location.name = "Old Power Station - Medic's Area"
         Location.travel1 = "-"
         Location.travel2 = "-"
         Location.travel3 = "-"
-        Location.option1 = "Talk to the MedicStation"
+        Location.option1 = "Talk to the Medic"
         Location.option2 = "Approach the Field Droid"
         Location.option3 = "-"
         LocationScreenSelect.option1 = ""
