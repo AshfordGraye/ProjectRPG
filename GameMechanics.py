@@ -430,7 +430,7 @@ class Character():
 
     moves = ""
     misschance = random.randint (1,100)
-    turn = False
+    playerturn = False
 
 ######################
 ######  PLAYER  ######
