@@ -1,11 +1,8 @@
 # Folders
-/OriginalAppBuild
-/Documentation
+
 
 # Files
 .DS_Store
-RunTesting.py
-ExampleCodeSnips.py
-Clipboard.py
+X-RunTesting.py
 
 # Filetypes
