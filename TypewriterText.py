@@ -15,6 +15,7 @@ class type():
 
     def clear():
         os.system('clear')
+        
     def fg(r,g,b):
         return f'\033[38;2;{r};{g};{b}m'
 

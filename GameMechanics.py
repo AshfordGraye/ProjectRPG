@@ -16,9 +16,15 @@ def ClearScreen():
     else:
         _ = system('clear')
 
-######################
-##### NAVSCREENS #####
-######################
+######################################
+######################################
+##### SECTION1 - DISPLAY SCREENS #####
+######################################
+######################################
+
+####################################
+##### SECTION 1A -  NAVSCREENS #####
+####################################
 
 # NAVSCREEN CLASS PROVIDES FRAMEWORK FOR NavScreen SUBCLASSES TO DISPLAY INFORMATION CONSISTENTLY
 class NavScreen:
@@ -40,9 +46,9 @@ class NavScreen:
     def Display():
         ScreenTitle.write (f"{NavScreen.name}\n")
         if NavScreen.firstvisit:
-            GMnarrate.write (f"{NavScreen.describe1}\n")
+            NavScreen.describe1()
         else:
-            GMnarrate.write (f"{NavScreen.describe2}\n")
+            NavScreen.describe2()
         NavScreen.lastNavScreen = NavScreen.holdNavScreen
         MenuTitle.write ("Travel Menu")
         PlayerInput.write (f"0: Go back to where I was")
@@ -148,9 +154,9 @@ class NavSelect:
         ClearScreen()
         NavScreen.Display()
 
-######################
-##### NPCSCREENS #####
-######################
+###################################
+##### SECTION 1B - NPCSCREENS #####
+###################################
 
 # NPC SCREEN PROVIDES FRAMEWORK FOR WHEN PLAYER HAS SELECTED TO INTERACT WITH AN NPC ON THE NAV SCREEN
 class NPCscreen:
@@ -169,11 +175,11 @@ class NPCscreen:
     def Display():
         ScreenTitle.write (f"{NPCscreen.name}    \n")
         if NPCscreen.firstvisit:
-            GMnarrate.write(f"{NPCscreen.gmintro1} \n")
-            NPCtalk.write (f'{NPCscreen.greeting1}  \n')
+            NPCscreen.gmintro1()
+            NPCscreen.greeting1()
         else:
-            GMnarrate.write (f"{NPCscreen.gmintro2}\n")
-            NPCtalk.write (f'{NPCscreen.greeting2}  \n')
+            NPCscreen.gmintro2()
+            NPCscreen.greeting2()
         MenuTitle.write ("NPCscreen Menu")
         PlayerInput.write (f"0: Leave this conversation")
         PlayerInput.write (f"1: {NPCscreen.option1}")
@@ -243,131 +249,9 @@ class NPCselect:
         ClearScreen()
         NPCscreen.Display()
 
-###################################
-###################################
-##### SECTION - BATTLE SYSTEM #####
-###################################
-###################################
-
-# BATTLE CLASS WILL DETERMINE BATTLE SEQUENCING AND BEHAVIOURS
-class Battle():
-    battlestart = True
-    #runs at the start to determine who goes first 
-    @staticmethod
-    def FirstStrike():
-        cointoss = random.randint(1,2)
-        if cointoss == 1:
-            Player.playerturn = True
-            GMnarrate.write(f'You move fast for the first strike!   \n')
-            Player.BattlePhase()
-        elif cointoss == 2:
-            Player.playerturn = False
-            GMnarrate.write(f'Your opponent strikes first!   \n')
-            Enemy.BattlePhase()
-    
-    @staticmethod
-    def PlayerVictory():
-
-        GMtalk.write (f'\nDecide quickly: yes or no?\n')
-        answer = input(("")) ; print("\n")
-        if answer.lower() in ("no"):
-            GMnarrate.write ("Your enemy stumbles to his feet and braces himself, steadying his weapon with renewed vigor. He has a cold steel in his eye... this could be his last chance to survive. \n")
-            time.sleep(1)
-            GMtalk.write (f'Brace Yourself! \n')
-            time.sleep(1)
-            Enemy.hp = Enemy.hpmax /100 *60
-            Battle.FirstStrike()
-        elif answer.lower() in ("yes"):
-            GMnarrate.write ("With a final swing of your weapon, you dispatch your foe's soul to the gods. May they have more mercy than you did... \n")
-            time.sleep(1)
-            GMnarrate.write ("It was a harsh ordeal, but you have emerged victorious, and earned your freedom. Well done, warrior. \n")
-            time.sleep(1)
-            GMnarrate.write("Thank you for playing. The game will close itself in five seconds. \n")
-            time.sleep(5)
-            quit()
-        else: 
-            GMtalk.write ("your mind is racing...  but you must focus! \n")
-            Battle.PlayerVictory()
-
-    @staticmethod
-    def EnemyVictory():
-        global firsthit
-        global playerturn
-        
-        GMnarrate.write ("You feel shattered and broken... but do you have the strength to go on? You must decide, one way or the other... \n")
-        GMtalk.write (f"He won't wait long... Yes or No? \n")
-        answer = input(str("")) ; print()
-        if answer.lower() in ("yes"):
-            firsthit = True
-            playerturn = False
-            GMnarrate.write ("Your enemy, allowing a brief show of his military honour, allows you a moment to stand and steady your weapon. Take this chance - it could be your last. \n")
-            time.sleep(1)
-            GMtalk.write ("Brace Yourself! \n")
-            time.sleep(1)
-            Player.Reset()
-            Battle.FirstStrike()
-        elif answer.lower() in ("no"):
-            GMnarrate.write("You enemy looks upon you with disdain.\n")
-            time.sleep(1)
-            NPCtalk.write (f"'hm... pathetic. I had expected more of you.' \n")
-            time.sleep(1)
-            GMnarrate.write ("With a final thrust of his weapon, your foe dispatches your dream of freedom to the gods - and your soul with it.\n")
-            time.sleep(1)
-            GMnarrate.write("Thank you for playing. The app will close itself in five seconds\n")
-            time.sleep(5)
-            quit()
-        else:
-            GMtalk.write ("Your mind is racing... focus! \n")
-            Battle.EnemyVictory()
-
-    @staticmethod
-    def CheckForVictory():
-        if Player.hp <= 0:
-            Player.hp = 0
-            GMnarrate.write (f'Seeing an opening, the enemy rushes forward and strikes you with a vicious fury, knocking you to the ground. He stands above you and bellows for the crowd: \n')
-            time.sleep(1)
-            NPCtalk.write (f"   'ARE YOU DEFEATED ALREADY?!'\n")
-            time.sleep(1)
-            Battle.EnemyVictory()
-        elif Enemy.hp <= 0:
-            Enemy.hp = 0
-            GMnarrate.write ("Your enemy stumbles back, and then falls to the ground.\n")
-            time.sleep(1)
-            GMnarrate.write ("You look down at your enemy - do you strike him down and finish the task?")
-            time.sleep(1)
-            Battle.PlayerVictory()
-    
-
-    @staticmethod
-    def Fight():
-        
-        #NEED TO RESET BATTLEBEGINS AT THE END OF THE FIGHT 
-        if Battle.battlestart == True:
-            Battle.battlestart = False
-            Enemy.SetDifficulty()
-            GMnarrate.write (f"An enemy {Enemy.job} appeared!")
-            Battle.FirstStrike()
-        if Player.playerturn == True:
-            Player.BattlePhase()
-            Battle.Fight()    
-        elif Player.playerturn == False:
-            Enemy.BattlePhase()
-            Battle.Fight()
-
-        Battle.CheckForVictory()
-        Battle.Fight()
-
-# INITIALISES NEW BATTLE BASED ON ENEMY TYPE
-class LowLvlBadGuy(Battle):
-    
-    @staticmethod
-    def StartFight():
-        Enemy.level = 1
-        LowLvlBadGuy.Fight()
-
-######################
-#### PLAYER  INFO ####
-######################
+######################################
+##### SECTION 1C - PLAYERSCREENS #####
+######################################
 
 class PlayerScreens:
     def StatScreen():
@@ -396,13 +280,19 @@ You currently have the following in your inventory:
     {Player.items}
     ''')
 
+
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+
+
 ####################################
 ####################################
-######  SECTION - CHARACTERS  ######
+######  SECTION2 - CHARACTERS  ######
 ####################################
 ####################################
 
-class Character():
+class Character:
     
     name = ""
     
@@ -432,9 +322,9 @@ class Character():
     misschance = random.randint (1,100)
     playerturn = False
 
-######################
-######  PLAYER  ######
-######################
+####################################
+######  SECTIION 2A - PLAYER  ######
+####################################
 
 class Player (Character):
 
@@ -690,10 +580,281 @@ Would you like to select this class, or view another?
     def Reset():
         Player.hp = Player.hpmax
         Player.mp = Player.mpmax
+      
+#############################
+##### SECTION 2B - NPCS #####
+#############################
 
-######################
-###### BAD GUYS ######
-######################
+    #EXAMPLE FRAMEWORK FOR FUTURE NPC ADDITIONS
+# class XXXXX(NPCscreen):
+#     firstvisit = True
+#     def init():
+#         NPCscreen.name = "XXXXX"
+#         if XXXXX.firstvisit:
+#             NPCscreen.firstvisit = True
+#             NPCscreen.gmintro1 = Story.GMIntroTest1
+#             NPCscreen.greeting1 = Story.NPCInteractTest1
+#             XXXXX.firstvisit = False
+#         else:
+#             NPCscreen.gmintro2 = Story.GMIntroTest2
+#             NPCscreen.greeting2 = Story.NPCInteractTest2
+#         NPCscreen.option1 = "-"
+#         NPCscreen.option2 = "-"
+#         NPCscreen.option3 = "-"
+#         NPCselect.option1 = ""
+#         NPCselect.option2 = ""
+#         NPCselect.option3 = ""
+#         NPCscreen.Display()
+
+class Porter (NPCscreen):
+    firstvisit = True
+    def init():
+        NPCscreen.name = "Skytrain Dock porter"
+        if Porter.firstvisit:
+            NPCscreen.firstvisit = True
+            NPCscreen.gmintro1 = Story.GMIntroTest1
+            NPCscreen.greeting1 = Story.NPCInteractTest1
+            Porter.firstvisit = False
+        else:
+            NPCscreen.gmintro2 = Story.GMIntroTest2
+            NPCscreen.greeting2 = Story.NPCInteractTest2
+        NPCscreen.option1 = "-"
+        NPCscreen.option2 = "-"
+        NPCscreen.option3 = "-"
+        NPCselect.option1 = ""
+        NPCselect.option2 = ""
+        NPCselect.option3 = ""
+        NPCscreen.Display()
+
+class HomelessGuy(NPCscreen):
+    firstvisit = True
+    def init():
+        NPCscreen.name = "Homeless Guy"
+        if HomelessGuy.firstvisit:
+            NPCscreen.firstvisit = True
+            NPCscreen.gmintro1 = Story.GMIntroTest1
+            NPCscreen.greeting1 = Story.NPCInteractTest1
+            HomelessGuy.firstvisit = False
+        else:
+            NPCscreen.gmintro2 = Story.GMIntroTest2
+            NPCscreen.greeting2 = Story.NPCInteractTest2
+        NPCscreen.option1 = "-"
+        NPCscreen.option2 = "-"
+        NPCscreen.option3 = "-"
+        NPCselect.option1 = ""
+        NPCselect.option2 = ""
+        NPCselect.option3 = ""
+        NPCscreen.Display()
+
+class Medic(NPCscreen):
+    firstvisit = True
+    def init():
+        NPCscreen.name = "Medic"
+        if Medic.firstvisit:
+            NPCscreen.firstvisit = True
+            NPCscreen.gmintro1 = Story.GMIntroTest1
+            NPCscreen.greeting1 = Story.NPCInteractTest1
+            Medic.firstvisit = False
+        else:
+            NPCscreen.gmintro2 = Story.GMIntroTest2
+            NPCscreen.greeting2 = Story.NPCInteractTest2
+        NPCscreen.option1 = "I'm hurt, can you help?"
+        NPCscreen.option2 = "What's that droid for?"
+        NPCscreen.option3 = "-"
+        NPCselect.option1 = Story.Medic1
+        NPCscreen.Display()
+
+class VendorPhys (NPCscreen):
+    firstvisit = True
+    def init():
+        NPCscreen.name = "Store - Iron Will"
+        if VendorPhys.firstvisit:
+            NPCscreen.firstvisit = True
+            NPCscreen.gmintro1 = Story.GMIntroTest1
+            NPCscreen.greeting1 = Story.NPCInteractTest1
+            VendorPhys.firstvisit = False
+        else:
+            NPCscreen.gmintro2 = Story.GMIntroTest2
+            NPCscreen.greeting2 = Story.NPCInteractTest2
+        NPCscreen.option1 = "-"
+        NPCscreen.option2 = "-"
+        NPCscreen.option3 = "-"
+        NPCselect.option1 = ""
+        NPCselect.option2 = ""
+        NPCselect.option3 = ""
+        NPCscreen.Display()
+
+class VendorMag (NPCscreen):
+    firstvisit = True
+    def init():
+        NPCscreen.name = "Store - Technomancy"
+        if VendorMag.firstvisit:
+            NPCscreen.firstvisit = True
+            NPCscreen.gmintro1 = Story.GMIntroTest1
+            NPCscreen.greeting1 = Story.NPCInteractTest1
+            VendorMag.firstvisit = False
+        else:
+            NPCscreen.gmintro2 = Story.GMIntroTest2
+            NPCscreen.greeting2 = Story.NPCInteractTest2
+        NPCscreen.option1 = "-"
+        NPCscreen.option2 = "-"
+        NPCscreen.option3 = "-"
+        NPCselect.option1 = ""
+        NPCselect.option2 = ""
+        NPCselect.option3 = ""
+        NPCscreen.Display()
+
+class VendorItem (NPCscreen):
+    firstvisit = True
+    def init():
+        NPCscreen.name = "Store - Going Alone"
+        if VendorItem.firstvisit:
+            NPCscreen.firstvisit = True
+            NPCscreen.gmintro1 = Story.GMIntroTest1
+            NPCscreen.greeting1 = Story.NPCInteractTest1
+            VendorItem.firstvisit = False
+        else:
+            NPCscreen.gmintro2 = Story.GMIntroTest2
+            NPCscreen.greeting2 = Story.NPCInteractTest2
+        NPCscreen.option1 = "-"
+        NPCscreen.option2 = "-"
+        NPCscreen.option3 = "-"
+        NPCselect.option1 = ""
+        NPCselect.option2 = ""
+        NPCselect.option3 = ""
+        NPCscreen.Display()
+
+
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+
+
+####################################
+####################################
+##### SECTION3 - BATTLE SYSTEM #####
+####################################
+####################################
+
+# BATTLE CLASS WILL DETERMINE BATTLE SEQUENCING AND BEHAVIOURS
+class Battle():
+    battlestart = True
+    #runs at the start to determine who goes first 
+    @staticmethod
+    def FirstStrike():
+        cointoss = random.randint(1,2)
+        if cointoss == 1:
+            Player.playerturn = True
+            GMnarrate.write(f'You move fast for the first strike!   \n')
+            Player.BattlePhase()
+        elif cointoss == 2:
+            Player.playerturn = False
+            GMnarrate.write(f'Your opponent strikes first!   \n')
+            Enemy.BattlePhase()
+    
+    @staticmethod
+    def PlayerVictory():
+
+        GMtalk.write (f'\nDecide quickly: yes or no?\n')
+        answer = input(("")) ; print("\n")
+        if answer.lower() in ("no"):
+            GMnarrate.write ("Your enemy stumbles to his feet and braces himself, steadying his weapon with renewed vigor. He has a cold steel in his eye... this could be his last chance to survive. \n")
+            time.sleep(1)
+            GMtalk.write (f'Brace Yourself! \n')
+            time.sleep(1)
+            Enemy.hp = Enemy.hpmax /100 *60
+            Battle.FirstStrike()
+        elif answer.lower() in ("yes"):
+            GMnarrate.write ("With a final swing of your weapon, you dispatch your foe's soul to the gods. May they have more mercy than you did... \n")
+            time.sleep(1)
+            GMnarrate.write ("It was a harsh ordeal, but you have emerged victorious, and earned your freedom. Well done, warrior. \n")
+            time.sleep(1)
+            GMnarrate.write("Thank you for playing. The game will close itself in five seconds. \n")
+            time.sleep(5)
+            quit()
+        else: 
+            GMtalk.write ("your mind is racing...  but you must focus! \n")
+            Battle.PlayerVictory()
+
+    @staticmethod
+    def EnemyVictory():
+        global firsthit
+        global playerturn
+        
+        GMnarrate.write ("You feel shattered and broken... but do you have the strength to go on? You must decide, one way or the other... \n")
+        GMtalk.write (f"He won't wait long... Yes or No? \n")
+        answer = input(str("")) ; print()
+        if answer.lower() in ("yes"):
+            firsthit = True
+            playerturn = False
+            GMnarrate.write ("Your enemy, allowing a brief show of his military honour, allows you a moment to stand and steady your weapon. Take this chance - it could be your last. \n")
+            time.sleep(1)
+            GMtalk.write ("Brace Yourself! \n")
+            time.sleep(1)
+            Player.Reset()
+            Battle.FirstStrike()
+        elif answer.lower() in ("no"):
+            GMnarrate.write("You enemy looks upon you with disdain.\n")
+            time.sleep(1)
+            NPCtalk.write (f"'hm... pathetic. I had expected more of you.' \n")
+            time.sleep(1)
+            GMnarrate.write ("With a final thrust of his weapon, your foe dispatches your dream of freedom to the gods - and your soul with it.\n")
+            time.sleep(1)
+            GMnarrate.write("Thank you for playing. The app will close itself in five seconds\n")
+            time.sleep(5)
+            quit()
+        else:
+            GMtalk.write ("Your mind is racing... focus! \n")
+            Battle.EnemyVictory()
+
+    @staticmethod
+    def CheckForVictory():
+        if Player.hp <= 0:
+            Player.hp = 0
+            GMnarrate.write (f'Seeing an opening, the enemy rushes forward and strikes you with a vicious fury, knocking you to the ground. He stands above you and bellows for the crowd: \n')
+            time.sleep(1)
+            NPCtalk.write (f"   'ARE YOU DEFEATED ALREADY?!'\n")
+            time.sleep(1)
+            Battle.EnemyVictory()
+        elif Enemy.hp <= 0:
+            Enemy.hp = 0
+            GMnarrate.write ("Your enemy stumbles back, and then falls to the ground.\n")
+            time.sleep(1)
+            GMnarrate.write ("You look down at your enemy - do you strike him down and finish the task?")
+            time.sleep(1)
+            Battle.PlayerVictory()
+    
+
+    @staticmethod
+    def Fight():
+        
+        #NEED TO RESET BATTLEBEGINS AT THE END OF THE FIGHT 
+        if Battle.battlestart == True:
+            Battle.battlestart = False
+            Enemy.SetDifficulty()
+            GMnarrate.write (f"An enemy {Enemy.job} appeared!")
+            Battle.FirstStrike()
+        if Player.playerturn == True:
+            Player.BattlePhase()
+            Battle.Fight()    
+        elif Player.playerturn == False:
+            Enemy.BattlePhase()
+            Battle.Fight()
+
+        Battle.CheckForVictory()
+        Battle.Fight()
+
+# INITIALISES NEW BATTLE BASED ON ENEMY TYPE
+class LowLvlBadGuy(Battle):
+    
+    @staticmethod
+    def StartFight():
+        Enemy.level = 1
+        LowLvlBadGuy.Fight()
+
+##################################
+###### SECTION 3B - ENEMIES ######
+##################################
 
 class Enemy(Character):
 
@@ -799,239 +960,18 @@ class Enemy(Character):
                 Player.hp -= Enemy.moves["Attack"]
                 GMnarrate.write (f'The {Enemy.job} made a strong lunge at you with its weapon, causing {damage} damage')
         Player.playerturn = not Player.playerturn
-        
-################
-##### NPCS #####
-################
+  
 
-    #EXAMPLE FRAMEWORK FOR FUTURE NPC ADDITIONS
-# class XXXXX(NPCscreen):
-#     firstvisit = True
-#     def init():
-#         NPCscreen.name = "XXXXX"
-#         if XXXXX.firstvisit:
-#             NPCscreen.gmintro1 = "GMINTRO1"
-#             NPCscreen.greeting1 = "NPCGREETING1"
-#         else:
-#             NPCscreen.gmintro2 = "GMINTRO2"
-#             NPCscreen.greeting2 = "NPCGREETING2"
-#         NPCscreen.option1 = "-"
-#         NPCscreen.option2 = "-"
-#         NPCscreen.option3 = "-"
-#         NPCselect.option1 = ""
-#         NPCselect.option2 = ""
-#         NPCselect.option3 = ""
-#         NPCscreen.Display()
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
 
-class Porter (NPCscreen):
-    firstvisit = True
-    def init():
-        NPCscreen.name = "Skytrain Dock porter"
-        if Porter.firstvisit:
-            NPCscreen.gmintro1 = "GMINTRO1"
-            NPCscreen.greeting1 = "NPCGREETING1"
-        else:
-            NPCscreen.gmintro2 = "GMINTRO2"
-            NPCscreen.greeting2 = "NPCGREETING2"
-        NPCscreen.option1 = "-"
-        NPCscreen.option2 = "-"
-        NPCscreen.option3 = "-"
-        NPCselect.option1 = ""
-        NPCselect.option2 = ""
-        NPCselect.option3 = ""
-        NPCscreen.Display()
 
-class HomelessGuy(NPCscreen):
-    firstvisit = True
-    def init():
-        NPCscreen.name = "Homeless Guy"
-        if HomelessGuy.firstvisit:
-            NPCscreen.firstvisit = True
-            NPCscreen.gmintro1 = "GMINTRO1"
-            NPCscreen.greeting1 = "NPCGREETING1"
-            HomelessGuy.firstvisit = False
-        else:
-            NPCscreen.gmintro2 = "GMINTRO2"
-            NPCscreen.greeting2 = "NPCGREETING2"
-        NPCscreen.option1 = "-"
-        NPCscreen.option2 = "-"
-        NPCscreen.option3 = "-"
-        NPCselect.option1 = ""
-        NPCselect.option2 = ""
-        NPCselect.option3 = ""
-        NPCscreen.Display()
-
-class Medic(NPCscreen):
-    firstvisit = True
-    def init():
-        NPCscreen.name = "Medic"
-        if Medic.firstvisit:
-            NPCscreen.gmintro1 = "The Medic greets you"
-            NPCscreen.greeting1 = "Hey there, nice to meet you"
-        else:
-            NPCscreen.gmintro2 = " The Medic now says"
-            NPCscreen.greeting2 = "Nice to see you again!"
-        NPCscreen.option1 = "I'm hurt, can you help?"
-        NPCscreen.option2 = "What's that droid for?"
-        NPCscreen.option3 = "-"
-        NPCselect.option1 = Story.Medic1
-        NPCscreen.Display()
-
-class VendorPhys (NPCscreen):
-    firstvisit = True
-    def init():
-        NPCscreen.name = "Store - Iron Will"
-        if VendorPhys.firstvisit:
-            NPCscreen.gmintro1 = "GMINTRO1"
-            NPCscreen.greeting1 = "NPCGREETING1"
-        else:
-            NPCscreen.gmintro2 = "GMINTRO2"
-            NPCscreen.greeting2 = "NPCGREETING2"
-        NPCscreen.option1 = "-"
-        NPCscreen.option2 = "-"
-        NPCscreen.option3 = "-"
-        NPCselect.option1 = ""
-        NPCselect.option2 = ""
-        NPCselect.option3 = ""
-        NPCscreen.Display()
-
-class VendorMag (NPCscreen):
-    firstvisit = True
-    def init():
-        NPCscreen.name = "Store - Technomancy"
-        if VendorMag.firstvisit:
-            NPCscreen.gmintro1 = "GMINTRO1"
-            NPCscreen.greeting1 = "NPCGREETING1"
-        else:
-            NPCscreen.gmintro2 = "GMINTRO2"
-            NPCscreen.greeting2 = "NPCGREETING2"
-        NPCscreen.option1 = "-"
-        NPCscreen.option2 = "-"
-        NPCscreen.option3 = "-"
-        NPCselect.option1 = ""
-        NPCselect.option2 = ""
-        NPCselect.option3 = ""
-        NPCscreen.Display()
-
-class VendorItem (NPCscreen):
-    firstvisit = True
-    def init():
-        NPCscreen.name = "Store - Going Alone"
-        if VendorItem.firstvisit:
-            NPCscreen.gmintro1 = "GMINTRO1"
-            NPCscreen.greeting1 = "NPCGREETING1"
-        else:
-            NPCscreen.gmintro2 = "GMINTRO2"
-            NPCscreen.greeting2 = "NPCGREETING2"
-        NPCscreen.option1 = "-"
-        NPCscreen.option2 = "-"
-        NPCscreen.option3 = "-"
-        NPCselect.option1 = ""
-        NPCselect.option2 = ""
-        NPCselect.option3 = ""
-        NPCscreen.Display()
-
-##########################
-##########################
-##### STORY ELEMENTS #####
-##########################
-##########################
-
-class Story():
-
-    @staticmethod
-    def Introduction():
-        GMtalk.write (f'''
-    Welcome, Player - to Project RPG. Shortly, you will be free to explore the city of Piston, meet its inhabitants, and find your way to the fighting tournament to earn your fortune. 
-    But first, a little about how the game works.
-
-    In the game world, you will be presented with menus that looks like this:
-        ''')
-        time.sleep(0.5)
-        Tutorial.__init__()
-        Tutorial.Screen()
-        time.sleep(1)
-        GMtalk.write ('''
-    Whenever you see a list like the one above, just enter the number of the option you wish to select. It's that easy!
-
-    Further hints like will appear like this as the game continues. 
-    There will be another tutorial section when you enter a battle for the first time. Until then, enjoy the game!
-        ''')
-        time.sleep(2)
-   
-    @staticmethod
-    def StoryBegins():
-
-        GMnarrate.write ('''
-You're riding the skytrain to Piston, a city on the Southern Alliance's edge. You served the Alliance during it's last war against the Northern Commonwealth. 
-The Empire won, but you were cast aside afterwards, just like the rest of the conscriptions.
-Now you're barely getting by - but an underground fight tournament in Piston may give you just enough fortune to start the new life you deserve...
-While looking out the brass port hole you notice the stranger opposite peering at you through his goggles. After meeting your eyes, he introduces himself with a familiar Pistonian drawl:
-        ''')
-        NPCtalk.write ('''
-    'Well hey there friend, Armish Cornwall's the name - Who do I got the pleasure of acquantancin' today?'
-        ''')
-        Player.Naming()
-        NPCtalk.write (f'''
-    'Howdy, {Player.name} - a pleasure. You go' dat stern look about yer feller, one only an Alliance vet could git. 
-    I were a low rank soldier in the war, how'd they git you to serve?'
-        ''')
-        Player.ClassChoice()
-        if Player.job == "Soldier":
-            NPCtalk.write ('''
-    Well I'll be, I had feelings yer might be a brother in arms
-        ''')
-        elif Player.job == "Scientist":
-            NPCtalk.write ('''
-    Shoot, you one o' dem fancy science types huh?
-    Well I'm grateful fer the tech you nerds done worked up fer us!
-        ''')
-        elif Player.job == "Medic":
-            NPCtalk.write ('''
-    Hell, you boys were all whut kept us going some days... thank you, brother.
-        ''')
-        elif Player.job == "Officer":
-            NPCtalk.write ('''
-    Officer, huh... higher ups always lookin' down on us rank and file...
-    I suppose yer orders kept us alive.
-        ''')
-        GMnarrate.write ("Armish leans back in his chair and studies you")
-        NPCtalk.write ('''
-    ... Yer never been ter Piston, have yer? Rough place, no Alliance peacekeepers around this far out. I gotta spare knife. Not much, but it's better than yer fists. A healing salve too, in case someone manages to get too close.
-    ''')
-        GMnarrate.write ('''
-Armish hands you a knife. The blade is serrated, but rusted. Handle seems sturdy enough.
-He also hands you a healing salve. Looks like a standard spray applicator.
-        ''')
-        Player.phyweapons.append("Knife")
-        Player.items.append ("Healing Salve")
-        GMtalk.write ('''
-    A Knife has been added to your weapons list.
-    A Healing Salve has been added to your items list.
-        ''')
-        GMnarrate.write ('''
-Armish looks out the window. You are nearing Piston now, the gleaming metal superstructures piercing the clouds you are now descending towards.
-He stands to leave and turns to you:
-        ''')
-        NPCtalk.write (f'''
-    It were good makin' yer acquaintanceship the day, friend - maybe we'll see each other round the way.
-    Stay safe, now, {Player.name}.
-        ''')
-        GMnarrate.write (f'''
-After watching Armish leave, you look around the skytrain cabin. 
-The battered leather seats haven't been fixed in years, and the once polished brass has started to rust in places.
-You glance out of the port hole one last time at the incoming city - the skytrain is on it's landing approach. 
-You turn and walk through the rusted cabin door into the skytrain's passenger corridor...
-        ''')
-
-    def Medic1():
-        NPCtalk.write ("howdy!")
-
-#####################
-#####################
-##### LOCATIONS #####
-#####################
-#####################
+##################################
+##################################
+##### SECTION4 - LOCATIONS #######
+##################################
+##################################
 
     # FRAMEWORK FOR FUTURE LOCATIOON ADDITIONS
 # class XXXXX (NavScreen):
@@ -1040,8 +980,8 @@ You turn and walk through the rusted cabin door into the skytrain's passenger co
 #         if XXXXX.firstvisit:
 #             NavScreen.firstvisit = True
 #             XXXXX.firstvisit = False
-#         NavScreen.describe1 = ""
-#         NavScreen.describe2 = ""
+#         NavScreen.describe1 = Story.GMLocationTest1
+#         NavScreen.describe2 = Story.GMLocationTest2
 #         NavScreen.name = "XXXXX"
 #         NavScreen.option1 = "-"
 #         NavScreen.option2 = "-"
@@ -1076,8 +1016,8 @@ class Train (NavScreen):
         if Train.firstvisit:
             NavScreen.firstvisit = True
             Train.firstvisit = False
-        NavScreen.describe1 = "You are in a Skytrain cabin. The battered leather seats haven't been fixed in years, and the once polished brass has started to rust in places."
-        NavScreen.describe2 = "Once again you enter the Skytrain and find a cabin."
+        NavScreen.describe1 = Story.GMLocationTest1
+        NavScreen.describe2 = Story.GMLocationTest2
         NavScreen.name = "Skytrain"
         NavScreen.travel1 = "Leave the Skytrain"
         NavScreen.travel2 = "-"
@@ -1095,8 +1035,8 @@ class Station (NavScreen):
         if Station.firstvisit:
             NavScreen.firstvisit = True
             Station.firstvisit = False
-        NavScreen.describe1 = "You step off the Skytrain onto the Station dock. It stinks of smoke and diesel, and you can barely see in the smog."
-        NavScreen.describe2 = "Back at the station, you see the magnificent Skytrain docked - they always amazed you, as a boy you had never imagined they would one day take off from the rails."
+        NavScreen.describe1 = Story.GMLocationTest1
+        NavScreen.describe2 = Story.GMLocationTest2
         NavScreen.name = "Skytrain Dock Station"
         NavScreen.travel1 = "Proceed to the Power Station"
         NavScreen.travel2 = "-"
@@ -1119,8 +1059,8 @@ class PowerStation (NavScreen):
         if PowerStation.firstvisit:
             NavScreen.firstvisit = True
             PowerStation.firstvisit = False
-        NavScreen.describe1 = "The hulking mass of concrete, steel and towering chimneys stands before you"
-        NavScreen.describe2 = "You stand in the grounds of the old Power Station"
+        NavScreen.describe1 = Story.GMLocationTest1
+        NavScreen.describe2 = Story.GMLocationTest2
         NavScreen.name = "Old Power Station - Grounds"
         NavScreen.travel1 = "Visit the Medic Station"
         NavScreen.travel2 = "Visit the makeshift Bazaar in the Station lobby"
@@ -1143,8 +1083,8 @@ class MedicStation (NavScreen):
         if MedicStation.firstvisit:
             NavScreen.firstvisit = True
             MedicStation.firstvisit = False
-        NavScreen.describe1 = "The Medic's Station area seems to be staffed only by an old man and a beaten up droid."
-        NavScreen.describe2 = "The Medic sits in the corner. You hear the beeps and whirs of the Field Droid busying itself around the area."
+        NavScreen.describe1 = Story.GMLocationTest1
+        NavScreen.describe2 = Story.GMLocationTest2
         NavScreen.name = "Old Power Station - Medic's Area"
         NavScreen.travel1 = "-"
         NavScreen.travel2 = "-"
@@ -1167,8 +1107,8 @@ class Bazaar (NavScreen):
         if Bazaar.firstvisit:
             NavScreen.firstvisit = True
             Bazaar.firstvisit = False
-        NavScreen.describe1 = "You enter the Bazaar"
-        NavScreen.describe2 = "The bazaar are is full of people"
+        NavScreen.describe1 = Story.GMLocationTest1
+        NavScreen.describe2 = Story.GMLocationTest2
         NavScreen.name = "Old Power Station - Makeshift Bazaar"
         NavScreen.travel1 = "-"
         NavScreen.travel2 = "-"
@@ -1191,8 +1131,8 @@ class StationFloor (NavScreen):
         if StationFloor.firstvisit:
             NavScreen.firstvisit = True
             StationFloor.firstvisit = False
-        NavScreen.describe1 = "You enter the Power Station Floor"
-        NavScreen.describe2 = "Once again into the Arena area... here goes. "
+        NavScreen.describe1 = Story.GMLocationTest1
+        NavScreen.describe2 = Story.GMLocationTest2
         NavScreen.name = "Old Power Station - Work Floor"
         NavScreen.travel1 = "-"
         NavScreen.travel2 = "-"
@@ -1207,3 +1147,35 @@ class StationFloor (NavScreen):
         NavSelect.option2 = ""
         NavSelect.option3 = ""
         NavScreen.Display()
+
+#####################################
+#####################################
+##### SECTION5 - STORY ELEMENTS #####
+#####################################
+#####################################
+
+class Story:
+    
+    def GMLocationTest1():
+        GMnarrate.write ("First Location Test \n")
+    
+    def GMLocationTest2():
+        GMnarrate.write ("Second Location Test \n")
+    
+    def GMIntroTest1():
+        GMnarrate.write ("First Introduction Test \n")
+    
+    def GMIntroTest2():
+        GMnarrate.write ("Second Introduction Test \n")
+
+    def NPCInteractTest1():
+        NPCtalk.write ("First NPC Interaction Test \n")
+
+    def NPCInteractTest2():
+        NPCtalk.write ("Second NPC Interaction Test \n")
+
+    def StoryTest1():
+        GMnarrate.write ("STORY EXAMPLE 1 \n")
+    
+    def StoryTest2():
+        GMnarrate.write ("STORY EXAMPLE 2 \n")
