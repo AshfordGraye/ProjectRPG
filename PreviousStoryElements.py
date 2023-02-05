@@ -1,9 +1,4 @@
-from World import *
-
-class Story():
-
-    @staticmethod
-    def Introduction():
+def Introduction():
         GMtalk.write (f'''
     Welcome, Player - to Project RPG. Shortly, you will be free to explore the city of Piston, meet its inhabitants, and find your way to the fighting tournament to earn your fortune. 
     But first, a little about how the game works.
@@ -24,6 +19,7 @@ class Story():
    
     @staticmethod
     def StoryBegins():
+
         GMnarrate.write ('''
 You're riding the skytrain to Piston, a city on the Southern Alliance's edge. You served the Alliance during it's last war against the Northern Commonwealth. 
 The Empire won, but you were cast aside afterwards, just like the rest of the conscriptions.
@@ -85,3 +81,6 @@ The battered leather seats haven't been fixed in years, and the once polished br
 You glance out of the port hole one last time at the incoming city - the skytrain is on it's landing approach. 
 You turn and walk through the rusted cabin door into the skytrain's passenger corridor...
         ''')
+
+    def Medic1():
+        NPCtalk.write ("howdy!")
