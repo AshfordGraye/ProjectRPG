@@ -2,10 +2,13 @@ import random
 from os import system, name
 from time import sleep
 from TypewriterText import *
+from ItemList import *
+from WeaponList import *
 
 ############################
 ##### GLOBAL FUNCTIONS #####
 ############################
+
 def ClearScreen():
  
     # for windows
@@ -16,6 +19,9 @@ def ClearScreen():
     else:
         _ = system('clear')
 
+def PressEnterToGoBack():
+    GMtalk.write ("Press Enter to go back")
+    input()
 ######################################
 ######################################
 ##### SECTION1 - DISPLAY SCREENS #####
@@ -23,231 +29,312 @@ def ClearScreen():
 ######################################
 
 ####################################
-##### SECTION 1A -  NAVSCREENS #####
+##### SECTION 1A -  LocationS #####
 ####################################
 
-# NAVSCREEN CLASS PROVIDES FRAMEWORK FOR NavScreen SUBCLASSES TO DISPLAY INFORMATION CONSISTENTLY
-class NavScreen:
-
-    firstvisit = True
-    currentNavScreen = ""
-    holdNavScreen = ""
-    lastNavScreen = ""
+# Location CLASS PROVIDES FRAMEWORK FOR LOCATION OBJECTS TO DISPLAY INFORMATION CONSISTENTLY
+class Location:
+    currentLocation = ""
+    holdLocation = ""
+    lastLocation = ""
+    name = ""
+    firstvisit = ""
     describe1 = ""
     describe2 = ""
-    name = ""
-    option1 = "-"
-    option2 = "-"
-    option3 = "-"
-    travel1 = "-"
-    travel2 = "-"
-    travel3 = "-"    
-    
+    option1 = ""
+    option2 = ""
+    option3 = ""
+    travel1 = ""
+    travel2 = ""
+    travel3 = ""
+    selectoption1 = ""
+    selectoption2 = ""
+    selectoption3 = ""
+    selecttravel1 = ""
+    selecttravel2 = ""
+    selecttravel3 = ""
+
     def Display():
-        ScreenTitle.write (f"{NavScreen.name}\n")
-        if NavScreen.firstvisit:
-            NavScreen.describe1()
+        ScreenTitle.write (f"{Location.name}\n")
+        if Location.firstvisit:
+            Location.describe1()
         else:
-            NavScreen.describe2()
-        NavScreen.lastNavScreen = NavScreen.holdNavScreen
+            Location.describe2()
+        Location.lastLocation = Location.holdLocation
         MenuTitle.write ("Travel Menu")
         PlayerInput.write (f"0: Go back to where I was")
-        PlayerInput.write (f"1: {NavScreen.travel1}")
-        PlayerInput.write (f"2: {NavScreen.travel2}")
-        PlayerInput.write (f"3: {NavScreen.travel3}")
+        PlayerInput.write (f"1: {Location.travel1}")
+        PlayerInput.write (f"2: {Location.travel2}")
+        PlayerInput.write (f"3: {Location.travel3}")
         MenuTitle.write ("Action Menu")
-        PlayerInput.write (f"4: {NavScreen.option1}")
-        PlayerInput.write (f"5: {NavScreen.option2}")
-        PlayerInput.write (f"6: {NavScreen.option3}")
+        PlayerInput.write (f"4: {Location.option1}")
+        PlayerInput.write (f"5: {Location.option2}")
+        PlayerInput.write (f"6: {Location.option3}")
         MenuTitle.write ("Player Menu")
         PlayerInput.write (f"7: Check Items")
         PlayerInput.write (f"8: Check Weapons")
         PlayerInput.write (f"9: Check Stats")
         print ()
-        NavSelect.init()
+        Location.Selection()
 
 # FACILITATES PLAYER SELECTION IN THE NAV SCREEN
-class NavSelect:
-
-    travel1 = ""
-    travel2 = ""
-    travel3 = ""
-    option1 = ""
-    option2 = ""
-    option3 = ""
-
-    def init():
-
-        selection = input("What would you like to do?   \n")
+    def Selection():
+        GMtalk.write ("What would you like to do?   \n")
+        selection = input()
         print()
         if selection == "0":
-            if NavScreen.lastNavScreen == "":
-                NavSelect.InvalidChoice()
+            if Location.lastLocation == "":
+                Location.InvalidChoice()
             else:
                 ClearScreen()
-                NavScreen.firstvisit = False
-                NavScreen.holdNavScreen = NavScreen.currentNavScreen
-                NavScreen.lastNavScreen()   
+                Location.firstvisit = False
+                Location.holdLocation = Location.currentLocation
+
+                Location.lastLocation()   
         elif selection == "1":
-            if NavSelect.travel1 == "":
-                NavSelect.InvalidChoice()
+            if Location.travel1 == "":
+                Location.InvalidChoice()
             else:
                 ClearScreen()
-                NavScreen.firstvisit = False
-                NavScreen.holdNavScreen = NavScreen.currentNavScreen
-                NavSelect.travel1()
+                Location.firstvisit = False
+                Location.holdLocation = Location.currentLocation
+                print ("location held")
+                Location.selecttravel1()
         elif selection == "2":
-            if NavSelect.travel2 == "":
-                NavSelect.InvalidChoice()
+            if Location.travel2 == "":
+                Location.InvalidChoice()
             else:
                 ClearScreen()
-                NavScreen.firstvisit = False
-                NavScreen.holdNavScreen = NavScreen.currentNavScreen
-                NavSelect.travel2()
+                Location.firstvisit = False
+                Location.holdLocation = Location.currentLocation
+                Location.selecttravel2()
         elif selection == "3":
-            if NavSelect.travel3 == "":
-                NavSelect.InvalidChoice()
+            if Location.travel3 == "":
+                Location.InvalidChoice()
             else:
                 ClearScreen()
-                NavScreen.firstvisit = False
-                NavScreen.holdNavScreen = NavScreen.currentNavScreen
-                NavSelect.travel3()
+                Location.firstvisit = False
+                Location.holdLocation = Location.currentLocation
+                Location.tselectravel3()
         elif selection == "4":
-            if NavSelect.option1 == "":
-                NavSelect.InvalidChoice()
+            if Location.option1 == "":
+                Location.InvalidChoice()
             else:
                 ClearScreen()
-                NavSelect.option1()
+                Location.selectoption1()
         elif selection == "5":
-            if NavSelect.option2 == "":
-                NavSelect.InvalidChoice()
+            if Location.option2 == "":
+                Location.InvalidChoice()
             else:
                 ClearScreen()
-                NavSelect.option2()
+                Location.selectoption2()
         elif selection == "6":
-            if NavSelect.option3 == "":
-                NavSelect.InvalidChoice()
+            if Location.option3 == "":
+                Location.InvalidChoice()
             else:
                 ClearScreen()
-                NavSelect.option3()
+                Location.selectoption3()
         elif selection == "7":
             PlayerScreens.ItemScreen()
             input ("Press Enter to go back")
             ClearScreen()
-            NavScreen.Display()
+            Location.Display()
         elif selection == "8":
             PlayerScreens.WeaponScreen()
             input ("Press Enter to go back")
             ClearScreen()
-            NavScreen.Display()
+            Location.Display()
         elif selection == "9":
             PlayerScreens.StatScreen()
             input ("Press Enter to go back")
             ClearScreen()
-            NavScreen.Display()
+            Location.Display()
         else:
-            NavSelect.InvalidChoice()
+            Location.InvalidChoice()
     
     def InvalidChoice():
         GMtalk.write ("That won't work here... Try something else.")
         input("Press Enter to go back")
         ClearScreen()
-        NavScreen.Display()
+        Location.Display()
 
 ###################################
-##### SECTION 1B - NPCSCREENS #####
+##### SECTION 1B - NPCS #####
 ###################################
 
 # NPC SCREEN PROVIDES FRAMEWORK FOR WHEN PLAYER HAS SELECTED TO INTERACT WITH AN NPC ON THE NAV SCREEN
-class NPCscreen:
-
-    firstvisit = True
-    name = ""
-    gmintro1 = ""
-    gmintro2 = ""
-    greeting1 = ""
-    greeting2 = ""
-    items = {}
-    option1 = "-"
-    option2 = "-"
-    option3 = "-"
+# class NPC:
+#     def __init__(self, name, firstvisit, gmintro1, gmintro2, inventory, option1, option2, option3):
+#     firstvisit = True
+#     name = ""
+#     gmintro1 = ""
+#     gmintro2 = ""
+#     inventory = []
+#     option1 = "-"
+#     option2 = "-"
+#     option3 = "-"
     
+class NPC:
+    def __init__(self, name, firstvisit, gmintro1, gmintro2, inventory, option1, option2, option3, select1, select2, select3):
+        self.name = name
+        self.firstvisit = firstvisit
+        self.gmintro1 = gmintro1
+        self.gmintro2 = gmintro2
+        self.inventory = inventory
+        self.option1 = option1
+        self.option2 = option2
+        self.option3 = option3
+        self.select1 = select1
+        self.select2 = select2
+        self.select3 = select3
+
     def Display():
-        ScreenTitle.write (f"{NPCscreen.name}    \n")
-        if NPCscreen.firstvisit:
-            NPCscreen.gmintro1()
-            NPCscreen.greeting1()
+        ScreenTitle.write (f"{NPC.name}    \n")
+        if NPC.firstvisit:
+            NPC.gmintro1()
         else:
-            NPCscreen.gmintro2()
-            NPCscreen.greeting2()
-        MenuTitle.write ("NPCscreen Menu")
+            NPC.gmintro2()
+        MenuTitle.write ("NPC Menu")
         PlayerInput.write (f"0: Leave this conversation")
-        PlayerInput.write (f"1: {NPCscreen.option1}")
-        PlayerInput.write (f"2: {NPCscreen.option2}")
-        PlayerInput.write (f"3: {NPCscreen.option3}")
-        MenuTitle.write ("Player Menu")
-        PlayerInput.write (f"7: Check Items")
-        PlayerInput.write (f"8: Check Weapons")
-        PlayerInput.write (f"9: Check Stats")
+        PlayerInput.write (f"1: {NPC.option1}")
+        PlayerInput.write (f"2: {NPC.option2}")
+        PlayerInput.write (f"3: {NPC.option3}")
         print ()
-        NPCselect.init()
+        NPC.Selection()
 
-# FACILITATES PLAYER SELECTION IN THE NPC SCREEN
-class NPCselect:
-
-    option1 = "NPCscreen1"
-    option2 = "NPCscreen2"
-    option3 = "NPCscreen3"
-
-    def init():
-
+    def SaleDisplay():
+        ScreenTitle.write (f"{NPC.name}    \n")
+        if NPC.inventory == []:
+            GMnarrate.write ("The Vendor shakes hs head...")
+            NPCtalk.write ("I'm afraid I've got nothing else in stock. Be sure to coe back and try again later.")
+            PressEnterToGoBack()
+            ClearScreen()
+            NPC.Display()
+        else:
+            listitem = 0
+            for elem in NPC.inventory:
+                listitem += 1
+                GMtalk.write (f"{listitem}: {elem}   \n")
+        NPCtalk.write("So what'll it be?    \n")
+        GMtalk.write (f"Your currently have {Player.cash} credits on you. Enter the number for what you'd like to buy and see it's price. If you're not interested, enter 0.")
+        selection = int(input())
+        if selection == 0:
+            NPCtalk.write ("No worries - later now.")
+            PressEnterToGoBack()
+            ClearScreen()
+            NPC.Display
+        elif selection in range (1,listitem+1):
+            selecteditem = NPC.inventory[selection-1]
+            selecteditemposition = NPC.inventory.index(selecteditem)
+            ClearScreen()
+            NPCtalk.write (f"That there {selecteditem.name} is worth {selecteditem.value} credits. You sure? No buybacks!   \n")
+            PlayerInput.write ("1: I'm sure")
+            PlayerInput.write ("2: Let me look again")
+            confirmsale = int(input())
+            if Player.cash >= selecteditem.cost:
+                if confirmsale == 1:
+                    boughtitem = NPC.inventory.pop(selecteditemposition)
+                    Player.cash -= boughtitem.cost
+                    GMnarrate.write (f"You acquired a {boughtitem.name}! You now have {Player.cash} credits left.")
+                    Player.items.append(boughtitem)
+                    PressEnterToGoBack()
+                    ClearScreen()
+                    NPC.SaleDisplay()
+                elif confirmsale == 2:
+                    NPCtalk.write ("Alright, have another look.")
+                    NPC.SaleDisplay()
+                else:
+                    NPCtalk.write ("What? I didn't quite catch that. Let me show you again")
+                    GMtalk.write (input("Press Enter to go back"))
+                    NPC.SaleDisplay()
+            else:
+                Interactions.VendorNoMoney()
+                NPC.SaleDisplay()
+        else:
+            NPC.InvalidChoice()
+    
+    def Selection():
         selection = input("What would you like to do?   \n")
         print()
         if selection == "0":
             ClearScreen()
-            NPCscreen.firstvisit = False
-            NavScreen.currentNavScreen()
+            NPC.firstvisit = False
+            Location.currentLocation()
         elif selection == "1":
-            if NPCselect.option1 == "":
-                NPCselect.InvalidChoice()
+            if NPC.select1 == "":
+                NPC.InvalidChoice()
             else:
                 ClearScreen()
-                NPCselect.option1()
+                NPC.select1()
         elif selection == "2":
-            if NPCselect.option2 == "":
-                NPCselect.InvalidChoice()
+            if NPC.select2 == "":
+                NPC.InvalidChoice()
             else:
                 ClearScreen()
-                NPCselect.option2()
+                NPC.select2()
         elif selection == "3":
-            if NPCselect.option3 == "":
-                NPCselect.InvalidChoice()
+            if NPC.select3 == "":
+                NPC.InvalidChoice()
             else:
                 ClearScreen()
-                NPCselect.option3()
-        elif selection == "7":
-            PlayerScreens.ItemScreen
-            input ("Press Enter to go back")
-            ClearScreen()
-            NPCscreen.Display()
-        elif selection == "8":
-            PlayerScreens.WeaponScreen
-            input ("Press Enter to go back")
-            ClearScreen()
-            NPCscreen.Display()
-        elif selection == "9":
-            PlayerScreens.StatScreen
-            input ("Press Enter to go back")
-            ClearScreen()
-            NPCscreen.Display()
+                NPC.select3()
         else:
-            NPCselect.InvalidChoice()
-    
+            NPC.InvalidChoice()
+
+
+
+
     def InvalidChoice():
         GMtalk.write ("That won't work here... Try something else.")
         input("Press Enter to go back")
         ClearScreen()
-        NPCscreen.Display()
+        NPC.Display()
+
+# FACILITATES PLAYER SELECTION IN THE NPC SCREEN
+# class NPCselect:
+
+#     option1 = "NPC1"
+#     option2 = "NPC2"
+#     option3 = "NPC3"
+
+#     def init():
+
+#         selection = input("What would you like to do?   \n")
+#         print()
+#         if selection == "0":
+#             ClearScreen()
+#             NPC.firstvisit = False
+#             Location.currentLocation()
+#         elif selection == "1":
+#             if NPC.select1 == "":
+#                 NPCselect.InvalidChoice()
+#             else:
+#                 ClearScreen()
+#                 NPC.select1()
+#         elif selection == "2":
+#             if NPC.select2 == "":
+#                 NPCselect.InvalidChoice()
+#             else:
+#                 ClearScreen()
+#                 NPC.select2()
+#         elif selection == "3":
+#             if NPC.select3 == "":
+#                 NPCselect.InvalidChoice()
+#             else:
+#                 ClearScreen()
+#                 NPC.select3()
+#         else:
+#             NPCselect.InvalidChoice()
+    
+#     def InvalidChoice():
+#         GMtalk.write ("That won't work here... Try something else.")
+#         input("Press Enter to go back")
+#         ClearScreen()
+#         NPC.Display()
+
+
+
+
 
 ######################################
 ##### SECTION 1C - PLAYERSCREENS #####
@@ -255,7 +342,7 @@ class NPCselect:
 
 class PlayerScreens:
     def StatScreen():
-        
+        ClearScreen()
         GMnarrate.write(f'''
 Your current stats are:
     Health:                 {Player.hp}/{Player.hpmax}
@@ -268,6 +355,7 @@ Your current stats are:
         
 
     def WeaponScreen():
+        ClearScreen()
         GMnarrate.write (f'''
 You currently have the following equipped:
     Physical Weapon:        {Player.physequip}
@@ -275,10 +363,12 @@ You currently have the following equipped:
     ''')
 
     def ItemScreen():
-        GMnarrate.write (f'''
-You currently have the following in your inventory:
-    {Player.items}
-    ''')
+        ClearScreen()
+        GMnarrate.write ("You currently have the following in your inventory:")
+        listitem = 0
+        for elem in Player.items:
+            listitem += 1
+            GMtalk.write (f"{listitem}: {elem}   \n")
 
 
 #######################################################################################################################
@@ -296,6 +386,8 @@ class Character:
     
     name = ""
     
+    cash = 200
+
     job = ""
     soldier = ""
     scientist = ""
@@ -586,143 +678,134 @@ Would you like to select this class, or view another?
 #############################
 
     #EXAMPLE FRAMEWORK FOR FUTURE NPC ADDITIONS
-# class XXXXX(NPCscreen):
+# class XXXXX(NPC):
 #     firstvisit = True
 #     def init():
-#         NPCscreen.name = "XXXXX"
+#         NPC.name = "XXXXX"
 #         if XXXXX.firstvisit:
-#             NPCscreen.firstvisit = True
-#             NPCscreen.gmintro1 = Story.GMIntroTest1
-#             NPCscreen.greeting1 = Story.NPCInteractTest1
+#             NPC.firstvisit = True
+#             NPC.gmintro1 = Story.GMIntroTest1
+#
 #             XXXXX.firstvisit = False
 #         else:
-#             NPCscreen.gmintro2 = Story.GMIntroTest2
-#             NPCscreen.greeting2 = Story.NPCInteractTest2
-#         NPCscreen.option1 = "-"
-#         NPCscreen.option2 = "-"
-#         NPCscreen.option3 = "-"
-#         NPCselect.option1 = ""
-#         NPCselect.option2 = ""
-#         NPCselect.option3 = ""
-#         NPCscreen.Display()
+#             NPC.gmintro2 = Story.GMIntroTest2
+#
+#         NPC.option1 = "-"
+#         NPC.option2 = "-"
+#         NPC.option3 = "-"
+#         NPC.select1 = ""
+#         NPC.select2 = ""
+#         NPC.select3 = ""
+#         NPC.Display()
 
-class Porter (NPCscreen):
+class Porter (NPC):
     firstvisit = True
     def init():
-        NPCscreen.name = "Skytrain Dock porter"
+        NPC.name = "Skytrain Dock porter"
         if Porter.firstvisit:
-            NPCscreen.firstvisit = True
-            NPCscreen.gmintro1 = Story.GMIntroTest1
-            NPCscreen.greeting1 = Story.NPCInteractTest1
+            NPC.firstvisit = True
+            NPC.gmintro1 = Story.GMIntroTest1
             Porter.firstvisit = False
         else:
-            NPCscreen.gmintro2 = Story.GMIntroTest2
-            NPCscreen.greeting2 = Story.NPCInteractTest2
-        NPCscreen.option1 = "-"
-        NPCscreen.option2 = "-"
-        NPCscreen.option3 = "-"
-        NPCselect.option1 = ""
-        NPCselect.option2 = ""
-        NPCselect.option3 = ""
-        NPCscreen.Display()
+            NPC.gmintro2 = Story.GMIntroTest2
+        NPC.option1 = "-"
+        NPC.option2 = "-"
+        NPC.option3 = "-"
+        NPC.select1 = ""
+        NPC.select2 = ""
+        NPC.select3 = ""
+        NPC.Display()
 
-class HomelessGuy(NPCscreen):
+class HomelessGuy(NPC):
     firstvisit = True
     def init():
-        NPCscreen.name = "Homeless Guy"
+        NPC.name = "Homeless Guy"
         if HomelessGuy.firstvisit:
-            NPCscreen.firstvisit = True
-            NPCscreen.gmintro1 = Story.GMIntroTest1
-            NPCscreen.greeting1 = Story.NPCInteractTest1
+            NPC.firstvisit = True
+            NPC.gmintro1 = Story.GMIntroTest1
             HomelessGuy.firstvisit = False
         else:
-            NPCscreen.gmintro2 = Story.GMIntroTest2
-            NPCscreen.greeting2 = Story.NPCInteractTest2
-        NPCscreen.option1 = "-"
-        NPCscreen.option2 = "-"
-        NPCscreen.option3 = "-"
-        NPCselect.option1 = ""
-        NPCselect.option2 = ""
-        NPCselect.option3 = ""
-        NPCscreen.Display()
+            NPC.gmintro2 = Story.GMIntroTest2
+        NPC.option1 = "-"
+        NPC.option2 = "-"
+        NPC.option3 = "-"
+        NPC.select1 = ""
+        NPC.select2 = ""
+        NPC.select3 = ""
+        NPC.Display()
 
-class Medic(NPCscreen):
+class Medic(NPC):
     firstvisit = True
     def init():
-        NPCscreen.name = "Medic"
+        NPC.name = "Medic"
         if Medic.firstvisit:
-            NPCscreen.firstvisit = True
-            NPCscreen.gmintro1 = Story.GMIntroTest1
-            NPCscreen.greeting1 = Story.NPCInteractTest1
+            NPC.firstvisit = True
+            NPC.gmintro1 = Story.GMIntroTest1
             Medic.firstvisit = False
         else:
-            NPCscreen.gmintro2 = Story.GMIntroTest2
-            NPCscreen.greeting2 = Story.NPCInteractTest2
-        NPCscreen.option1 = "I'm hurt, can you help?"
-        NPCscreen.option2 = "What's that droid for?"
-        NPCscreen.option3 = "-"
-        NPCselect.option1 = Story.Medic1
-        NPCscreen.Display()
+            NPC.gmintro2 = Story.GMIntroTest2
+        NPC.option1 = "I'm hurt, can you help?"
+        NPC.option2 = "What's that droid for?"
+        NPC.option3 = "-"
+        NPC.select1 = ""
+        NPC.Display()
 
-class VendorPhys (NPCscreen):
+class VendorPhys (NPC):
     firstvisit = True
     def init():
-        NPCscreen.name = "Store - Iron Will"
+        NPC.name = "Store - Iron Will"
         if VendorPhys.firstvisit:
-            NPCscreen.firstvisit = True
-            NPCscreen.gmintro1 = Story.GMIntroTest1
-            NPCscreen.greeting1 = Story.NPCInteractTest1
+            NPC.firstvisit = True
+            NPC.gmintro1 = Story.GMIntroTest1
             VendorPhys.firstvisit = False
         else:
-            NPCscreen.gmintro2 = Story.GMIntroTest2
-            NPCscreen.greeting2 = Story.NPCInteractTest2
-        NPCscreen.option1 = "-"
-        NPCscreen.option2 = "-"
-        NPCscreen.option3 = "-"
-        NPCselect.option1 = ""
-        NPCselect.option2 = ""
-        NPCselect.option3 = ""
-        NPCscreen.Display()
+            NPC.gmintro2 = Story.GMIntroTest2
+        NPC.option1 = "-"
+        NPC.option2 = "-"
+        NPC.option3 = "-"
+        NPC.select1 = ""
+        NPC.select2 = ""
+        NPC.select3 = ""
+        NPC.Display()
 
-class VendorMag (NPCscreen):
+class VendorMag (NPC):
     firstvisit = True
     def init():
-        NPCscreen.name = "Store - Technomancy"
+        NPC.name = "Store - Technomancy"
         if VendorMag.firstvisit:
-            NPCscreen.firstvisit = True
-            NPCscreen.gmintro1 = Story.GMIntroTest1
-            NPCscreen.greeting1 = Story.NPCInteractTest1
+            NPC.firstvisit = True
+            NPC.gmintro1 = Story.GMIntroTest1
             VendorMag.firstvisit = False
         else:
-            NPCscreen.gmintro2 = Story.GMIntroTest2
-            NPCscreen.greeting2 = Story.NPCInteractTest2
-        NPCscreen.option1 = "-"
-        NPCscreen.option2 = "-"
-        NPCscreen.option3 = "-"
-        NPCselect.option1 = ""
-        NPCselect.option2 = ""
-        NPCselect.option3 = ""
-        NPCscreen.Display()
+            NPC.gmintro2 = Story.GMIntroTest2
+        NPC.option1 = "-"
+        NPC.option2 = "-"
+        NPC.option3 = "-"
+        NPC.select1 = ""
+        NPC.select2 = ""
+        NPC.select3 = ""
+        NPC.Display()
 
-class VendorItem (NPCscreen):
+class VendorItem (NPC):
     firstvisit = True
+    localinventory = [Potion, HiPotion]
     def init():
-        NPCscreen.name = "Store - Going Alone"
+        NPC.name = "Store - Going Alone"
         if VendorItem.firstvisit:
-            NPCscreen.firstvisit = True
-            NPCscreen.gmintro1 = Story.GMIntroTest1
-            NPCscreen.greeting1 = Story.NPCInteractTest1
+            NPC.firstvisit = True
+            NPC.gmintro1 = Story.VendorItemFirstVisit
             VendorItem.firstvisit = False
         else:
-            NPCscreen.gmintro2 = Story.GMIntroTest2
-            NPCscreen.greeting2 = Story.NPCInteractTest2
-        NPCscreen.option1 = "-"
-        NPCscreen.option2 = "-"
-        NPCscreen.option3 = "-"
-        NPCselect.option1 = ""
-        NPCselect.option2 = ""
-        NPCselect.option3 = ""
-        NPCscreen.Display()
+            NPC.gmintro2 = Story.GMIntroTest2
+        NPC.inventory = VendorItem.localinventory
+        NPC.option1 = "View wares"
+        NPC.option2 = "-"
+        NPC.option3 = "-"
+        NPC.select1 = NPC.SaleDisplay
+        NPC.select2 = ""
+        NPC.select3 = ""
+        NPC.Display()
+
 
 
 #######################################################################################################################
@@ -972,187 +1055,200 @@ class Enemy(Character):
 ##### SECTION4 - LOCATIONS #######
 ##################################
 ##################################
-
-    # FRAMEWORK FOR FUTURE LOCATIOON ADDITIONS
-# class XXXXX (NavScreen):
+# FRAMEWORK FOR FUTURE LOCATIOON ADDITIONS
+# class XXXXX (Location):
 #     def init():
-#         NavScreen.currentNavScreen = XXXXX.init
+#         Location.currentLocation = XXXXX.init
 #         if XXXXX.firstvisit:
-#             NavScreen.firstvisit = True
+#             Location.firstvisit = True
 #             XXXXX.firstvisit = False
-#         NavScreen.describe1 = Story.GMLocationTest1
-#         NavScreen.describe2 = Story.GMLocationTest2
-#         NavScreen.name = "XXXXX"
-#         NavScreen.option1 = "-"
-#         NavScreen.option2 = "-"
-#         NavScreen.option3 = "-"
-#         NavScreen.travel1 = "-"
-#         NavScreen.travel2 = "-"
-#         NavScreen.travel3 = "-"
-#         NavScreen.Display()
+#         Location.describe1 = Story.GMLocationTest1
+#         Location.describe2 = Story.GMLocationTest2
+#         Location.name = "XXXXX"
+#         Location.option1 = "-"
+#         Location.option2 = "-"
+#         Location.option3 = "-"
+#         Location.travel1 = "-"
+#         Location.travel2 = "-"
+#         Location.travel3 = "-"
+#         Location.selectoption1 = "-"
+#         Location.selectoption2 = "-"
+#         Location.selectoption3 = "-"
+#         Location.selecttravel1 = "-"
+#         Location.selecttravel2 = "-"
+#         Location.selecttravel3 = "-"
+#         Location.Display()
 
-class Tutorial (NavScreen):
-    def init():
-        NavScreen.currentNavScreen = Tutorial.init
-        if Tutorial.firstvisit:
-            NavScreen.firstvisit = True
-            Tutorial.firstvisit = False
-        NavScreen.describe1 = "A description of your NavScreen and the world around you"
-        NavScreen.describe2 = "Another description of your NavScreen and the world around you"
-        NavScreen.name = "The name of your NavScreen"
-        NavScreen.option1 = "Talk to NPC"
-        NavScreen.option2 = "Look at item of interest"
-        NavScreen.option3 = "-"
-        NavScreen.travel1 = "Go in that direction"
-        NavScreen.travel2 = "Go in the other direction"
-        NavScreen.travel3 = "-"
-        NavScreen.Display()
 
-# EDIT THIS SUBCLASS TO ADD A HIDDEN ITEM AFTER LEAVING FOR THE FIRST TIME
-class Train (NavScreen): 
+class Train (Location): 
     firstvisit = True
     def init():
-        NavScreen.currentNavScreen = Train.init
+        Location.currentLocation = Train.init
         if Train.firstvisit:
-            NavScreen.firstvisit = True
+            Location.firstvisit = True
             Train.firstvisit = False
-        NavScreen.describe1 = Story.GMLocationTest1
-        NavScreen.describe2 = Story.GMLocationTest2
-        NavScreen.name = "Skytrain"
-        NavScreen.travel1 = "Leave the Skytrain"
-        NavScreen.travel2 = "-"
-        NavScreen.travel3 = "-"
-        NavScreen.option1 = "-"
-        NavScreen.option2 = "-"
-        NavScreen.option3 = "-"
-        NavSelect.travel1 = Station.init
-        NavScreen.Display()
+        Location.describe1 = Story.GMLocationTest1
+        Location.describe2 = Story.GMLocationTest2
+        Location.name = "Skytrain"
+        Location.travel1 = "Leave the Skytrain"
+        Location.travel2 = "-"
+        Location.travel3 = "-"
+        Location.option1 = "-"
+        Location.option2 = "-"
+        Location.option3 = "-"
+        Location.selecttravel1 = Station.init
+        Location.Display()
 
-class Station (NavScreen):
+class Station (Location):
     firstvisit = True
     def init():
-        NavScreen.currentNavScreen = Station.init
+        Location.currentLocation = Station.init
         if Station.firstvisit:
-            NavScreen.firstvisit = True
+            Location.firstvisit = True
             Station.firstvisit = False
-        NavScreen.describe1 = Story.GMLocationTest1
-        NavScreen.describe2 = Story.GMLocationTest2
-        NavScreen.name = "Skytrain Dock Station"
-        NavScreen.travel1 = "Proceed to the Power Station"
-        NavScreen.travel2 = "-"
-        NavScreen.travel3 = "-"
-        NavScreen.option1 = "Talk to the Dock Porter"
-        NavScreen.option2 = "Approach the homeless guy"
-        NavScreen.option3 = "-"
-        NavSelect.travel1 = PowerStation.init
-        NavSelect.travel2 = ""
-        NavSelect.travel3 = ""
-        NavSelect.option1 = Porter.init
-        NavSelect.option2 = HomelessGuy.init
-        NavSelect.option3 = ""
-        NavScreen.Display()
+        Location.describe1 = Story.GMLocationTest1
+        Location.describe2 = Story.GMLocationTest2
+        Location.name = "Skytrain Dock Station"
+        Location.travel1 = "Proceed to the Power Station"
+        Location.travel2 = "-"
+        Location.travel3 = "-"
+        Location.option1 = "Talk to the Dock Porter"
+        Location.option2 = "Approach the homeless guy"
+        Location.option3 = "-"
+        Location.selecttravel1 = PowerStation.init
+        Location.selecttravel2 = ""
+        Location.selecttravel3 = ""
+        Location.selectoption1 = Porter.init
+        Location.selectoption2 = HomelessGuy.init
+        Location.selectoption3 = ""
+        Location.Display()
 
-class PowerStation (NavScreen):
+class PowerStation (Location):
     firstvisit = True
     def init():
-        NavScreen.currentNavScreen = PowerStation.init
+        Location.currentLocation = PowerStation.init
         if PowerStation.firstvisit:
-            NavScreen.firstvisit = True
+            Location.firstvisit = True
             PowerStation.firstvisit = False
-        NavScreen.describe1 = Story.GMLocationTest1
-        NavScreen.describe2 = Story.GMLocationTest2
-        NavScreen.name = "Old Power Station - Grounds"
-        NavScreen.travel1 = "Visit the Medic Station"
-        NavScreen.travel2 = "Visit the makeshift Bazaar in the Station lobby"
-        NavScreen.travel3 = "Head up to the Power Station workfloor"
-        NavScreen.option1 = "-"
-        NavScreen.option2 = "-"
-        NavScreen.option3 = "-"
-        NavSelect.travel1 = MedicStation.init
-        NavSelect.travel2 = Bazaar.init
-        NavSelect.travel3 = StationFloor.init
-        NavSelect.option1 = ""
-        NavSelect.option2 = ""
-        NavSelect.option3 = ""
-        NavScreen.Display()
+        Location.describe1 = Story.GMLocationTest1
+        Location.describe2 = Story.GMLocationTest2
+        Location.name = "Old Power Station - Grounds"
+        Location.travel1 = "Visit the Medic Station"
+        Location.travel2 = "Visit the makeshift Bazaar in the Station lobby"
+        Location.travel3 = "Head up to the Power Station workfloor"
+        Location.option1 = "-"
+        Location.option2 = "-"
+        Location.option3 = "-"
+        Location.selecttravel1 = MedicStation.init
+        Location.selecttravel2 = Bazaar.init
+        Location.selecttravel3 = StationFloor.init
+        Location.selectoption1 = ""
+        Location.selectoption2 = ""
+        Location.selectoption3 = ""
+        Location.Display()
 
-class MedicStation (NavScreen):
+class MedicStation (Location):
     firstvisit = True
     def init():
-        NavScreen.currentNavScreen = MedicStation.init
+        Location.currentLocation = MedicStation.init
         if MedicStation.firstvisit:
-            NavScreen.firstvisit = True
+            Location.firstvisit = True
             MedicStation.firstvisit = False
-        NavScreen.describe1 = Story.GMLocationTest1
-        NavScreen.describe2 = Story.GMLocationTest2
-        NavScreen.name = "Old Power Station - Medic's Area"
-        NavScreen.travel1 = "-"
-        NavScreen.travel2 = "-"
-        NavScreen.travel3 = "-"
-        NavScreen.option1 = "Talk to the Medic"
-        NavScreen.option2 = "Approach the Field Droid"
-        NavScreen.option3 = "-"
-        NavSelect.travel1 = ""
-        NavSelect.travel2 = ""
-        NavSelect.travel3 = ""
-        NavSelect.option1 = Medic.init
-        NavSelect.option2 = ""
-        NavSelect.option3 = ""
-        NavScreen.Display()
+        Location.describe1 = Story.GMLocationTest1
+        Location.describe2 = Story.GMLocationTest2
+        Location.name = "Old Power Station - Medic's Area"
+        Location.travel1 = "-"
+        Location.travel2 = "-"
+        Location.travel3 = "-"
+        Location.option1 = "Talk to the Medic"
+        Location.option2 = "Approach the Field Droid"
+        Location.option3 = "-"
+        Location.selecttravel1 = ""
+        Location.selecttravel2 = ""
+        Location.selecttravel3 = ""
+        Location.selectoption1 = "select"
+        Location.selectoption2 = ""
+        Location.selectoption3 = ""
+        Location.Display()
 
-class Bazaar (NavScreen):
+class Bazaar (Location):
     firstvisit = True
     def init():
-        NavScreen.currentNavScreen = Bazaar.init
+        Location.currentLocation = Bazaar.init
         if Bazaar.firstvisit:
-            NavScreen.firstvisit = True
+            Location.firstvisit = True
             Bazaar.firstvisit = False
-        NavScreen.describe1 = Story.GMLocationTest1
-        NavScreen.describe2 = Story.GMLocationTest2
-        NavScreen.name = "Old Power Station - Makeshift Bazaar"
-        NavScreen.travel1 = "-"
-        NavScreen.travel2 = "-"
-        NavScreen.travel3 = "-"
-        NavScreen.option1 = "Talk to the Magetek Vendor"
-        NavScreen.option2 = "Talk to the Physical Vendor"
-        NavScreen.option3 = "Talk to the Item Vendor"
-        NavSelect.travel1 = ""
-        NavSelect.travel2 = ""
-        NavSelect.travel3 = ""
-        NavSelect.option1 = VendorMag.init
-        NavSelect.option2 = VendorPhys.init
-        NavSelect.option3 = VendorItem.init
-        NavScreen.Display()
+        Location.describe1 = Story.GMLocationTest1
+        Location.describe2 = Story.GMLocationTest2
+        Location.name = "Old Power Station - Makeshift Bazaar"
+        Location.travel1 = "-"
+        Location.travel2 = "-"
+        Location.travel3 = "-"
+        Location.option1 = "Talk to the Magetek Vendor"
+        Location.option2 = "Talk to the Physical Vendor"
+        Location.option3 = "Talk to the Item Vendor"
+        Location.selecttravel1 = ""
+        Location.selecttravel2 = ""
+        Location.selecttravel3 = ""
+        Location.selectoption1 = VendorMag.init
+        Location.selectoption2 = VendorPhys.init
+        Location.selectoption3 = VendorItem.init
+        Location.Display()
 
-class StationFloor (NavScreen):
+class StationFloor (Location):
     firstvisit = True
     def init():
-        NavScreen.currentNavScreen = StationFloor.init
+        Location.currentLocation = StationFloor.init
         if StationFloor.firstvisit:
-            NavScreen.firstvisit = True
+            Location.firstvisit = True
             StationFloor.firstvisit = False
-        NavScreen.describe1 = Story.GMLocationTest1
-        NavScreen.describe2 = Story.GMLocationTest2
-        NavScreen.name = "Old Power Station - Work Floor"
-        NavScreen.travel1 = "-"
-        NavScreen.travel2 = "-"
-        NavScreen.travel3 = "-"
-        NavScreen.option1 = "Approach the Arena Cage"
-        NavScreen.option2 = "-"
-        NavScreen.option3 = "-"
-        NavSelect.travel1 = ""
-        NavSelect.travel2 = ""
-        NavSelect.travel3 = ""
-        NavSelect.option1 = ""
-        NavSelect.option2 = ""
-        NavSelect.option3 = ""
-        NavScreen.Display()
+        Location.describe1 = Story.GMLocationTest1
+        Location.describe2 = Story.GMLocationTest2
+        Location.name = "Old Power Station - Work Floor"
+        Location.travel1 = "-"
+        Location.travel2 = "-"
+        Location.travel3 = "-"
+        Location.option1 = "Approach the Arena Cage"
+        Location.option2 = "-"
+        Location.option3 = "-"
+        Location.selecttravel1 = ""
+        Location.selecttravel2 = ""
+        Location.selecttravel3 = ""
+        Location.selectoption1 = ""
+        Location.selectoption2 = ""
+        Location.selectoption3 = ""
+        Location.Display()
 
 #####################################
 #####################################
 ##### SECTION5 - STORY ELEMENTS #####
 #####################################
 #####################################
+
+class Interactions:
+    def VendorGreeting():
+        greeting = random.randint(1,3)
+        if greeting == 1:
+            GMnarrate.write ("You are greeted with a friendly smile")
+            NPCtalk.write ("Well howdy there! What can I get ya>")
+        elif greeting == 2:
+            GMnarrate.write ("You are quickly examined, presumably for trouble, before being greeted")
+            NPCtalk.write ("Hey there, how can I help you?")
+        else:
+            GMnarrate.write ("The individual looks at you with a vacant expression... they look like they've been here a while")
+            NPCtalk.write ("Hey, uhh... what's up?")
+
+    def VendorNoMoney():
+        greeting = random.randint(1,13)
+        if greeting in range (1,5):
+            GMnarrate.write ("The Vendor shakes their head...")
+            NPCtalk.write ("No creds, no goods I'm afraid... maybe come back when you've got something for me")
+        elif greeting in range (5,10):
+            GMnarrate.write ("The Vendor glances at you with an annoyed expression")
+            NPCtalk.write ("... and what exactly are you going to be paying me with? Come on now.")
+        else:
+            GMnarrate.write ("The Vendor looks kind of angry, perhaps you upset them")
+            NPCtalk.write ("Do I look like a damn charity to you? Get outta here until you've got soemthing WORTH MY TIME!!!")
 
 class Story:
     
@@ -1168,10 +1264,10 @@ class Story:
     def GMIntroTest2():
         GMnarrate.write ("Second Introduction Test \n")
 
-    def NPCInteractTest1():
+    def NPCspeechtest1():
         NPCtalk.write ("First NPC Interaction Test \n")
 
-    def NPCInteractTest2():
+    def NPCspeechtest2():
         NPCtalk.write ("Second NPC Interaction Test \n")
 
     def StoryTest1():
@@ -1179,3 +1275,14 @@ class Story:
     
     def StoryTest2():
         GMnarrate.write ("STORY EXAMPLE 2 \n")
+
+    def VendorItemFirstVisit():
+        GMnarrate.write ("The Item Vendor greets you:")
+        NPCtalk.write ("Howdy there, got some good items for ya!")
+
+
+
+
+
+
+
