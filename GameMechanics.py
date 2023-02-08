@@ -1,9 +1,9 @@
 import random
 from os import system, name
 from time import sleep
-from TypewriterText import *
-from ItemList import *
-from WeaponList import *
+from x_TypewriterText import *
+from x_ItemList import *
+from x_WeaponList import *
 
 ############################
 ##### GLOBAL FUNCTIONS #####
