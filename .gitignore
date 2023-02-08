@@ -2,7 +2,7 @@
 
 
 # Files
-.DS_Store
-X-RunTesting.py
+RunTesting.py
 
 # Filetypes
+*.DS_Store
