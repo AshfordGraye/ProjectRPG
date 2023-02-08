@@ -222,7 +222,7 @@ class NPC:
             NPCtalk.write ("No worries - later now.")
             PressEnterToGoBack()
             ClearScreen()
-            NPC.Display
+            NPC.Display()
         elif selection in range (1,listitem+1):
             selecteditem = NPC.inventory[selection-1]
             selecteditemposition = NPC.inventory.index(selecteditem)
@@ -700,6 +700,7 @@ Would you like to select this class, or view another?
 
 class Porter (NPC):
     firstvisit = True
+    localinventory = []
     def init():
         NPC.name = "Skytrain Dock porter"
         if Porter.firstvisit:
@@ -718,6 +719,7 @@ class Porter (NPC):
 
 class HomelessGuy(NPC):
     firstvisit = True
+    localinventory = []
     def init():
         NPC.name = "Homeless Guy"
         if HomelessGuy.firstvisit:
@@ -736,6 +738,7 @@ class HomelessGuy(NPC):
 
 class Medic(NPC):
     firstvisit = True
+    localinventory = []
     def init():
         NPC.name = "Medic"
         if Medic.firstvisit:
@@ -748,10 +751,32 @@ class Medic(NPC):
         NPC.option2 = "What's that droid for?"
         NPC.option3 = "-"
         NPC.select1 = ""
+        NPC.select2 = ""
+        NPC.select3 = ""
+        NPC.Display()
+
+class FieldDroid(NPC):
+    firstvisit = True
+    localinventory = []
+    def init():
+        NPC.name = "Field Droid"
+        if FieldDroid.firstvisit:
+            NPC.firstvisit = True
+            NPC.gmintro1 = Story.GMIntroTest1
+            FieldDroid.firstvisit = False
+        else:
+            NPC.gmintro2 = Story.GMIntroTest2
+        NPC.option1 = "Instruct Droid to fix you up"
+        NPC.option2 = "-"
+        NPC.option3 = "-"
+        NPC.select1 = ""
+        NPC.select2 = ""
+        NPC.select3 = ""
         NPC.Display()
 
 class VendorPhys (NPC):
     firstvisit = True
+    localinventory = []
     def init():
         NPC.name = "Store - Iron Will"
         if VendorPhys.firstvisit:
@@ -770,6 +795,7 @@ class VendorPhys (NPC):
 
 class VendorMag (NPC):
     firstvisit = True
+    localinventory = []
     def init():
         NPC.name = "Store - Technomancy"
         if VendorMag.firstvisit:
@@ -1166,8 +1192,8 @@ class MedicStation (Location):
         Location.selecttravel1 = ""
         Location.selecttravel2 = ""
         Location.selecttravel3 = ""
-        Location.selectoption1 = "select"
-        Location.selectoption2 = ""
+        Location.selectoption1 = Medic.init
+        Location.selectoption2 = FieldDroid.init
         Location.selectoption3 = ""
         Location.Display()
 
