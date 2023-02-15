@@ -215,14 +215,14 @@ class NPC:
             for elem in NPC.inventory:
                 listitem += 1
                 GMtalk.write (f"{listitem}: {elem}   \n")
-        NPCtalk.write("So what'll it be?    \n")
+        Interactions.VendorChooseItem
         GMtalk.write (f"Your currently have {Player.cash} credits on you. Enter the number for what you'd like to buy and see it's price. If you're not interested, enter 0.")
         selection = int(input())
         if selection == 0:
             NPCtalk.write ("No worries - later now.")
             PressEnterToGoBack()
             ClearScreen()
-            NPC.Display
+            NPC.Display()
         elif selection in range (1,listitem+1):
             selecteditem = NPC.inventory[selection-1]
             selecteditemposition = NPC.inventory.index(selecteditem)
@@ -700,6 +700,7 @@ Would you like to select this class, or view another?
 
 class Porter (NPC):
     firstvisit = True
+    localinventory = []
     def init():
         NPC.name = "Skytrain Dock porter"
         if Porter.firstvisit:
@@ -718,6 +719,7 @@ class Porter (NPC):
 
 class HomelessGuy(NPC):
     firstvisit = True
+    localinventory = []
     def init():
         NPC.name = "Homeless Guy"
         if HomelessGuy.firstvisit:
@@ -736,6 +738,7 @@ class HomelessGuy(NPC):
 
 class Medic(NPC):
     firstvisit = True
+    localinventory = []
     def init():
         NPC.name = "Medic"
         if Medic.firstvisit:
@@ -748,18 +751,40 @@ class Medic(NPC):
         NPC.option2 = "What's that droid for?"
         NPC.option3 = "-"
         NPC.select1 = ""
+        NPC.select2 = ""
+        NPC.select3 = ""
+        NPC.Display()
+
+class FieldDroid(NPC):
+    firstvisit = True
+    localinventory = []
+    def init():
+        NPC.name = "Field Droid"
+        if FieldDroid.firstvisit:
+            NPC.firstvisit = True
+            NPC.gmintro1 = Story.GMIntroTest1
+            FieldDroid.firstvisit = False
+        else:
+            NPC.gmintro2 = Story.GMIntroTest2
+        NPC.option1 = "Instruct Droid to fix you up"
+        NPC.option2 = "-"
+        NPC.option3 = "-"
+        NPC.select1 = ""
+        NPC.select2 = ""
+        NPC.select3 = ""
         NPC.Display()
 
 class VendorPhys (NPC):
     firstvisit = True
+    localinventory = []
     def init():
         NPC.name = "Store - Iron Will"
         if VendorPhys.firstvisit:
             NPC.firstvisit = True
-            NPC.gmintro1 = Story.GMIntroTest1
+            NPC.gmintro1 = Interactions.VendorGreeting
             VendorPhys.firstvisit = False
         else:
-            NPC.gmintro2 = Story.GMIntroTest2
+            NPC.gmintro2 = Interactions.VendorGreeting
         NPC.option1 = "-"
         NPC.option2 = "-"
         NPC.option3 = "-"
@@ -770,14 +795,15 @@ class VendorPhys (NPC):
 
 class VendorMag (NPC):
     firstvisit = True
+    localinventory = []
     def init():
         NPC.name = "Store - Technomancy"
         if VendorMag.firstvisit:
             NPC.firstvisit = True
-            NPC.gmintro1 = Story.GMIntroTest1
+            NPC.gmintro1 = Interactions.VendorGreeting
             VendorMag.firstvisit = False
         else:
-            NPC.gmintro2 = Story.GMIntroTest2
+            NPC.gmintro2 = Interactions.VendorGreeting
         NPC.option1 = "-"
         NPC.option2 = "-"
         NPC.option3 = "-"
@@ -793,10 +819,10 @@ class VendorItem (NPC):
         NPC.name = "Store - Going Alone"
         if VendorItem.firstvisit:
             NPC.firstvisit = True
-            NPC.gmintro1 = Story.VendorItemFirstVisit
+            NPC.gmintro1 = Interactions.VendorGreeting
             VendorItem.firstvisit = False
         else:
-            NPC.gmintro2 = Story.GMIntroTest2
+            NPC.gmintro2 = Interactions.VendorGreeting
         NPC.inventory = VendorItem.localinventory
         NPC.option1 = "View wares"
         NPC.option2 = "-"
@@ -1166,8 +1192,8 @@ class MedicStation (Location):
         Location.selecttravel1 = ""
         Location.selecttravel2 = ""
         Location.selecttravel3 = ""
-        Location.selectoption1 = "select"
-        Location.selectoption2 = ""
+        Location.selectoption1 = Medic.init
+        Location.selectoption2 = FieldDroid.init
         Location.selectoption3 = ""
         Location.Display()
 
@@ -1226,17 +1252,27 @@ class StationFloor (Location):
 #####################################
 
 class Interactions:
+
+# VENDORS
+
     def VendorGreeting():
         greeting = random.randint(1,3)
         if greeting == 1:
             GMnarrate.write ("You are greeted with a friendly smile")
-            NPCtalk.write ("Well howdy there! What can I get ya>")
+            NPCtalk.write ("Well howdy there! What can I get ya")
         elif greeting == 2:
             GMnarrate.write ("You are quickly examined, presumably for trouble, before being greeted")
             NPCtalk.write ("Hey there, how can I help you?")
         else:
             GMnarrate.write ("The individual looks at you with a vacant expression... they look like they've been here a while")
             NPCtalk.write ("Hey, uhh... what's up?")
+
+    def VendorChooseItem():
+        option = random.randint(1,4)
+        NPCtalk.write ("So what'll it be?")
+        NPCtalk.write ("Anything take your fancy?")
+        NPCtalk.write ("What catches your eye there?")
+        NPCtalk.write ("Got some good stuff for sale ")
 
     def VendorNoMoney():
         greeting = random.randint(1,13)
@@ -1249,6 +1285,10 @@ class Interactions:
         else:
             GMnarrate.write ("The Vendor looks kind of angry, perhaps you upset them")
             NPCtalk.write ("Do I look like a damn charity to you? Get outta here until you've got soemthing WORTH MY TIME!!!")
+
+
+
+
 
 class Story:
     
@@ -1276,9 +1316,6 @@ class Story:
     def StoryTest2():
         GMnarrate.write ("STORY EXAMPLE 2 \n")
 
-    def VendorItemFirstVisit():
-        GMnarrate.write ("The Item Vendor greets you:")
-        NPCtalk.write ("Howdy there, got some good items for ya!")
 
 
 
