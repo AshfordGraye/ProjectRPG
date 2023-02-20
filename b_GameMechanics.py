@@ -22,6 +22,7 @@ def ClearScreen():
 def PressEnterToGoBack():
     GMtalk.write ("Press Enter to go back")
     input()
+    ClearScreen()
 ######################################
 ######################################
 ##### SECTION1 - DISPLAY SCREENS #####
@@ -359,16 +360,19 @@ Your current stats are:
         GMnarrate.write (f'''
 You currently have the following equipped:
     Physical Weapon:        {Player.physequip}
-    Magetek Weapon:         {Player.magequip}
+    Armatek Weapon:         {Player.magequip}
     ''')
 
     def ItemScreen():
         ClearScreen()
-        GMnarrate.write ("You currently have the following in your inventory:")
-        listitem = 0
-        for elem in Player.items:
-            listitem += 1
-            GMtalk.write (f"{listitem}: {elem}   \n")
+        if Player.items == []:
+            GMnarrate.write("You do not have anything in your inventory right now.  \n")
+        else:
+            GMnarrate.write ("You currently have the following in your inventory:   \n")
+            listitem = 0
+            for elem in Player.items:
+                listitem += 1
+                GMtalk.write (f"{listitem}: {elem}   \n")
 
 
 #######################################################################################################################
@@ -422,6 +426,8 @@ class Player (Character):
 
     def init():
         Player.name = ""
+
+        Player.cash = 0
         
         Player.job = ""
         Player.soldier = ""
@@ -1258,34 +1264,38 @@ class Interactions:
     def VendorGreeting():
         greeting = random.randint(1,3)
         if greeting == 1:
-            GMnarrate.write ("You are greeted with a friendly smile")
-            NPCtalk.write ("Well howdy there! What can I get ya")
+            GMnarrate.write ("You are greeted with a friendly smile \n")
+            NPCtalk.write ("Well howdy there! What can I get ya \n")
         elif greeting == 2:
-            GMnarrate.write ("You are quickly examined, presumably for trouble, before being greeted")
-            NPCtalk.write ("Hey there, how can I help you?")
+            GMnarrate.write ("You are quickly examined, presumably for trouble, before being greeted    \n")
+            NPCtalk.write ("Hey there, how can I help you?  \n")
         else:
-            GMnarrate.write ("The individual looks at you with a vacant expression... they look like they've been here a while")
-            NPCtalk.write ("Hey, uhh... what's up?")
+            GMnarrate.write ("The individual looks at you with a vacant expression... they look like they've been here a while  \n")
+            NPCtalk.write ("Hey, uhh... what's up?  \n")
 
     def VendorChooseItem():
         option = random.randint(1,4)
-        NPCtalk.write ("So what'll it be?")
-        NPCtalk.write ("Anything take your fancy?")
-        NPCtalk.write ("What catches your eye there?")
-        NPCtalk.write ("Got some good stuff for sale ")
+        if option == 1:
+            NPCtalk.write ("So what'll it be  \n?")
+        elif option ==2:
+            NPCtalk.write ("Anything take your fancy?  \n")
+        elif option == 3:
+            NPCtalk.write ("What catches your eye there?  \n")
+        else:
+            NPCtalk.write ("Got some good stuff for sale!  \n")
 
     def VendorNoMoney():
         greeting = random.randint(1,13)
         if greeting in range (1,5):
-            GMnarrate.write ("The Vendor shakes their head...")
-            NPCtalk.write ("No creds, no goods I'm afraid... maybe come back when you've got something for me")
+            GMnarrate.write ("The Vendor shakes their head...  \n")
+            NPCtalk.write ("No creds, no goods I'm afraid... maybe come back when you've got something for me  \n")
         elif greeting in range (5,10):
-            GMnarrate.write ("The Vendor glances at you with an annoyed expression")
-            NPCtalk.write ("... and what exactly are you going to be paying me with? Come on now.")
+            GMnarrate.write ("The Vendor glances at you with an annoyed expression  \n")
+            NPCtalk.write ("... and what exactly are you going to be paying me with? Come on now.  \n")
         else:
-            GMnarrate.write ("The Vendor looks kind of angry, perhaps you upset them")
-            NPCtalk.write ("Do I look like a damn charity to you? Get outta here until you've got soemthing WORTH MY TIME!!!")
-
+            GMnarrate.write ("The Vendor looks kind of angry, perhaps you upset them…  \n")
+            NPCtalk.write ("Do I look like a damn charity to you? Get outta here until you've got soemthing WORTH MY TIME!!!  \n")
+        PressEnterToGoBack()
 
 
 
