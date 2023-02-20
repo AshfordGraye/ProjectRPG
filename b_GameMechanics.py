@@ -115,7 +115,7 @@ class Location:
                 ClearScreen()
                 Location.firstvisit = False
                 Location.holdLocation = Location.currentLocation
-                Location.tselectravel3()
+                Location.selecttravel3()
         elif selection == "4":
             if Location.option1 == "":
                 Location.InvalidChoice()
@@ -1135,15 +1135,15 @@ class Station (Location):
         Location.describe1 = Story.GMLocationTest1
         Location.describe2 = Story.GMLocationTest2
         Location.name = "Skytrain Dock Station"
-        Location.travel1 = "Proceed to the Power Station"
+        Location.travel1 = "Board the Skytrain"
         Location.travel2 = "-"
-        Location.travel3 = "-"
+        Location.travel3 = "Head to the Power Station"
         Location.option1 = "Talk to the Dock Porter"
         Location.option2 = "Approach the homeless guy"
         Location.option3 = "-"
-        Location.selecttravel1 = PowerStation.init
+        Location.selecttravel1 = Train.init
         Location.selecttravel2 = ""
-        Location.selecttravel3 = ""
+        Location.selecttravel3 = PowerStation.init
         Location.selectoption1 = Porter.init
         Location.selectoption2 = HomelessGuy.init
         Location.selectoption3 = ""
@@ -1161,13 +1161,13 @@ class PowerStation (Location):
         Location.name = "Old Power Station - Grounds"
         Location.travel1 = "Visit the Medic Station"
         Location.travel2 = "Visit the makeshift Bazaar in the Station lobby"
-        Location.travel3 = "Head up to the Power Station workfloor"
+        Location.travel3 = "Head to the Skytrain Station"
         Location.option1 = "-"
         Location.option2 = "-"
         Location.option3 = "-"
         Location.selecttravel1 = MedicStation.init
         Location.selecttravel2 = Bazaar.init
-        Location.selecttravel3 = StationFloor.init
+        Location.selecttravel3 = Station.init
         Location.selectoption1 = ""
         Location.selectoption2 = ""
         Location.selectoption3 = ""
