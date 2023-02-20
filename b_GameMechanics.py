@@ -212,15 +212,16 @@ class NPC:
             ClearScreen()
             NPC.Display()
         else:
+            Interactions.VendorChooseItem()
             listitem = 0
             for elem in NPC.inventory:
                 listitem += 1
                 GMtalk.write (f"{listitem}: {elem}   \n")
-        Interactions.VendorChooseItem
         GMtalk.write (f"Your currently have {Player.cash} credits on you. Enter the number for what you'd like to buy and see it's price. If you're not interested, enter 0.")
         selection = int(input())
         if selection == 0:
-            NPCtalk.write ("No worries - later now.")
+            ClearScreen()
+            NPCtalk.write ("No worries - later now. \n")
             PressEnterToGoBack()
             ClearScreen()
             NPC.Display()
@@ -1276,7 +1277,7 @@ class Interactions:
     def VendorChooseItem():
         option = random.randint(1,4)
         if option == 1:
-            NPCtalk.write ("So what'll it be  \n?")
+            NPCtalk.write ("So what'll it be?  \n")
         elif option ==2:
             NPCtalk.write ("Anything take your fancy?  \n")
         elif option == 3:
