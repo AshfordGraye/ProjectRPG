@@ -254,7 +254,16 @@ class NPC:
                 NPC.SaleDisplay()
         else:
             NPC.InvalidChoice()
-    
+
+    def ChatDisplay():
+        MenuTitle.write ("NPC Menu")
+        PlayerInput.write (f"0: Leave this conversation")
+        PlayerInput.write (f"1: {NPC.option1}")
+        PlayerInput.write (f"2: {NPC.option2}")
+        PlayerInput.write (f"3: {NPC.option3}")
+        print ()
+        NPC.Selection()
+
     def Selection():
         selection = input("What would you like to do?   \n")
         print()
@@ -351,8 +360,8 @@ Your current stats are:
 
     Physical Strength:      {Player.phystr}
     Physical Defense:       {Player.phydef}
-    Magetek Strength:       {Player.magstr}
-    Magetek Defense:        {Player.magdef}
+    Armatek Strength:       {Player.armstr}
+    Armatek Defense:        {Player.armdef}
     ''')
         
 
@@ -361,7 +370,7 @@ Your current stats are:
         GMnarrate.write (f'''
 You currently have the following equipped:
     Physical Weapon:        {Player.physequip}
-    Armatek Weapon:         {Player.magequip}
+    Armatek Weapon:         {Player.armequip}
     ''')
 
     def ItemScreen():
@@ -383,7 +392,7 @@ You currently have the following equipped:
 
 ####################################
 ####################################
-######  SECTION2 - CHARACTERS  ######
+######  SECTION2 - CHARACTERS  #####
 ####################################
 ####################################
 
@@ -406,13 +415,13 @@ class Character:
 
     phystr = ""
     phydef = ""
-    magstr = ""
-    magdef = ""
+    armstr = ""
+    armdef = ""
 
     phyweapons = ""
     physequip = ""
-    magweapons = ""
-    magequip = ""
+    armweapon = ""
+    armequip = ""
     items = ""
 
     moves = ""
@@ -428,7 +437,7 @@ class Player (Character):
     def init():
         Player.name = ""
 
-        Player.cash = 0
+        Player.cash = 200
         
         Player.job = ""
         Player.soldier = ""
@@ -443,13 +452,13 @@ class Player (Character):
 
         Player.phystr = 10
         Player.phydef = 10
-        Player.magstr = 10
-        Player.magdef = 10
+        Player.armstr = 10
+        Player.armdef = 10
 
         Player.phyweapons = []
         Player.physequip = ['none']
-        Player.magweapons = []
-        Player.magequip = ['none']
+        Player.armweapon = []
+        Player.armequip = ['none']
         Player.items = []
 
         Player.moves = {}
@@ -463,7 +472,7 @@ class Player (Character):
     @staticmethod
     def ClassChoice():
         GMtalk.write ('''
-Different roles will affect your how strong your Physical and Magetek abilities are, and how well you can defend against them. 
+Different roles will affect your how strong your Physical and Armatek abilities are, and how well you can defend against them. 
 As you progress in the game you will have the option of usig different weapons and items that also influence these stats.
 
 Remember, your enemies will have strengths and weaknesses too!
@@ -483,7 +492,7 @@ What was your role in the military? Enter a role number to view it's stats.
         if viewclass.lower() == "1":
             Player.job = "Soldier"
             Player.phystr += (Player.phystr /100 *30)
-            Player.magdef -= (Player.magdef /100 *30)
+            Player.armdef -= (Player.armdef /100 *30)
             Player.moves = {"Attack": random.randint(25,35) + Player.phystr}
             GMnarrate.write (f'''
 A former {Player.job}, you fought in the Alliance Army as a Shock Trooper.
@@ -492,8 +501,8 @@ The Army's excellent training has given you great strength when fighting.
 Your stats will be:
 {Player.phystr} Physical Strength
 {Player.phydef} Physical Defense
-{Player.magstr} Magetek Strength
-{Player.magdef} Magetek Defense
+{Player.armstr} Armatek Strength
+{Player.armdef} Armatek Defense
     ''')
             PlayerInput.write ('''
 Would you like to select this class, or view another?
@@ -507,8 +516,8 @@ Would you like to select this class, or view another?
                 Player.job = ""
                 Player.phystr = 10
                 Player.phydef = 10
-                Player.magstr = 10
-                Player.magdef = 10
+                Player.armstr = 10
+                Player.armdef = 10
                 Player.ClassChoice()
             else:
                 GMtalk.write ("Please enter the number of your selection")
@@ -517,18 +526,18 @@ Would you like to select this class, or view another?
 
         elif viewclass.lower() == "2":
             Player.job = "Scientist"
-            Player.magstr += (Player.magstr /100 *30)
+            Player.armstr += (Player.armstr /100 *30)
             Player.phydef -= (Player.phydef /100 *30)
             Player.moves = {"Attack": random.randint(25,35) + Player.phystr}
             GMnarrate.write (f'''
 A former {Player.job}, you designed weaponry to be used against the enemy.
-Your knowledge of Magetek gives you an advantage when using Magetek abilities.
+Your knowledge of Armatek gives you an advantage when using Armatek abilities.
 
 Your stats will be:
 {Player.phystr} Physical Strength
 {Player.phydef} Physical Defense
-{Player.magstr} Magetek Strength
-{Player.magdef} Magetek Defense
+{Player.armstr} Armatek Strength
+{Player.armdef} Armatek Defense
     ''')
             PlayerInput.write ('''
 Would you like to select this class, or view another?
@@ -542,8 +551,8 @@ Would you like to select this class, or view another?
                 Player.job = ""
                 Player.phystr = 10
                 Player.phydef = 10
-                Player.magstr = 10
-                Player.magdef = 10
+                Player.armstr = 10
+                Player.armdef = 10
                 Player.ClassChoice()
             else:
                 GMtalk.write ("Please enter the number of your selection")
@@ -563,8 +572,8 @@ Your hardiness earned in battle has given you stronger physical defense.
 Your stats will be:
 {Player.phystr} Physical Strength
 {Player.phydef} Physical Defense
-{Player.magstr} Magetek Strength
-{Player.magdef} Magetek Defense
+{Player.armstr} Armatek Strength
+{Player.armdef} Armatek Defense
     ''')
             PlayerInput.write ('''
 Would you like to select this class, or view another?
@@ -578,8 +587,8 @@ Would you like to select this class, or view another?
                 Player.job = ""
                 Player.phystr = 10
                 Player.phydef = 10
-                Player.magstr = 10
-                Player.magdef = 10
+                Player.armstr = 10
+                Player.armdef = 10
                 Player.ClassChoice()
             else:
                 GMtalk.write ("Please enter the number of your selection")
@@ -589,18 +598,18 @@ Would you like to select this class, or view another?
 
         elif viewclass.lower() == "4":
             Player.job = "Officer"
-            Player.magdef += (Player.magdef /100 *30)
-            Player.magstr -= (Player.magstr /100 *30)
+            Player.armdef += (Player.armdef /100 *30)
+            Player.armstr -= (Player.armstr /100 *30)
             Player.moves = {"Attack": random.randint(25,35) + Player.phystr}
             GMnarrate.write (f'''
 A former {Player.job} in the Alliance Navy, you commanded SkyCruiser fleets against the Commonwealth.
-Your officer's training gave you increased defense against Magetek abilities. 
+Your officer's training gave you increased defense against Armatek abilities. 
 
 Your stats will be:
 {Player.phystr} Physical Strength
 {Player.phydef} Physical Defense
-{Player.magstr} Magetek Strength
-{Player.magdef} Magetek Defense
+{Player.armstr} Armatek Strength
+{Player.armdef} Armatek Defense
     ''')
             PlayerInput.write ('''
 Would you like to select this class, or view another?
@@ -614,8 +623,8 @@ Would you like to select this class, or view another?
                 Player.job = ""
                 Player.phystr = 10
                 Player.phydef = 10
-                Player.magstr = 10
-                Player.magdef = 10
+                Player.armstr = 10
+                Player.armdef = 10
                 Player.ClassChoice()
             else:
                 GMtalk.write ("Please enter the number of your selection")
@@ -739,6 +748,26 @@ class HomelessGuy(NPC):
         NPC.option2 = "-"
         NPC.option3 = "-"
         NPC.select1 = ""
+        NPC.select2 = ""
+        NPC.select3 = ""
+        NPC.Display()
+
+class BossMan(NPC):
+    firstvisit = True
+    def init():
+        NPC.name = "BossMan"
+        if BossMan.firstvisit:
+            NPC.firstvisit = True
+            NPC.gmintro1 = Story.GMIntroTest1
+
+            BossMan.firstvisit = False
+        else:
+            NPC.gmintro2 = Story.GMIntroTest2
+
+        NPC.option1 = "Need to get into the fights"
+        NPC.option2 = "-"
+        NPC.option3 = "-"
+        NPC.select1 = Interactions.ConfirmTheFight
         NPC.select2 = ""
         NPC.select3 = ""
         NPC.Display()
@@ -982,8 +1011,8 @@ class Enemy(Character):
 
     phystr = 10
     phydef = 10
-    magstr = 10
-    magdef = 10
+    armstr = 10
+    armdef = 10
 
 
     misschance = ""
@@ -1000,8 +1029,8 @@ class Enemy(Character):
             Enemy.hp = Enemy.hpmax
             Enemy.phystr += (Enemy.phystr /100 *10)
             Enemy.phydef += (Enemy.phydef /100 *10)
-            Enemy.magstr += (Enemy.magstr /100 *10)
-            Enemy.magdef += (Enemy.magdef /100 *10)
+            Enemy.armstr += (Enemy.armstr /100 *10)
+            Enemy.armdef += (Enemy.armdef /100 *10)
 
         elif Enemy.level == 2:
             Enemy.job = "Brute"
@@ -1009,8 +1038,8 @@ class Enemy(Character):
             Enemy.hp = Enemy.hpmax
             Enemy.phystr += (Enemy.phystr /100 *75)
             Enemy.phydef += (Enemy.phydef /100 *75)
-            Enemy.magstr += (Enemy.magstr /100 *75)
-            Enemy.magdef += (Enemy.magdef /100 *75)
+            Enemy.armstr += (Enemy.armstr /100 *75)
+            Enemy.armdef += (Enemy.armdef /100 *75)
 
         elif Enemy.level == 3:
             Enemy.job = "Elite"
@@ -1018,8 +1047,8 @@ class Enemy(Character):
             Enemy.hp = Enemy.hpmax
             Enemy.phystr += (Enemy.phystr /100 *150)
             Enemy.phydef += (Enemy.phydef /100 *150)
-            Enemy.magstr += (Enemy.magstr /100 *150)
-            Enemy.magdef += (Enemy.magdef /100 *150)
+            Enemy.armstr += (Enemy.armstr /100 *150)
+            Enemy.armdef += (Enemy.armdef /100 *150)
 
         elif Enemy.level == 4:
             Enemy.job = "Boss"
@@ -1027,10 +1056,10 @@ class Enemy(Character):
             Enemy.hp = Enemy.hpmax
             Enemy.phystr += (Enemy.phystr /100 *200)
             Enemy.phydef += (Enemy.phydef /100 *200)
-            Enemy.magstr += (Enemy.magstr /100 *200)
-            Enemy.magdef += (Enemy.magdef /100 *200)
+            Enemy.armstr += (Enemy.armstr /100 *200)
+            Enemy.armdef += (Enemy.armdef /100 *200)
         Enemy.damadj = (Enemy.phystr - Player.phydef)
-        Enemy.magadj = (Enemy.magstr - Player.magdef)
+        Enemy.magadj = (Enemy.armstr - Player.armdef)
 
     @staticmethod
     def ResetDifficulty():
@@ -1042,8 +1071,8 @@ class Enemy(Character):
         
         Enemy.phystr = 10
         Enemy.phydef = 10
-        Enemy.magstr = 10
-        Enemy.magdef = 10
+        Enemy.armstr = 10
+        Enemy.armdef = 10
 
         Enemy.damadj = ""
         Enemy.magadj = ""
@@ -1169,13 +1198,13 @@ class PowerStation (Location):
         Location.travel1 = "Visit the Medic Station"
         Location.travel2 = "Visit the makeshift Bazaar in the Station lobby"
         Location.travel3 = "Head to the Skytrain Station"
-        Location.option1 = "-"
+        Location.option1 = "Talk to the Station Boss"
         Location.option2 = "-"
         Location.option3 = "-"
         Location.selecttravel1 = MedicStation.init
         Location.selecttravel2 = Bazaar.init
         Location.selecttravel3 = Station.init
-        Location.selectoption1 = ""
+        Location.selectoption1 = BossMan.init
         Location.selectoption2 = ""
         Location.selectoption3 = ""
         Location.Display()
@@ -1217,7 +1246,7 @@ class Bazaar (Location):
         Location.travel1 = "-"
         Location.travel2 = "-"
         Location.travel3 = "-"
-        Location.option1 = "Talk to the Magetek Vendor"
+        Location.option1 = "Talk to the Armatek Vendor"
         Location.option2 = "Talk to the Physical Vendor"
         Location.option3 = "Talk to the Item Vendor"
         Location.selecttravel1 = ""
@@ -1259,6 +1288,17 @@ class StationFloor (Location):
 #####################################
 
 class Interactions:
+
+# GETTING INTO THE FIGHT ARENA
+
+    def ConfirmTheFight():
+        GMnarrate.write("The Boss Man asks")
+        NPCtalk.write("You sure you wanna go in?")
+        NPC.option1 = "Yes"
+        NPC.option2 = "No, I'll come back later."
+        NPC.select1 = StationFloor.init
+        NPC.select2 = Location.currentLocation
+        NPC.ChatDisplay()
 
 # VENDORS
 
