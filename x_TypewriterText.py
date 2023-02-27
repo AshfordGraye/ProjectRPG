@@ -4,7 +4,7 @@ import time
 
 ##### THIS CLASS IS STOLEN CODE! SHHHHH!
 class type():
-    def write(text, speed=0.01):
+    def write(text, speed=0.001):
         for char in text:
             sys.stdout.write(char)
             sys.stdout.flush()
@@ -56,7 +56,7 @@ class type():
     reset = '\033[0m'
 
 class quicktype():
-    def write(text, speed=0.005):
+    def write(text, speed=0.001):
         for char in text:
             sys.stdout.write(char)
             sys.stdout.flush()
