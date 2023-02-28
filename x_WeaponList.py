@@ -9,4 +9,5 @@ class Weapon:
 
 
 BareKnuckles = Weapon ("Bare Knuckles", "Physical", "10", "10")
+Knife = Weapon ("Knife", "Physical", "10", "0")
 PowerFist = Weapon ("PowerFist", "Armatek", "10", "10")

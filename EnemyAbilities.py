@@ -6,4 +6,3 @@ class EnemyMove:
         self.damage = damage
 
 
-Lunge = EnemyMove ("Lunge", "SinglePhysical", 10)

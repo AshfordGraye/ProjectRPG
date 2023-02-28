@@ -39,12 +39,11 @@ def InvalidChoice():
 
 def CountDown():
     timer = 5
-    while timer >= 4:
+    while timer >= 5:
         GMtalk.write(f"{timer}...")
         timer -= 1
         sleep(1)
     ClearScreen()
-
 
 
 #############################################
@@ -81,11 +80,10 @@ class Location:
         else:
             self.describe2()
             print()
-        PlayerOne.currentlocation = self.Area
-        PlayerOne.lastlocation = PlayerOne.holdlocation
+        MainCharacter.currentlocation = self.Area
+        MainCharacter.lastlocation = MainCharacter.holdlocation
         ScreenTitle.write (f"{self.name}\n")
         MenuTitle.write ("Travel Menu")
-        PlayerInput.write (f"0: Go back to where I was")
         PlayerInput.write (f"1: {self.travel1}")
         PlayerInput.write (f"2: {self.travel2}")
         PlayerInput.write (f"3: {self.travel3}")
@@ -106,23 +104,13 @@ class Location:
         selection = input()
         if selection in range (1,7):
             self.firstvisit = False
-        print()
-        if selection == "0":
-            if PlayerOne.lastlocation == "":
-                self.InvalidChoice()
-            else:
-                ClearScreen()
-                self.firstvisit = False
-                PlayerOne.holdlocation = PlayerOne.currentlocation
-
-                PlayerOne.lastlocation()   
         elif selection == "1":
             if self.selecttravel1 == "-":
                 self.InvalidChoice()
             else:
                 ClearScreen()
                 self.firstvisit = False
-                PlayerOne.holdlocation = PlayerOne.currentlocation
+                MainCharacter.holdlocation = MainCharacter.currentlocation
                 self.selecttravel1()
         elif selection == "2":
             if self.selecttravel2 == "-":
@@ -130,7 +118,7 @@ class Location:
             else:
                 ClearScreen()
                 self.firstvisit = False
-                PlayerOne.holdlocation = PlayerOne.currentlocation
+                MainCharacter.holdlocation = MainCharacter.currentlocation
                 self.selecttravel2()
         elif selection == "3":
             if self.selecttravel3 == "-":
@@ -138,7 +126,7 @@ class Location:
             else:
                 ClearScreen()
                 self.firstvisit = False
-                PlayerOne.holdlocation = PlayerOne.currentlocation
+                MainCharacter.holdlocation = MainCharacter.currentlocation
                 self.selecttravel3()
         elif selection == "4":
             if self.selectoption1 == "-":
@@ -159,17 +147,17 @@ class Location:
                 ClearScreen()
                 self.selectoption3()
         elif selection == "7":
-            Player.ShowItems()
+            MainCharacter.ShowItems()
             input ("Press Enter to go back")
             ClearScreen()
             self.Area()
         elif selection == "8":
-            Player.ShowWeapons()
+            MainCharacter.ShowWeapons()
             input ("Press Enter to go back")
             ClearScreen()
             self.Area()
         elif selection == "9":
-            Player.ShowStats()
+            MainCharacter.ShowStats()
             input ("Press Enter to go back")
             ClearScreen()
             self.Area()
@@ -209,46 +197,48 @@ class Character:
     items = []
 
     moveset = []
+    menuselect = ""
+    movechoice = ""
 
 # PLAYER CHARACTER SUBCLASS IS CONTROLLABLE BY THE PLAYER
 class Player(Character):
 
-    currentlocation = ""
-    holdlocation = ""
-    lastlocation = ""
+    def __init__(self, name):
+        self.name = name
+        if self.name == "Player":
+            self.currentlocation = ""
+            self.holdlocation = ""
+            self.lastlocation = ""
 
-    cash = 200
-    
-    job = ""
+            self.cash = 200
+            
+            self.job = ""
 
-    hpmax = 1000
-    hp = 101
-    mpmax = 100
-    mp = mpmax
+            self.hpmax = 1000
+            self.hp = 101
+            self.mpmax = 100
+            self.mp = 100
 
-    phystr = 10
-    phydef = 10
-    armstr = 10
-    armdef = 10
+            self.phystr = 10
+            self.phydef = 10
+            self.armstr = 10
+            self.armdef = 10
 
-    phyweapons = [BareKnuckles]
-    physequip = [BareKnuckles]
-    armweapons = []
-    armequip = []
-    
-    items = []
+            self.phyweapons = [Knife]
+            self.physequip = [BareKnuckles]
+            self.armweapons = []
+            self.armequip = []
+            
+            self.items = []
 
-    moves = [Attack]
-    arenawins = 0
-    arenaroundcomplete = False
+            self.moveset = [Attack]
+            self.arenawins = 0
+            self.arenaroundcomplete = False
 
-    handholding = ""
-    menuselect = ""
-    
+            self.handholding = ""
 
-    def MenuSelection():
-        GMtalk.write("What would you like to do?    \n")
-        Player.menuselect = input ()
+    def MenuSelection(self):
+        self.menuselect = int(input())
 
     def Naming():
         PlayerInput.write("Enter your name:")
@@ -409,29 +399,30 @@ Would you like to select this class, or view another?
         Player.hp = Player.hpmax
         Player.mp = Player.mpmax
 
-    def ShowStats():
+    def ShowStats(self):
         ClearScreen()
         GMnarrate.write(f'''
 Your current stats are:
-    Health:                 {Player.hp}/{Player.hpmax}
+    Health:                 {self.hp}/{self.hpmax}
 
-    Physical Strength:      {Player.phystr}
-    Physical Defense:       {Player.phydef}
-    Armatek Strength:       {Player.armstr}
-    Armatek Defense:        {Player.armdef}
+    Physical Strength:      {self.phystr}
+    Physical Defense:       {self.phydef}
+    Armatek Strength:       {self.armstr}
+    Armatek Defense:        {self.armdef}
     ''')
         
-    def ShowWeapons():
+    def ShowWeapons(self):
         ClearScreen()
         GMtalk.write ("You currently have the following equipped:")
-        if len(PlayerOne.physequip) == 0:
+        if len(self.physequip) == 0:
             GMnarrate.write("Physical Weaponry:     You do not have a weapon equipped.")
         else:
-            GMnarrate.write(f"Physical Weapon:       {PlayerOne.physequip[0]}")
-        if len(PlayerOne.armequip) == 0:
+            GMnarrate.write(f"Physical Weapon:       {self.physequip[0]}")
+        if len(self.armequip) == 0:
             GMnarrate.write("Armatek Equipment:     You do not have any Armatek equipped.")
         else:
-            GMnarrate.write(f"Armatek Equipment:     {PlayerOne.armequip[0]}")
+            GMnarrate.write(f"Armatek Equipment:     {self.armequip[0]}") 
+        self.ChangeEquipment()
 
     def ShowItems():
         ClearScreen()
@@ -444,12 +435,140 @@ Your current stats are:
                 listitem += 1
                 GMtalk.write (f"{listitem}: {elem}   \n")
 
-
     def ChangeEquipment(self):
         GMtalk.write("Would you like to change any of your current equipment?")
+        PlayerInput.write ("1: Yes \n2: No")
         self.MenuSelection()
+        if self.menuselect == 1:
+            self.SelectEquipment()
+        else:
+            GMtalk.write("okay, let's go back.")
+            PressEnterToGoBack()
+
+    def SelectEquipment(self):
+        listorder = 0
+        GMtalk.write ("please select an equipment type to change")
+        PlayerInput.write("1:Physical Equipment \n2: Armatek")
+        self.MenuSelection()
+        if self.menuselect == 1:
+            GMtalk.write("Select a weapon to equip.")
+            for elem in self.phyweapons:
+                listorder += 1
+                GMtalk.write(f"{listorder}: {elem}")
+                self.MenuSelection()
+                removeditem = self.physequip.pop (0)
+                selecteditem = self.phyweapons.pop (self.menuselect-1)
+                self.phyweapons.append (removeditem)
+                self.physequip.append (selecteditem)
+                
+                PressEnterToGoBack()
+        elif self.menuselect == 2:
+            GMtalk.write("Select a weapon to equip.")
+            for elem in self.armweapons:
+                listorder += 1
+                GMtalk.write(f"{listorder}: {elem}")
+                self.MenuSelection()
+                self.armweapons.remove [0]
+                self.armweapons.append [self.menuselect-1]
+                PressEnterToGoBack()
+
+
+
+
+
+    def PlayerTurnDisplay(self):
+        MenuTitle.write("Your Turn: \n")
+        for elem in BattleSystem.enemies:
+            if elem.hp > (elem.hpmax /100 *70):
+                GMnarrate.write("The foe stands strong! Don't give up!   \n")
+            elif elem.hp > (elem.hpmax /100 *30):
+                GMnarrate.write("Your foe grows weaker! Keep it up!  \n")
+            elif elem.hp <= (elem.hpmax /100 *30):
+                GMnarrate.write("Your enemy grows weak! Almost there!    \n")
+
+        MenuTitle.write (f"{self.name}:")
+        if self.hp > (self.hpmax /100 * 25):
+            print (f' {type.fg_orange}HP:{type.reset}   {type.fg_green}{self.hp}/{self.hpmax}{type.reset}')
+        elif self.hp <= (self.hpmax /100 * 25):
+            print (f' {type.fg_orange}HP:{type.reset}   {type.fg_red}{self.hp}{type.reset}/{type.fg_green}{self.hpmax}{type.reset}')
         
+        if self.mp > (self.mpmax /100 * 25):
+            print (f' {type.fg_orange}MP:{type.reset}   {type.fg_green}{Player.mp}/{Player.mp}{type.reset}')
+        elif self.mp <= (self.mpmax /100 *25):
+            print (f' {type.fg_orange}MP:{type.reset}   {type.fg_red}{self.mp}{type.reset}/{type.fg_green}{self.mpmax}{type.reset}\n')
+        print()
+
+    def PlayerAbilitySelect(self):
+        listmoves = 0 #to number the ability list dynamically 
+        MenuTitle.write ("Select an option:")
         
+        #this bit swaps out the standard attack move in move slot 0 with LimtBreak when health is below 10%
+        if self.hp <= (self.hpmax/100*10):
+            self.moveset [0] = LimitBreak
+        else:
+            self.moveset [0] = Attack
+        
+        # list the choices
+        for elem in self.moveset:
+            listmoves += 1
+            PlayerInput.write (f" {listmoves}: {elem} \n")
+        #get player selection
+        self.MenuSelection()
+
+        #check to see if selection is valid, then move to select the enemy 
+        if self.menuselect in [str(n) for n in range (1, listmoves+1)]:
+            self.PlayerSelectEnemy()
+        else:
+            InvalidChoice()
+            BattleSystem.PlayerTurn()
+
+#get selectin!
+    def PlayerSelectEnemy(self):
+        listofenemies = 0
+        #autoselect if there's only one enemy cos duh...
+        if len (BattleSystem.enemies) == 1:
+            self.selectedenemy = BattleSystem.enemies[0]
+            self.PlayerMoveConfirmed()
+        #if more than one, list and select in the same way as selecting an ability. Neat!
+        else:
+            GMtalk.write(f"Select an enemy to attack    \n")
+            for elem in BattleSystem.enemies:
+                listofenemies += 1
+                PlayerInput.write (f" {listofenemies}: {elem.name}")
+            self.playerenemychoice = int(input())
+            if self.playerenemychoice in range (1, listofenemies+1):
+                self.selectedenemy = BattleSystem.enemies[self.playerenemychoice-1]
+                self.PlayerMoveConfirmed()
+            else:
+                GMtalk.write ("Invalid Input")
+                self.PlayerSelectEnemy()
+
+    def PlayerMoveConfirmed(self):
+            self.menuselect = int(self.menuselect)
+            selectedmove = self.moveset[self.menuselect-1]
+            print (selectedmove)
+            PressEnterToContinue()
+            #accuracycheck checks against the misschance of the selected move.
+            accuracycheck = random.randint (1,100)
+            if accuracycheck in range (selectedmove.chancetomiss): # so if the accuracycheck falls within the misschance of the selected move, it misses.
+                GMnarrate.write  ("You missed!  \n")
+            else: #otherwise, it hits and so determines how damage or buffs work here base on the selected move effect value
+                if selectedmove.effect == "Physical":
+                    damage = (self.phystr + selectedmove.damage - self.selectedenemy.phydef)
+                    self.selectedenemy.hp = (BattleSystem.selectedenemy.hp - damage)
+                    GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
+                    BattleSystem.CheckEnemyStatus()
+                elif selectedmove.effect == "Legendary":
+                    if self.hp <= ((self.hpmax / 100) * 10):
+                        damage = (self.phystr * selectedmove.damage)
+                        self.selectedenemy.hp = (self.selectedenemy.hp - damage)
+                        GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
+                        BattleSystem.CheckEnemyStatus()
+                    else:
+                        GMnarrate.write ("You can't use your Limit Break ability unless your health is below 10%!")
+                        PressEnterToGoBack()
+                        BattleSystem.PlayerTurn()
+
 # NPC CHARACTER SUBCLASS CAN BE INTERACTED WITH BY THE PLAYER TO TRIGGER CONVERSATIONS AND EVENTS
 class NPC(Character):
     
@@ -477,13 +596,12 @@ class NPC(Character):
         self.TalkSelection()
 
     def TalkSelection(self):
-        Player.MenuSelection()
-        print (Player.menuselect)
+        Player.MenuSelection(self)
         if Player.menuselect in [str(n) for n in range (1,4)]:
             self.firstmeet = False
         if Player.menuselect == "0":
             ClearScreen()
-            PlayerOne.currentlocation()
+            Player.currentlocation()
         elif Player.menuselect == "1":
             if self.talkselect1 == "":
                 NPC.InvalidChoice()
@@ -511,7 +629,7 @@ class NPC(Character):
         self.Talk()
 
 # VENDORS ARE AN NPC SUBCLASS TO DIFFERENTIATE BETWEEN CONVERSATIONS AND COMMERCE
-class Vendor (NPC):
+class Vendor (NPC): 
 
     def SaleDisplay():
         ScreenTitle.write (f"{NPC.name}    \n")
@@ -581,28 +699,25 @@ class Enemy(Character):
             self.phydef = 5
             self.armstr = 5
             self.armdef = 5
-            self.moves = [Lunge]
-            self.movechoice = ""
+            self.moveset = [Lunge]
 
     def MoveSelect(self):
         misschance = random.randint (1,100)
-        movechoice = random.randint (1,10)
-        if self.level == 1:
-            if movechoice in range (1,5) and misschance in range (1,90):
-                self.moveselection = Lunge
-                Enemy.DamageCalculation(self)
-            elif movechoice in range (5,11) and misschance in range (1,90):
-                self.moveselection = Lunge
-                Enemy.DamageCalculation(self)
-            else:
-                GMnarrate.write (f"The {self.name} tried to attack, but missed!  \n")
+        self.movechoice = self.moveset [(random.randint (1,len(self.moveset)))-1]
+        print (self.movechoice)
+        PressEnterToContinue()
+        if misschance in range (1,self.movechoice.chancetomiss+1):
+            GMnarrate.write (f"The {self.name} tried to attack, but missed!  \n")
+        else:
+            Enemy.DamageCalculation(self)
 
 
     def DamageCalculation(self):
-        if self.moveselection.effect == "SinglePhysical":
-            totaldamage = (self.moveselection.damage + self.phystr - Player.phydef)
-            Player.hp -= totaldamage
-        GMnarrate.write (f"{self.name} used {self.moveselection.name} for {totaldamage} damage \n")
+        target = BattleSystem.party[random.randint(1,len(BattleSystem.party))-1]
+        if self.movechoice.effect == "Physical":
+            totaldamage = (self.movechoice.damage + self.phystr - Player.phydef)
+            target.hp -= totaldamage
+        GMnarrate.write (f"{self.name} used {self.movechoice.name} for {totaldamage} damage \n")
 
 # VENDORS ARE AN NPC SUBCLASS TO DIFFERENTIATE BETWEEN CONVERSATIONS AND COMMERCE
 
@@ -623,7 +738,7 @@ PowerStationBazaar = Location("PowerStation - Bazaar")
 PowerStationArena = Location("Power Station - Arena")
 
 # PLAYABLE CHARACTERS
-PlayerOne = Player ("Ash")
+MainCharacter = Player ("Player")
 
 # NPC CHARACTERS
 TutorialCharacter = NPC("Tutorial NPC")
@@ -654,6 +769,7 @@ class BattleSystem:
     #
     battlestart = True
     #enemy list gets populated at battle start and selectedenemy is populated when a player selectes an enemy to attack
+    party = [MainCharacter]
     enemies = []
     selectedenemy = ""
 
@@ -678,95 +794,96 @@ class BattleSystem:
     def PlayerTurn():
         for elem in BattleSystem.enemies:
             print (elem.job, elem.hp)
-        BattleSystem.PlayerTurnDisplay()
-        BattleSystem.PlayerAbilitySelect()
+        for elem in BattleSystem.party:
+            elem.PlayerTurnDisplay()
+            elem.PlayerAbilitySelect()
         # BattleSystem.CheckForVictory()
         Player.playerturn = not Player.playerturn
         PressEnterToContinue()
 
-# displays player stats on screen during player turn 
-    def PlayerTurnDisplay():
-        MenuTitle.write("Your Turn: \n")
-        for elem in BattleSystem.enemies:
-            if elem.hp > (elem.hpmax /100 *70):
-                GMnarrate.write("The foe stands strong! Don't give up!   \n")
-            elif elem.hp > (elem.hpmax /100 *30):
-                GMnarrate.write("Your foe grows weaker! Keep it up!  \n")
-            elif elem.hp <= (elem.hpmax /100 *30):
-                GMnarrate.write("Your enemy grows weak! Almost there!    \n")
+# # displays player stats on screen during player turn 
+#     def PlayerTurnDisplay():
+#         MenuTitle.write("Your Turn: \n")
+#         for elem in BattleSystem.enemies:
+#             if elem.hp > (elem.hpmax /100 *70):
+#                 GMnarrate.write("The foe stands strong! Don't give up!   \n")
+#             elif elem.hp > (elem.hpmax /100 *30):
+#                 GMnarrate.write("Your foe grows weaker! Keep it up!  \n")
+#             elif elem.hp <= (elem.hpmax /100 *30):
+#                 GMnarrate.write("Your enemy grows weak! Almost there!    \n")
 
-        MenuTitle.write (f"{PlayerOne.name}:")
-        if PlayerOne.hp > (PlayerOne.hpmax /100 * 25):
-            print (f' {type.fg_orange}HP:{type.reset}   {type.fg_green}{PlayerOne.hp}/{PlayerOne.hpmax}{type.reset}')
-        elif PlayerOne.hp <= (PlayerOne.hpmax /100 * 25):
-            print (f' {type.fg_orange}HP:{type.reset}   {type.fg_red}{PlayerOne.hp}{type.reset}/{type.fg_green}{PlayerOne.hpmax}{type.reset}')
+#         MenuTitle.write (f"{PlayerOne.name}:")
+#         if PlayerOne.hp > (PlayerOne.hpmax /100 * 25):
+#             print (f' {type.fg_orange}HP:{type.reset}   {type.fg_green}{PlayerOne.hp}/{PlayerOne.hpmax}{type.reset}')
+#         elif PlayerOne.hp <= (PlayerOne.hpmax /100 * 25):
+#             print (f' {type.fg_orange}HP:{type.reset}   {type.fg_red}{PlayerOne.hp}{type.reset}/{type.fg_green}{PlayerOne.hpmax}{type.reset}')
         
-        if PlayerOne.mp > (PlayerOne.mpmax /100 * 25):
-            print (f' {type.fg_orange}MP:{type.reset}   {type.fg_green}{Player.mp}/{Player.mp}{type.reset}')
-        elif PlayerOne.mp <= (PlayerOne.mpmax /100 *25):
-            print (f' {type.fg_orange}MP:{type.reset}   {type.fg_red}{PlayerOne.mp}{type.reset}/{type.fg_green}{PlayerOne.mpmax}{type.reset}\n')
-        print()
+#         if PlayerOne.mp > (PlayerOne.mpmax /100 * 25):
+#             print (f' {type.fg_orange}MP:{type.reset}   {type.fg_green}{Player.mp}/{Player.mp}{type.reset}')
+#         elif PlayerOne.mp <= (PlayerOne.mpmax /100 *25):
+#             print (f' {type.fg_orange}MP:{type.reset}   {type.fg_red}{PlayerOne.mp}{type.reset}/{type.fg_green}{PlayerOne.mpmax}{type.reset}\n')
+#         print()
         
 
-        # KEEP THIS TO INSERT AS SCAN ABILITY LATER:
+#         # KEEP THIS TO INSERT AS SCAN ABILITY LATER:
 
-        # MenuTitle.write (f"{Enemy.job} Status")
-        # if (Enemy.hp > Enemy.hpmax/100 *25):
-        #     print (f' {type.fg_orange}HP:{type.reset}   {type.fg_green}{Enemy.hp}/{Enemy.hpmax}{type.reset}')
-        # if (Enemy.hp <= Enemy.hpmax /100 *25):
-        #     print (f' {type.fg_orange}HP:{type.reset}   {type.fg_red}{Enemy.hp}{type.reset}/{type.fg_orange}{Enemy.hpmax}{type.reset}')
-        # print()
+#         # MenuTitle.write (f"{Enemy.job} Status")
+#         # if (Enemy.hp > Enemy.hpmax/100 *25):
+#         #     print (f' {type.fg_orange}HP:{type.reset}   {type.fg_green}{Enemy.hp}/{Enemy.hpmax}{type.reset}')
+#         # if (Enemy.hp <= Enemy.hpmax /100 *25):
+#         #     print (f' {type.fg_orange}HP:{type.reset}   {type.fg_red}{Enemy.hp}{type.reset}/{type.fg_orange}{Enemy.hpmax}{type.reset}')
+#         # print()
 
-# how player selects abilities
-    def PlayerAbilitySelect():
-        listmoves = 0 #to number the ability list dynamically 
-        MenuTitle.write ("Select an option:")
+# # how player selects abilities
+#     def PlayerAbilitySelect():
+#         listmoves = 0 #to number the ability list dynamically 
+#         MenuTitle.write ("Select an option:")
         
-        #this bit swaps out the standard attack move in move slot 0 with LimtBreak when health is below 10%
-        if Player.hp <= (Player.hpmax/100*10):
-            Player.moves [0] = LimitBreak
-        else:
-            Player.moves [0] = Attack
+#         #this bit swaps out the standard attack move in move slot 0 with LimtBreak when health is below 10%
+#         if Player.hp <= (Player.hpmax/100*10):
+#             Player.moves [0] = LimitBreak
+#         else:
+#             Player.moves [0] = Attack
         
-        # list the choices
-        for elem in Player.moves:
-            listmoves += 1
-            PlayerInput.write (f" {listmoves}: {elem} \n")
-        #get player selection - try statement takes care of blank inputs. 
+#         # list the choices
+#         for elem in Player.moves:
+#             listmoves += 1
+#             PlayerInput.write (f" {listmoves}: {elem} \n")
+#         #get player selection - try statement takes care of blank inputs. 
         
-        BattleSystem.playermovechoice = input()
-        #check to see if selection is valid, then move to select the enemy 
-        if BattleSystem.playermovechoice in [str(n) for n in range (1, listmoves+1)]:
-            BattleSystem.PlayerSelectEnemy()
-        else:
-            InvalidChoice()
-            BattleSystem.PlayerTurn()
+#         BattleSystem.playermovechoice = input()
+#         #check to see if selection is valid, then move to select the enemy 
+#         if BattleSystem.playermovechoice in [str(n) for n in range (1, listmoves+1)]:
+#             BattleSystem.PlayerSelectEnemy()
+#         else:
+#             InvalidChoice()
+#             BattleSystem.PlayerTurn()
 
 #get selectin!
-    def PlayerSelectEnemy():
-        listofenemies = 0
-        #autoselect if there's only one enemy cos duh...
-        if len (BattleSystem.enemies) == 1:
-            BattleSystem.selectedenemy = BattleSystem.enemies[0]
-            BattleSystem.PlayerMoveConfirmed()
-        #if more than one, list and select in the same way as selecting an ability. Neat!
-        else:
-            GMtalk.write(f"Select an enemy to attack    \n")
-            for elem in BattleSystem.enemies:
-                listofenemies += 1
-                PlayerInput.write (f" {listofenemies}: {elem.name}")
-            BattleSystem.playerenemychoice = int(input())
-            if BattleSystem.playerenemychoice in range (1, listofenemies+1):
-                BattleSystem.selectedenemy = BattleSystem.enemies[BattleSystem.playerenemychoice-1]
-                BattleSystem.PlayerMoveConfirmed()
-            else:
-                GMtalk.write ("Invalid Input")
-                BattleSystem.PlayerSelectEnemy()
+    # def PlayerSelectEnemy():
+    #     listofenemies = 0
+    #     #autoselect if there's only one enemy cos duh...
+    #     if len (BattleSystem.enemies) == 1:
+    #         BattleSystem.selectedenemy = BattleSystem.enemies[0]
+    #         BattleSystem.PlayerMoveConfirmed()
+    #     #if more than one, list and select in the same way as selecting an ability. Neat!
+    #     else:
+    #         GMtalk.write(f"Select an enemy to attack    \n")
+    #         for elem in BattleSystem.enemies:
+    #             listofenemies += 1
+    #             PlayerInput.write (f" {listofenemies}: {elem.name}")
+    #         BattleSystem.playerenemychoice = int(input())
+    #         if BattleSystem.playerenemychoice in range (1, listofenemies+1):
+    #             BattleSystem.selectedenemy = BattleSystem.enemies[BattleSystem.playerenemychoice-1]
+    #             BattleSystem.PlayerMoveConfirmed()
+    #         else:
+    #             GMtalk.write ("Invalid Input")
+    #             BattleSystem.PlayerSelectEnemy()
 
 #now enemy is selected, move is confirmed. 
     def PlayerMoveConfirmed():
             BattleSystem.playermovechoice = int(BattleSystem.playermovechoice)
-            selectedmove = Player.moves[BattleSystem.playermovechoice-1]
+            selectedmove = Player.moveset[BattleSystem.playermovechoice-1]
             #accuracycheck checks against the misschance of the selected move.
             accuracycheck = random.randint (1,100)
             if accuracycheck in range (selectedmove.misschance): # so if the accuracycheck falls within the misschance of the selected move, it misses.
@@ -842,7 +959,7 @@ class Battles:
         if Player.arenaroundcomplete:
             GMnarrate.write ("There's nobody for you to fight right now")
             PressEnterToContinue()
-            PlayerOne.currentlocation()
+            MainCharacter.currentlocation()
         else:
             if Player.arenawins == 0:
                 BattleSystem.enemies = [Vagrant]
@@ -854,7 +971,7 @@ class Battles:
         if Player.arenawins == 1:
             print ("FIRST MATCH COMPLETE")
             PressEnterToContinue()
-            PlayerOne.currentlocation()
+            MainCharacter.currentlocation()
 
 ###################################
 ###################################
@@ -902,7 +1019,7 @@ class WorldBuilding:
         TutorialWorld.selectoption1 = TutorialCharacter.Talk
         TutorialWorld.selectoption2 = "-"
         TutorialWorld.selectoption3 = "-"
-        if PlayerOne.currentlocation == TutorialWorld.Area:
+        if MainCharacter.currentlocation == TutorialWorld.Area:
             if TutorialCharacter.firstmeet:
                 TutorialWorld.describe2 = LocationIntroduction.TutorialWorld1
                 TutorialWorld.travel1 = "Go to another location"
@@ -943,7 +1060,7 @@ class WorldBuilding:
 
         PowerStationGrounds.describe1 = LocationIntroduction.PowerStationGrounds1
         PowerStationGrounds.describe2 = LocationIntroduction.PowerStationGrounds2
-        PowerStationGrounds.travel1 = "Visit the Area"
+        PowerStationGrounds.travel1 = "Visit the Medic"
         PowerStationGrounds.travel2 = "Visit the Bazaar"
         PowerStationGrounds.travel3 = "Head to the Skytrain Dock"
         PowerStationGrounds.option1 = "Talk to the Station Boss"
@@ -961,13 +1078,13 @@ class WorldBuilding:
         PowerStationMedicArea.describe2 = LocationIntroduction.PowerStationMedicArea2
         PowerStationMedicArea.travel1 = "-"
         PowerStationMedicArea.travel2 = "-"
-        PowerStationMedicArea.travel3 = "-"
+        PowerStationMedicArea.travel3 = "Back to the Power Station Entrance"
         PowerStationMedicArea.option1 = "Talk to the Medic"
         PowerStationMedicArea.option2 = "Approach the Field Droid"
         PowerStationMedicArea.option3 = "-"
         PowerStationMedicArea.selecttravel1 = "-"
         PowerStationMedicArea.selecttravel2 = "-"
-        PowerStationMedicArea.selecttravel3 = "-"
+        PowerStationMedicArea.selecttravel3 = PowerStationGrounds.Area
         PowerStationMedicArea.selectoption1 = "-"
         PowerStationMedicArea.selectoption2 = "-"
         PowerStationMedicArea.selectoption3 = "-"
@@ -1116,14 +1233,14 @@ class StoryEvent:
     #runs at the start of the game to kick everything off
     def StartTheGame():
         MenuTitle.write("Project RPG        \n")
-        GMtalk.write(f"Welcome, {PlayerOne.name} - to Project RPG   \nI am the Game Master of this world and will be your guide on your adventure.  \n")
+        GMtalk.write(f"Welcome, {MainCharacter.name} - to Project RPG   \nI am the Game Master of this world and will be your guide on your adventure.  \n")
         GMtalk.write("If you have never played the game before, I can show you tutorial segments throughout the game to assist you. \nOr, if you'd prefer, I can disable the tutorial elements for you. \n")
         PlayerInput.write ("Please select your preference:  \n1: Tutorials on  \n2: Tutorials off   \n")
         answer = input ()
         print()
         if answer == "1":
             Player.handholding = True
-            GMtalk.write (f"No worries - We'll start with a quick overview.  \nFrom time to time I'll appear whenever new information about how the game becomes needed.\nOkay {PlayerOne.name} - Let's start with the basics.   \n\n")
+            GMtalk.write (f"No worries - We'll start with a quick overview.  \nFrom time to time I'll appear whenever new information about how the game becomes needed.\nOkay {MainCharacter.name} - Let's start with the basics.   \n\n")
             PressEnterToContinue()
             StoryEvent.IntroductionTutorial()
         elif answer == "2":
@@ -1161,8 +1278,8 @@ class StoryEvent:
 
     def Introduction_AboardTheSkytrain():
         GMnarrate.write("Story beat goes here. This is where our player character meets a stranger who gifts them a healing salve and a power glove armatek weapon")
-        PlayerOne.armweapons.append (PowerFist)
-        print (PlayerOne.armweapons)
+        MainCharacter.armweapons.append (PowerFist)
+        print (MainCharacter.armweapons)
         PressEnterToContinue()
         Train.Area()
 
@@ -1235,11 +1352,11 @@ class Interactions:
         PowerStationBoss.talkoption1 = "Yes"
         PowerStationBoss.talkoption2 = "No, I'll come back later."
         PowerStationBoss.talkselect1 = Interactions.PowerStationBossArenaConfirmed
-        PowerStationBoss.talkselect2 = PlayerOne.currentlocation
+        PowerStationBoss.talkselect2 = MainCharacter.currentlocation
         PowerStationBoss.Talk()
     
     def PowerStationBossArenaConfirmed():
-        PlayerOne.holdlocation = PlayerOne.currentlocation
+        MainCharacter.holdlocation = MainCharacter.currentlocation
         PowerStationArena.Area()
 
     def VendorGreeting():
