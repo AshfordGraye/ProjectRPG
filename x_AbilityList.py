@@ -8,10 +8,21 @@ class Ability:
         self.chancetomiss = chancetomiss
 
     def __repr__(self):
-        return (f'''{self.name} \n   AP: {self.cost}''')
+        if self.rounds > 1:
+            return (f'''{self.name} - can hit {self.rounds} times.\n   AP: {self.cost}''')
+        else:
+            return (f'''{self.name} \n   AP: {self.cost}''')
+
+ListItems = Ability("Items","Items",0,0,1,0)
 
 Attack = Ability ("Attack", "Physical", 20, 0, 1, 10)
 
 LimitBreak = Ability ("Limit Break", "Legendary", 10, 0, 1, 0)
+
+StrongFist = Ability ("Strong Fist", "Physical", 30, 5, 1, 5)
+
+KnifeCuts = Ability ("Knife Cuts", "Physical", 25, 10, 2, 30)
+
+
 
 Lunge = Ability ("Lunge", "Physical", 10, 0, 1, 10)
