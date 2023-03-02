@@ -2,9 +2,8 @@ import collections
 import random
 from os import system, name
 from time import sleep
-from x_TypewriterText import *
-from x_ItemList import *
-from x_WeaponList import *
+from x_Typewriter_Text import *
+from x_Items_And_Weapons import *
 from EnemyAbilities import *
 
 ############################
