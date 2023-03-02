@@ -7,8 +7,6 @@ from x_ItemList import *
 from x_WeaponList import *
 from EnemyAbilities import *
 
-
-
 ############################
 ##### GLOBAL FUNCTIONS #####
 ############################
@@ -45,9 +43,8 @@ def CountDown():
         sleep(1)
     ClearScreen()
 
-
 #############################################
-##### SECTION 1 - OBJECT CLASS CREATION #####
+##### SECTION - OBJECT CLASS CREATION #####
 #############################################
 
 # LOCATION CLASS PROVIDES VARIABLES AND FUNCTIONS FOR LOCATIONS TO DISPLAY INFORMATION CONSISTENTLY
@@ -199,6 +196,11 @@ class Character:
 
     selectedtarget = ""
 
+    def MenuSelection(self):
+        print()
+        self.menuselect = (input())
+        print()
+
 # PLAYER CHARACTER SUBCLASS IS CONTROLLABLE BY THE PLAYER
 class Player(Character):
 
@@ -240,10 +242,6 @@ class Player(Character):
 
             self.handholding = ""
 
-    def MenuSelection(self):
-        print()
-        self.menuselect = (input())
-        print()
 
     def Naming(self):
         PlayerInput.write("Enter your name:")
@@ -400,7 +398,7 @@ Would you like to select this class, or view another?
             else:
                 GMtalk.write ("Please enter the number of your selection")
 
-    # FUNCTIONS BELOW ARE FOR VIEWING AND CHANGING PLAYER ITEMS / EQUIPMENT
+    # NON COMBAT EQUIPMENT FUNCTIONS
 
     def ShowStats(self):
         ClearScreen()
@@ -414,15 +412,6 @@ Your current stats are:
     Armatek Defense:        {self.armdef}
     ''')
         
-    def ShowItems(self):
-        ClearScreen()
-        if len (self.items) == 0:
-            GMnarrate.write("You do not have anything in your inventory right now.  \n")
-        else:
-            GMnarrate.write ("You currently have the following in your inventory:   \n")
-            for count in self.items:
-                GMtalk.write (f"{self.items[count]} x {count}   \n")
-
     def ShowWeapons(self):
         ClearScreen()
         MenuTitle.write ("Current Equipment:   \n")
@@ -485,7 +474,7 @@ Your current stats are:
                 self.armweapons.append (removeditem)
                 self.armequip.append (selecteditem)
 
-    # COMBAT FUNCTIONS
+    # COMBAT ABILITY AND ITEM FUNCTIONS - ITEM FUNCTIONS ARE DESIGNED TO WORK INSIDE AND OUTSIDE OF COMBAT
 
     def PlayerTurnDisplay(self):
         MenuTitle.write("Your Turn: \n")
@@ -679,7 +668,6 @@ Your current stats are:
             del self.items[self.itemselected]
         BattleSystem.CheckEnemyStatus()
 
-
 # NPC CHARACTER SUBCLASS CAN BE INTERACTED WITH BY THE PLAYER TO TRIGGER CONVERSATIONS AND EVENTS
 class NPC(Character):
     
@@ -707,25 +695,25 @@ class NPC(Character):
         self.TalkSelection()
 
     def TalkSelection(self):
-        Player.MenuSelection(self)
-        if Player.menuselect in [str(n) for n in range (1,4)]:
+        self.MenuSelection()
+        if self.menuselect in [str(n) for n in range (1,4)]:
             self.firstmeet = False
-        if Player.menuselect == "0":
+        if self.menuselect == "0":
             ClearScreen()
             Player.currentlocation()
-        elif Player.menuselect == "1":
+        elif self.menuselect == "1":
             if self.talkselect1 == "":
                 NPC.InvalidChoice()
             else:
                 ClearScreen()
                 self.talkselect1()
-        elif Player.menuselect == "2":
+        elif self.menuselect == "2":
             if self.talkselect2 == "":
                 NPC.InvalidChoice()
             else:
                 ClearScreen()
                 self.talkselect2()
-        elif Player.menuselect == "3":
+        elif self.menuselect == "3":
             if self.talkselect3 == "":
                 NPC.InvalidChoice()
             else:
@@ -830,7 +818,6 @@ class Enemy(Character):
 
 # VENDORS ARE AN NPC SUBCLASS TO DIFFERENTIATE BETWEEN CONVERSATIONS AND COMMERCE
 
-
 #######################################
 ###### SECTION - OBJECT CREATION ######
 #######################################
@@ -860,11 +847,9 @@ VendorItem = Vendor("Item Vendor")
 VendorPhysical = Vendor ("Physical Equipment Vendor")
 VendorArmatek = Vendor ("Armatek Equipment Vendor")
 
-
 # ENEMY CHARACTERS
 Vagrant = Enemy ("Vagrant", 1)
 Vagrant2 = Enemy ("Vagrant 2", 1)
-
 
 ############################
 ############################
@@ -872,7 +857,7 @@ Vagrant2 = Enemy ("Vagrant 2", 1)
 ############################
 ############################
 
-# BATTLE SYSTEM ITSELF DOES ALL THE LEGWORK 
+# BATTLE SYSTEM INITIATES TURN BASED COMBAT USING THE PLAYER AND ENEMY FUNCTIONS
 class BattleSystem:
     
     #
@@ -981,7 +966,7 @@ class BattleSystem:
             BattleSystem.EnemyTurn()
             BattleSystem.Fight()
 
-# BATTLES CLASS LOADS IN ENEMIES FOR DIFFERENT KINDS OF FIGHTS, ALSO FACILITATES THE ARENA ROUNDS FUNCTIONALITY ;)
+# BATTLES CLASS LOADS IN ENEMIES FOR DIFFERENT KINDS OF FIGHTS, ALSO FACILITATES THE ARENA ROUNDS FUNCTIONALITY :)
 class Battles:
 
 # FOR AT THE BEGINNING AND END OF ARENA BATTLES
@@ -1213,7 +1198,7 @@ class WorldBuilding:
 ############################
 ############################
 
-# GM_NARRATE CLASSES ARE FOR ORGANISATION OF GAME MASTER NARRATION FOR DIFFERENT OBJECTS - STORY, LOCATIONS, CHARACTER INTRODUCTIONS, ETC
+# LOCATION INTRODUCTION FUNCTIONS ARE LOADED BY INDIVIDUAL AREAS WHEN THEY LOAD. 
 class LocationIntroduction:
     
     # def xxxxx 1():
@@ -1259,7 +1244,7 @@ class LocationIntroduction:
     def PowerStationArena2():
         GMnarrate.write ("POWER STATION ARENA PLACEHOLDER DESCRIPTION 2")
 
-
+# STORY EVENT FUNCTIONS RUN AT KEY POINTS IN THE GAME. THEY CAN BE CALLED WHENEVER NEEDED, USUALLY BY THE WORLDBUILDING FUNCTION WHEN CERTAIN PARAMTERS ARE MET 
 class StoryEvent:
     
     #runs at the start of the game to kick everything off
@@ -1315,7 +1300,7 @@ class StoryEvent:
         PressEnterToContinue()
         Train.Area()
 
-
+# SELF EXPLANATORY
 class BoilerplateSpeech:
     def GMLocationTest1():
         GMnarrate.write ("First Location Test \n")
@@ -1341,12 +1326,8 @@ class BoilerplateSpeech:
     def StoryTest2():
         GMnarrate.write ("STORY EXAMPLE 2 \n")
 
-
-
-# NPC INTERACTIONS ARE FOR WHEN YOU'RE HAVING A CHAT.
+# NPC INTERACTIONS ARE LOADED BY INDIVIDUAL NPCS WHEN YOU'RE HAVING A CHAT. EACH CHARACTER GETS ITS OWN GREETING FUNCTION AND THEN EXTRAS IF NECESSARY TO KEEP A CONVERSATION GOING.
 class Interactions:
-
-
 
     def TutorialCharacterGreet1():
         GMtalk.write("When talking to NPCs, You'll see an introduction by me and a greeting from the NPC. Selecting conversation options is the same as before.\n")
