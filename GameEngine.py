@@ -171,7 +171,7 @@ class Character:
 
     job = ""
 
-    cash = ""
+    credits = ""
 
     hpmax = ""
     hp = ""
@@ -210,7 +210,7 @@ class Player(Character):
             self.lastlocation = ""
             self.combatlocation = False
 
-            self.cash = 200
+            self.credits = 200
             
             self.job = ""
 
@@ -760,7 +760,7 @@ class Vendor (NPC):
             for count in self.items:
                 listitem += 1
                 GMtalk.write (f"{listitem}: {self.items[count]} x {[count]}   \n")
-        GMtalk.write (f"Your currently have {Player.cash} credits on you. Enter the number for what you'd like to buy and see it's price. If you're not interested, enter 0.")
+        GMtalk.write (f"Your currently have {MainCharacter.credits} credits on you. Enter the number for what you'd like to buy and see it's price. If you're not interested, enter 0.")
         selection = int(input())
         if selection == 0:
             ClearScreen()
@@ -777,11 +777,11 @@ class Vendor (NPC):
             PlayerInput.write ("1: I'm sure")
             PlayerInput.write ("2: Let me look again")
             confirmsale = int(input())
-            if Player.cash >= selecteditem.cost:
+            if MainCharacter.credits >= selecteditem.cost:
                 if confirmsale == 1:
                     boughtitem = itemsforsale(selecteditem)
-                    Player.cash -= boughtitem.cost
-                    GMnarrate.write (f"You acquired a {boughtitem.name}! You now have {Player.cash} credits left.")
+                    MainCharacter.credits -= boughtitem.cost
+                    GMnarrate.write (f"You acquired a {boughtitem.name}! You now have {MainCharacter.credits} credits left.")
                     MainCharacter.items[boughtitem] += 1
                     PressEnterToGoBack()
                     ClearScreen()
