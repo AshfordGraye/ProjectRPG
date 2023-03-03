@@ -4,7 +4,6 @@ from os import system, name
 from time import sleep
 from x_Typewriter_Text import *
 from x_Items_And_Weapons import *
-from EnemyAbilities import *
 
 ############################
 ##### GLOBAL FUNCTIONS #####
@@ -69,6 +68,8 @@ class Location:
 
     # LOADS WHEN A LOCATION IS TRAVELLED TO - DISPLAYS LOCATION INFO AND SORTS TRAVEL BACK TO PREVIOUS  
     def Area (self):
+        MainCharacter.currentlocation = self.Area
+        MainCharacter.lastlocation = MainCharacter.holdlocation
         WorldBuilding.LocationUpdate()
         if self.firstvisit:
             self.describe1()
@@ -76,8 +77,6 @@ class Location:
         else:
             self.describe2()
             print()
-        MainCharacter.currentlocation = self.Area
-        MainCharacter.lastlocation = MainCharacter.holdlocation
         ScreenTitle.write (f"{self.name}\n")
         MenuTitle.write ("Travel Menu")
         PlayerInput.write (f"1: {self.travel1}")
@@ -167,13 +166,15 @@ class Character:
     
     def __init__(self, name):
         self.name = name
+        if self.name != "":
+            self.items = collections.Counter()
 
     job = ""
 
     cash = ""
 
     hpmax = ""
-    hp = hpmax
+    hp = ""
     apmax = ""
     mp = apmax
 
@@ -186,8 +187,6 @@ class Character:
     physequip = []
     armweapons = []
     armequip = []
-    
-    items = collections.Counter()
 
     moveset = []
     menuselect = ""
@@ -225,10 +224,12 @@ class Player(Character):
             self.armstr = 10
             self.armdef = 10
 
-            self.phyweapons = [Knife]
+            self.phyweapons = []
             self.physequip = [BareKnuckles]
             self.armweapons = []
             self.armequip = []
+
+            self.items = collections.Counter()
             
             self.items[Potion] += 2
             self.items[HiPotion] += 2
@@ -464,15 +465,20 @@ Your current stats are:
                 listorder += 1
                 PlayerInput.write(f"{listorder}: {elem}")
             self.MenuSelection()
-            if self.armequip == []:
+            if len (self.armequip) == 0:
+                self.menuselect = int(self.menuselect)
                 selecteditem = self.armweapons.pop (self.menuselect-1)
+                print (selecteditem.name)
                 self.armequip.append (selecteditem)
+                self.moveset[2] = self.armequip[0].special
+                GMtalk.write (f"You now have the {self.armequip[0].name} equipped. \nYou can now use the {self.moveset[2].name} ability!")
             else:
                 removeditem = self.armequip.pop (0)
                 selecteditem = self.armweapons.pop (self.menuselect-1)
                 self.armweapons.append (removeditem)
                 self.armequip.append (selecteditem)
-
+                self.moveset[1] = self.physequip[0].special
+                GMtalk.write (f"You now have the {self.physequip[0].name} equipped. \nYou can now use the {self.moveset[1].name} ability!")
     # COMBAT ABILITY AND ITEM FUNCTIONS - ITEM FUNCTIONS ARE DESIGNED TO WORK INSIDE AND OUTSIDE OF COMBAT
 
     def PlayerTurnDisplay(self):
@@ -492,7 +498,7 @@ Your current stats are:
             print (f' {type.fg_orange}HP:{type.reset}   {type.fg_red}{self.hp}{type.reset}/{type.fg_green}{self.hpmax}{type.reset}')
         
         if self.ap > (self.apmax /100 * 25):
-            print (f' {type.fg_orange}MP:{type.reset}   {type.fg_green}{self.ap}/{self.ap}{type.reset}')
+            print (f' {type.fg_orange}MP:{type.reset}   {type.fg_green}{self.ap}/{self.apmax}{type.reset}')
         elif self.ap <= (self.apmax /100 *25):
             print (f' {type.fg_orange}MP:{type.reset}   {type.fg_red}{self.ap}{type.reset}/{type.fg_green}{self.apmax}{type.reset}\n')
         print()
@@ -525,7 +531,7 @@ Your current stats are:
         listofenemies = 0
         #autoselect if there's only one enemy cos duh...
         if len (BattleSystem.enemies) == 1:
-            self.selectedenemy = BattleSystem.enemies[0]
+            self.selectedtarget = BattleSystem.enemies[0]
             self.PlayerSelectAbilityTargetConfirmed()
         #if more than one, list and select in the same way as selecting an ability. Neat!
         else:
@@ -535,7 +541,7 @@ Your current stats are:
                 PlayerInput.write (f" {listofenemies}: {elem.name}")
             self.playerenemychoice = int(input())
             if self.playerenemychoice in range (1, listofenemies+1):
-                self.selectedenemy = BattleSystem.enemies[self.playerenemychoice-1]
+                self.selectedtarget = BattleSystem.enemies[self.playerenemychoice-1]
                 self.PlayerSelectAbilityTargetConfirmed()
             else:
                 GMtalk.write ("Invalid Input")
@@ -554,18 +560,29 @@ Your current stats are:
                     if accuracycheck in range (selectedmove.chancetomiss): # so if the accuracycheck falls within the misschance of the selected move, it misses.
                         GMnarrate.write  (f"You tried to use {selectedmove.name}, but missed!  \n")
                     else: #otherwise, it hits and so determines how damage or buffs work here base on the selected move effect value
+                        if selectedmove.apcost > 0:
+                            if selectedmove.apcost > self.ap:
+                                GMtalk.write("You don't have enough AP for that right now!")
+                            else:
+                                self.ap -= selectedmove.apcost
                         if selectedmove.effect == "Physical":
-                            damage = (self.phystr + selectedmove.damage + self.phyweapons[0].damage - self.selectedenemy.phydef)
-                            self.selectedenemy.hp = (BattleSystem.selectedenemy.hp - damage)
+                            damage = (self.phystr + selectedmove.damage + self.phyweapons[0].damage - self.selectedtarget.phydef)
+                            self.selectedtarget.hp = (BattleSystem.selectedtarget.hp - damage)
                             GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
                             BattleSystem.CheckEnemyStatus()
+                        
+                        elif selectedmove.effect == "Scan":
+                            self.selectedtarget.ShowCurrentStats()
+                            
+
+                        
                         elif selectedmove.effect == "Items":
                             self.PlayerSelectItems()
 
                         elif selectedmove.effect == "Legendary":
                                 if self.hp <= ((self.hpmax / 100) * 10):
                                     damage = (self.phystr * selectedmove.damage)
-                                    self.selectedenemy.hp = (self.selectedenemy.hp - damage)
+                                    self.selectedtarget.hp = (self.selectedtarget.hp - damage)
                                     GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
                                     BattleSystem.CheckEnemyStatus()
                                 else:
@@ -619,7 +636,7 @@ Your current stats are:
                     self.MenuSelection()
                     self.selectedtarget = BattleSystem.enemies[self.menuselect-1]
                     self.PlayerSelectItemsTargetConfirmed()
-        elif self.itemselected == "Physical" or "Armatek":
+        elif self.itemselected in ("Physical" , "Armatek"):
             if len(BattleSystem.enemies) == 1:
                 self.selectedtarget == BattleSystem.enemies[0]
                 self.PlayerSelectItemsTargetConfirmed()
@@ -654,8 +671,8 @@ Your current stats are:
                 self.currentlocation()
 
         elif self.itemselected.effect == "Physical":
-            damage = (self.itemselected.damage + self.selectedenemy.phydef)
-            self.selectedenemy.hp = (BattleSystem.selectedenemy.hp - damage)
+            damage = (self.itemselected.damage + self.selectedtarget.phydef)
+            self.selectedtarget.hp = (BattleSystem.selectedtarget.hp - damage)
             GMnarrate.write (f"You used {self.itemselected.name} to inflict {damage} damage. \n")
 
         else:
@@ -699,22 +716,22 @@ class NPC(Character):
             self.firstmeet = False
         if self.menuselect == "0":
             ClearScreen()
-            Player.currentlocation()
+            MainCharacter.currentlocation()
         elif self.menuselect == "1":
             if self.talkselect1 == "":
-                NPC.InvalidChoice()
+                InvalidChoice()
             else:
                 ClearScreen()
                 self.talkselect1()
         elif self.menuselect == "2":
             if self.talkselect2 == "":
-                NPC.InvalidChoice()
+                InvalidChoice()
             else:
                 ClearScreen()
                 self.talkselect2()
         elif self.menuselect == "3":
             if self.talkselect3 == "":
-                NPC.InvalidChoice()
+                InvalidChoice()
             else:
                 ClearScreen()
                 self.talkselect3()
@@ -728,21 +745,21 @@ class NPC(Character):
 
 # VENDORS ARE AN NPC SUBCLASS TO DIFFERENTIATE BETWEEN CONVERSATIONS AND COMMERCE
 class Vendor (NPC): 
-
-    def SaleDisplay():
-        ScreenTitle.write (f"{NPC.name}    \n")
-        if NPC.inventory == []:
+    
+    def SaleDisplay(self):
+        ScreenTitle.write (f"{self.name}    \n")
+        if len (self.items) == 0:
             GMnarrate.write ("The Vendor shakes hs head...")
             NPCtalk.write ("I'm afraid I've got nothing else in stock. Be sure to coe back and try again later.")
             PressEnterToGoBack()
             ClearScreen()
-            NPC.Display()
+            self.Talk()
         else:
             Interactions.VendorPresentItems()
             listitem = 0
-            for elem in NPC.inventory:
+            for count in self.items:
                 listitem += 1
-                GMtalk.write (f"{listitem}: {elem}   \n")
+                GMtalk.write (f"{listitem}: {self.items[count]} x {[count]}   \n")
         GMtalk.write (f"Your currently have {Player.cash} credits on you. Enter the number for what you'd like to buy and see it's price. If you're not interested, enter 0.")
         selection = int(input())
         if selection == 0:
@@ -750,10 +767,11 @@ class Vendor (NPC):
             NPCtalk.write ("No worries - later now. \n")
             PressEnterToGoBack()
             ClearScreen()
-            NPC.Display()
+            self.Talk()
         elif selection in range (1,listitem+1):
-            selecteditem = NPC.inventory[selection-1]
-            selecteditemposition = NPC.inventory.index(selecteditem)
+            itemsforsale = list(self.items)
+            selecteditem = itemsforsale[selection-1]
+
             ClearScreen()
             NPCtalk.write (f"That there {selecteditem.name} is worth {selecteditem.value} credits. You sure? No buybacks!   \n")
             PlayerInput.write ("1: I'm sure")
@@ -761,25 +779,25 @@ class Vendor (NPC):
             confirmsale = int(input())
             if Player.cash >= selecteditem.cost:
                 if confirmsale == 1:
-                    boughtitem = NPC.inventory.pop(selecteditemposition)
+                    boughtitem = itemsforsale(selecteditem)
                     Player.cash -= boughtitem.cost
                     GMnarrate.write (f"You acquired a {boughtitem.name}! You now have {Player.cash} credits left.")
-                    Player.items.append(boughtitem)
+                    MainCharacter.items[boughtitem] += 1
                     PressEnterToGoBack()
                     ClearScreen()
-                    NPC.SaleDisplay()
+                    self.SaleDisplay()
                 elif confirmsale == 2:
                     NPCtalk.write ("Alright, have another look.")
-                    NPC.SaleDisplay()
+                    self.SaleDisplay()
                 else:
                     NPCtalk.write ("What? I didn't quite catch that. Let me show you again")
                     GMtalk.write (input("Press Enter to go back"))
-                    NPC.SaleDisplay()
+                    self.SaleDisplay()
             else:
                 Interactions.VendorNoMoney()
-                NPC.SaleDisplay()
+                self.SaleDisplay()
         else:
-            NPC.InvalidChoice()
+            InvalidChoice()
 
 # ENEMY CHARACTERS ARE USED IN COMBAT
 class Enemy(Character):
@@ -807,7 +825,6 @@ class Enemy(Character):
         else:
             Enemy.DamageCalculation(self)
 
-
     def DamageCalculation(self):
         target = BattleSystem.party[random.randint(1,len(BattleSystem.party))-1]
         if self.movechoice.effect == "Physical":
@@ -815,6 +832,10 @@ class Enemy(Character):
             target.hp -= totaldamage
         GMnarrate.write (f"{self.name} used {self.movechoice.name} for {totaldamage} damage \n")
 
+    def ShowCurrentStats(self):
+        MenuTitle.write (f"{self.name}  \n")
+        MenuTitle.write ("HP:"); GMtalk.write(f"{self.hp}/{self.hpmax}  \n")
+        
 # VENDORS ARE AN NPC SUBCLASS TO DIFFERENTIATE BETWEEN CONVERSATIONS AND COMMERCE
 
 #######################################
@@ -861,10 +882,10 @@ class BattleSystem:
     
     #
     battlestart = True
-    #enemy list gets populated at battle start and selectedenemy is populated when a player selectes an enemy to attack
+    #enemy list gets populated at battle start and selectedtarget is populated when a player selectes an enemy to attack
     party = [MainCharacter]
     enemies = []
-    selectedenemy = ""
+    selectedtarget = ""
 
     #variables for listing and selection of abilities across functions
     playermovelist = 0
@@ -885,15 +906,12 @@ class BattleSystem:
 
 #player turn!
     def PlayerTurn():
-        for elem in BattleSystem.enemies:
-            print (elem.job, elem.hp)
         for elem in BattleSystem.party:
             elem.PlayerTurnDisplay()
             elem.PlayerSelectAbility()
         # BattleSystem.CheckForVictory()
         Player.playerturn = not Player.playerturn
         PressEnterToContinue()
-
 #now enemy is selected, move is confirmed. 
     def PlayerSelectAbilityTargetConfirmed():
             BattleSystem.playermovechoice = int(BattleSystem.playermovechoice)
@@ -904,14 +922,14 @@ class BattleSystem:
                 GMnarrate.write  ("You missed!  \n")
             else: #otherwise, it hits and so determines how damage or buffs work here base on the selected move effect value
                 if selectedmove.effect == "Physical":
-                    damage = (Player.phystr + selectedmove.damage - BattleSystem.selectedenemy.phydef)
-                    BattleSystem.selectedenemy.hp = (BattleSystem.selectedenemy.hp - damage)
+                    damage = (Player.phystr + selectedmove.damage - BattleSystem.selectedtarget.phydef)
+                    BattleSystem.selectedtarget.hp = (BattleSystem.selectedtarget.hp - damage)
                     GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
                     BattleSystem.CheckEnemyStatus()
                 elif selectedmove.effect == "Legendary":
                     if Player.hp <= ((Player.hpmax / 100) * 10):
                         damage = (Player.phystr * selectedmove.damage)
-                        BattleSystem.selectedenemy.hp = (BattleSystem.selectedenemy.hp - damage)
+                        BattleSystem.selectedtarget.hp = (BattleSystem.selectedtarget.hp - damage)
                         GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
                         BattleSystem.CheckEnemyStatus()
                     else:
@@ -921,9 +939,9 @@ class BattleSystem:
 
 #check to see if enemy is dead after attacking
     def CheckEnemyStatus():
-        if BattleSystem.selectedenemy.hp <= 0:
-            GMnarrate.write (f"{BattleSystem.selectedenemy.name} is down!")
-            BattleSystem.enemies.remove (BattleSystem.selectedenemy)
+        if BattleSystem.selectedtarget.hp <= 0:
+            GMnarrate.write (f"{BattleSystem.selectedtarget.name} is down!")
+            BattleSystem.enemies.remove (BattleSystem.selectedtarget)
             BattleSystem.PlayerCheckVictory()
 
 #checks to see if all enemies are down 
@@ -952,8 +970,8 @@ class BattleSystem:
             BattleSystem.battlestart = False
             MainCharacter.combatlocation = True
             if len (BattleSystem.enemies) == 1:
-                BattleSystem.selectedenemy = BattleSystem.enemies[0]
-                # GMnarrate.write (f"An enemy {BattleSystem.selectedenemy.job} appeared!  \n")
+                BattleSystem.selectedtarget = BattleSystem.enemies[0]
+                # GMnarrate.write (f"An enemy {BattleSystem.selectedtarget.job} appeared!  \n")
                 BattleSystem.FirstStrike()
             else:
                 GMnarrate.write (f"Multiple Enemies!")
@@ -1040,6 +1058,7 @@ class WorldBuilding:
                 TutorialWorld.describe2 = LocationIntroduction.TutorialWorld1
                 TutorialWorld.travel1 = "Go to another location"
             elif not TutorialCharacter.firstmeet:
+                TutorialWorld.firstvisit = False
                 TutorialWorld.describe2 = LocationIntroduction.TutorialWorld2
                 TutorialWorld.travel1 = "Continue the story"
                 TutorialWorld.selecttravel1 = StoryEvent.Introduction_AboardTheSkytrain
@@ -1110,15 +1129,15 @@ class WorldBuilding:
         PowerStationBazaar.travel1 = "-"
         PowerStationBazaar.travel2 = "-"
         PowerStationBazaar.travel3 = "-"
-        PowerStationBazaar.option1 = "-"
-        PowerStationBazaar.option2 = "-"
-        PowerStationBazaar.option3 = "-"
+        PowerStationBazaar.option1 = "Approach the Items stall"
+        PowerStationBazaar.option2 = "Talk to the Weapons trader"
+        PowerStationBazaar.option3 = "Examine the Armatek stand"
         PowerStationBazaar.selecttravel1 = "-"
         PowerStationBazaar.selecttravel2 = "-"
         PowerStationBazaar.selecttravel3 = "-"
-        PowerStationBazaar.selectoption1 = "-"
-        PowerStationBazaar.selectoption2 = "-"
-        PowerStationBazaar.selectoption3 = "-"
+        PowerStationBazaar.selectoption1 = VendorItem.Talk
+        PowerStationBazaar.selectoption2 = VendorPhysical.Talk
+        PowerStationBazaar.selectoption3 = VendorArmatek.Talk
         
         PowerStationArena.describe1 = LocationIntroduction.PowerStationArena1
         PowerStationArena.describe2 = LocationIntroduction.PowerStationArena2
@@ -1183,8 +1202,37 @@ class WorldBuilding:
         PowerStationBoss.talkselect2 = ""
         PowerStationBoss.talkselect3 = ""
 
+        VendorItem.gmintro1 = Interactions.VendorGreeting
+        VendorItem.gmintro2 = Interactions.VendorGreeting
+        VendorItem.talkoption1 = ""
+        VendorItem.talkoption2 = ""
+        VendorItem.talkoption3 = "Show me what you're selling"
+        VendorItem.talkselect1 = ""
+        VendorItem.talkselect2 = ""
+        VendorItem.talkselect3 = VendorItem.SaleDisplay
+
+        VendorPhysical.gmintro1 = Interactions.VendorGreeting
+        VendorPhysical.gmintro2 = Interactions.VendorGreeting
+        VendorPhysical.talkoption1 = ""
+        VendorPhysical.talkoption2 = ""
+        VendorPhysical.talkoption3 = "I need a better weapon"
+        VendorPhysical.talkselect1 = ""
+        VendorPhysical.talkselect2 = ""
+        VendorPhysical.talkselect3 = VendorPhysical.SaleDisplay
+
+        VendorArmatek.gmintro1 = Interactions.VendorGreeting
+        VendorArmatek.gmintro2 = Interactions.VendorGreeting
+        VendorArmatek.talkoption1 = ""
+        VendorArmatek.talkoption2 = ""
+        VendorArmatek.talkoption3 = "I'm looking for some new hardware"
+        VendorArmatek.talkselect1 = ""
+        VendorArmatek.talkselect2 = ""
+        VendorArmatek.talkselect3 = VendorArmatek.SaleDisplay
+
     def VendorUpdate():
-        VendorItem.items = [Potion, HiPotion]
+        VendorItem.items[Potion] += 1
+        VendorArmatek.items[ScanningGlove] += 1
+        VendorPhysical.items[Knife] += 1
     
     def ThisFunctionTookGodSixWholeDays():
         WorldBuilding.LocationUpdate()
@@ -1256,7 +1304,7 @@ class StoryEvent:
         print()
         if answer == "1":
             Player.handholding = True
-            GMtalk.write (f"No worries - We'll start with a quick overview.  \nFrom time to time I'll appear whenever new information about how the game becomes needed.\nOkay {MainCharacter.name} - Let's start with the basics.   \n\n")
+            GMtalk.write (f"Okay {MainCharacter.name} - Let's start with the basics.  \nFrom time to time I'll appear whenever new information about how the game becomes needed.   \n")
             PressEnterToContinue()
             StoryEvent.IntroductionTutorial()
         elif answer == "2":
@@ -1294,7 +1342,7 @@ class StoryEvent:
 
     def Introduction_AboardTheSkytrain():
         GMnarrate.write("Story beat goes here. This is where our player character meets a stranger who gifts them a healing salve and a power glove armatek weapon")
-        MainCharacter.armweapons.append (PowerFist)
+        MainCharacter.armweapons.append (ArmaGauntlet)
         print (MainCharacter.armweapons)
         PressEnterToContinue()
         Train.Area()
