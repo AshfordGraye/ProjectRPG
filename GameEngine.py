@@ -406,6 +406,8 @@ Would you like to select this class, or view another?
 
     def ShowStats(self):
         ClearScreen()
+        MenuTitle.write("Credits:")
+        GMtalk.write(f"{MainCharacter.credits}  \n")
         for elem in BattleSystem.party:
             MenuTitle.write(f"{elem.name} Vitals:")
             #for health
@@ -781,20 +783,21 @@ class Vendor (NPC):
     def SaleDisplay(self):
         ScreenTitle.write (f"{self.name}    \n")
         if len (self.items) == 0:
-            GMnarrate.write ("The Vendor shakes hs head...")
+            GMnarrate.write ("The Vendor shakes hs head...  \n")
             NPCtalk.write ("I'm afraid I've got nothing else in stock. Be sure to coe back and try again later.")
             PressEnterToGoBack()
             self.Talk()
         else:
             Interactions.VendorPresentItems()
             listitem = 0
+            PlayerInput.write ("0: Cancel   \n")
             for count in self.items:
                 listitem += 1
                 PlayerInput.write (f"{listitem}: {self.items[count]} x {count}  \n : {count.value} credits  \n")
-        GMtalk.write (f"Your currently have {MainCharacter.credits} credits on you. If you're not interested, enter 0.")
+        GMtalk.write (f"You currently have {MainCharacter.credits} credits.")
         self.MenuSelection()
-        if self.menuselectint == 0:
-            NPCtalk.write ("No worries - later now. \n")
+        if self.menuselect == "0":
+            NPCtalk.write ("No worries - later now.")
             PressEnterToGoBack()
             self.Talk()
         elif self.menuselectint in range (1,listitem+1):
@@ -804,10 +807,8 @@ class Vendor (NPC):
             PlayerInput.write ("1: I'm sure")
             PlayerInput.write ("2: Let me look again")
             self.MenuSelection()
-            print()
-            if self.menuselectint == "1":
+            if self.menuselect == "1":
                 if MainCharacter.credits >= selecteditem.value:
-                    if self.menuselectint == 1:
                         boughtitem = selecteditem
                         MainCharacter.credits -= boughtitem.value
                         GMnarrate.write (f"You acquired a {boughtitem.name}! You now have {MainCharacter.credits} credits left.")
@@ -829,21 +830,15 @@ class Vendor (NPC):
                         PressEnterToGoBack()
                         ClearScreen()
                         self.SaleDisplay()
-                    elif self.menuselectint == 2:
-                        NPCtalk.write ("Alright, have another look.")
-                        self.SaleDisplay()
-                    else:
-                        NPCtalk.write ("What? I didn't quite catch that. Let me show you again")
-                        GMtalk.write (input("Press Enter to go back"))
-                        self.SaleDisplay()
                 else:
                     Interactions.VendorNoMoney()
                     self.SaleDisplay()
-            elif self.menuselectint == "2":
+            elif self.menuselect == "2":
                 NPCtalk.write ("No worries - have a look at what I have.")
                 PressEnterToGoBack()
                 self.SaleDisplay()
         else:
+            NPCtalk.write ("What? I didn't quite catch that.    \n")
             InvalidChoice()
             self.SaleDisplay()
 
@@ -1500,13 +1495,13 @@ class Interactions:
         greeting = random.randint(1,3)
         if greeting == 1:
             GMnarrate.write ("You are greeted with a friendly smile \n")
-            NPCtalk.write ("Well howdy there! What can I get ya \n")
+            NPCtalk.write ("Well howdy there! What can I get ya")
         elif greeting == 2:
             GMnarrate.write ("You are quickly examined, presumably for trouble, before being greeted    \n")
-            NPCtalk.write ("Hey there, how can I help you?  \n")
+            NPCtalk.write ("Hey there, how can I help you?")
         else:
             GMnarrate.write ("The individual looks at you with a vacant expression... they look like they've been here a while  \n")
-            NPCtalk.write ("Hey, uhh... what's up?  \n")
+            NPCtalk.write ("Hey, uhh... what's up?")
 
     def VendorPresentItems():
         option = random.randint(1,4)
