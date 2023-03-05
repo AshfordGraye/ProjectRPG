@@ -611,8 +611,6 @@ Would you like to select this class, or view another?
                         
                         elif selectedmove.effect == "Scan":
                             self.selectedtarget.ShowCurrentStats()
-                            
-
                         
                         elif selectedmove.effect == "Items":
                             self.PlayerSelectItems()
@@ -737,6 +735,7 @@ class NPC(Character):
             self.gmintro1()
         else:
             self.gmintro2()
+        WorldBuilding.LocationUpdate()
         MenuTitle.write (f"\n{self.name}")
         PlayerInput.write (f"0: Leave this conversation")
         PlayerInput.write (f"1: {self.talkoption1}")
@@ -842,6 +841,14 @@ class Vendor (NPC):
             InvalidChoice()
             self.SaleDisplay()
 
+# MEDICS ARE AN NPC SUBCLASS TO KEEP HEALING OPTIONS SEPERATE, JUST FOR ORGANISATION REALLY.
+class Medic (NPC):
+    def Healing(self):
+        if self.name == "Medic":
+            Interactions.MedicHealing()
+        elif self.name == "Field Droid":
+            Interactions.FieldDroidHealing()
+
 # ENEMY CHARACTERS ARE USED IN COMBAT
 class Enemy(Character):
 
@@ -878,8 +885,6 @@ class Enemy(Character):
     def ShowCurrentStats(self):
         MenuTitle.write (f"{self.name}  \n")
         MenuTitle.write ("HP:"); GMtalk.write(f"{self.hp}/{self.hpmax}  \n")
-        
-# VENDORS ARE AN NPC SUBCLASS TO DIFFERENTIATE BETWEEN CONVERSATIONS AND COMMERCE
 
 #######################################
 ###### SECTION - OBJECT CREATION ######
@@ -903,14 +908,16 @@ MainCharacter = Player ("Player")
 TutorialCharacter = NPC("Tutorial NPC")
 DockPorter = NPC ("Skytrain Dock Porter")
 HomelessGuy = NPC ("Homeless Guy")
-Medic = NPC ("Medic")
-FieldDroid = NPC ("Field Droid")
 PowerStationBoss = NPC ("Power Station Boss")
 
 # STORE VENDORS 
 VendorItem = Vendor("Item Vendor")
 VendorPhysical = Vendor ("Physical Equipment Vendor")
 VendorArmatek = Vendor ("Armatek Equipment Vendor")
+
+# MEDIIIIIIIC!!!!!
+MedicFella = Medic ("Medic")
+FieldDroid = Medic ("Field Droid")
 
 # ENEMY CHARACTERS
 Vagrant = Enemy ("Vagrant", 1)
@@ -1153,7 +1160,6 @@ class WorldBuilding:
         PowerStationGrounds.selectoption2 = PowerStationMedicArea.Area
         PowerStationGrounds.selectoption3 = "-"
 
-        
         PowerStationMedicArea.describe1 = LocationIntroduction.PowerStationMedicArea1
         PowerStationMedicArea.describe2 = LocationIntroduction.PowerStationMedicArea2
         PowerStationMedicArea.travel1 = "-"
@@ -1165,9 +1171,14 @@ class WorldBuilding:
         PowerStationMedicArea.selecttravel1 = "-"
         PowerStationMedicArea.selecttravel2 = "-"
         PowerStationMedicArea.selecttravel3 = PowerStationGrounds.Area
-        PowerStationMedicArea.selectoption1 = "-"
-        PowerStationMedicArea.selectoption2 = "-"
+        PowerStationMedicArea.selectoption1 = MedicFella.Talk
+        PowerStationMedicArea.selectoption2 = FieldDroid.Talk
         PowerStationMedicArea.selectoption3 = "-"
+        if FieldDroid.droidclearancegranted == True:
+            FieldDroid.talkoption1 = "Do you need me to grant access each time I visit?"
+            FieldDroid.talkselect1 = Interactions.FieldDroidAlreadyCleared
+            FieldDroid.talkoption2 = "Can you fix me up?"
+            FieldDroid.talkselect2 = FieldDroid.Healing
 
         PowerStationBazaar.describe1 = LocationIntroduction.PowerStationBazaar1
         PowerStationBazaar.describe2 = LocationIntroduction.PowerStationBazaar2
@@ -1238,23 +1249,27 @@ class WorldBuilding:
         HomelessGuy.talkselect2 = ""
         HomelessGuy.talkselect3 = ""
 
-        Medic.gmintro1 = Interactions.Medic1
-        Medic.gmintro2 = Interactions.Medic2
-        Medic.talkoption1 = ""
-        Medic.talkoption2 = ""
-        Medic.talkoption3 = ""
-        Medic.talkselect1 = ""
-        Medic.talkselect2 = ""
-        Medic.talkselect3 = ""
+        MedicFella.gmintro1 = Interactions.Medic1
+        MedicFella.gmintro2 = Interactions.Medic2
+        MedicFella.talkoption1 = "Can you fix me up?"
+        MedicFella.talkoption2 = "What's that droid over there?"
+        MedicFella.talkoption3 = ""
+        MedicFella.talkselect1 = MedicFella.Healing
+        MedicFella.talkselect2 = Interactions.MedicAskAboutDroid
+        MedicFella.talkselect3 = ""
+        MedicFella.askedaboutdroid = False
+
 
         FieldDroid.gmintro1 = Interactions.FieldDroid1
         FieldDroid.gmintro2 = Interactions.FieldDroid2
-        FieldDroid.talkoption1 = ""
+        FieldDroid.talkoption1 = "What clearance do you need to work?"
         FieldDroid.talkoption2 = ""
         FieldDroid.talkoption3 = ""
-        FieldDroid.talkselect1 = ""
+        FieldDroid.talkselect1 = Interactions.FieldDroidQuestion
         FieldDroid.talkselect2 = ""
         FieldDroid.talkselect3 = ""
+        FieldDroid.droidclearancegranted = False
+
 
         PowerStationBoss.gmintro1 = Interactions.PowerStationBoss1
         PowerStationBoss.gmintro2 = Interactions.PowerStationBoss2
@@ -1265,6 +1280,8 @@ class WorldBuilding:
         PowerStationBoss.talkselect2 = ""
         PowerStationBoss.talkselect3 = ""
 
+    def VendorUpdate():
+        
         VendorItem.gmintro1 = Interactions.VendorGreeting
         VendorItem.gmintro2 = Interactions.VendorGreeting
         VendorItem.talkoption1 = ""
@@ -1291,8 +1308,7 @@ class WorldBuilding:
         VendorArmatek.talkselect1 = ""
         VendorArmatek.talkselect2 = ""
         VendorArmatek.talkselect3 = VendorArmatek.SaleDisplay
-
-    def VendorUpdate():
+        
         if MainCharacter.arenawins == 0:
             VendorItem.items[Potion] += 2
             VendorItem.items[HiPotion] += 1
@@ -1300,9 +1316,9 @@ class WorldBuilding:
             VendorPhysical.items[Knife] += 1
     
     def ThisFunctionTookGodSixWholeDays():
-        WorldBuilding.LocationUpdate()
         WorldBuilding.NPCUpdate()
         WorldBuilding.VendorUpdate()
+        WorldBuilding.LocationUpdate()
 
 ############################
 ############################
@@ -1466,18 +1482,89 @@ class Interactions:
         GMnarrate.write ("MEDIC PLACEHOLDER DESCRIPTION 1")
     def Medic2():
         GMnarrate.write ("MEDIC PLACEHOLDER DESCRIPTION 2")
+        MedicFella.Healing
+    def MedicAskAboutDroid():
+        if MedicFella.askedaboutdroid == False:
+            GMnarrate.write("STORY BEAT ABOUT DROID ORIGIN  \n")
+            NPCtalk.write("NPC speech goes here for story beat.")
+            MedicFella.askedaboutdroid = True
+            PressEnterToGoBack()
+            MedicFella.Talk()
+        else:
+            GMnarrate.write("CONFIRMS STORY BEAT DONE  \n")
+            NPCtalk.write("We already spoke about the droid.")
+            PressEnterToGoBack()
+            MedicFella.Talk()
+    def MedicHealing():
+        if MainCharacter.hp < (MainCharacter.hpmax/100*70):
+            MainCharacter.hp = (MainCharacter.hpmax/100*70)
+            GMnarrate.write("After the medic has finished examining you and administering some kind of injected formula, you can feel some of your pain begin to ease   \n")
+            NPCtalk.write("That's as much as I can do for you. Maybe the droid can help you out further,if you can get the damned thign to work.    \n")
+            GMtalk.write(f"{MainCharacter.name} health restored to {MainCharacter.hp}/{MainCharacter.hpmax}")
+            PressEnterToGoBack()
+            MedicFella.Talk()
+        else:
+            GMnarrate.write("The old medic looks you over:  \n")
+            NPCtalk.write("I'm araid I can't patch you up any further than you are, if you can figure out how that old droid works, it might help you better.   \n")
+            PressEnterToGoBack()
+            MedicFella.Talk()
 
     def FieldDroid1():
-        GMnarrate.write ("FIELD DROID PLACEHOLDER DESCRIPTION 1")
+        GMnarrate.write ("The Field Droid moves slowly around the Medic's station. It doesn't seem like it belongs here.    \n")
+        NPCtalk.write("VALID AUTHORISATION REQUIRED FOR USE! BZZT")
     def FieldDroid2():
-        GMnarrate.write ("FIELD DROID PLACEHOLDER DESCRIPTION 2")
-
+        GMnarrate.write("The Field Droid clicks it's chrome 'head' toward you:  \n ")
+        if FieldDroid.droidclearancegranted == False:
+            NPCtalk.write("VALID AUTHORISATION REQUIRED FOR USE! BZZT.")
+        elif FieldDroid.droidclearancegranted == True:
+            NPCtalk.write("DOES PRESENT COMBATANT REQUIRE ASSISTANCE?")  
+    def FieldDroidQuestion():
+        if MedicFella.askedaboutdroid == False and FieldDroid.droidclearancegranted == False:
+            GMnarrate.write ("The Field Droid simply repeats itself: \n")
+            NPCtalk.write ("VALID AUTHORISATION REQUIRED FOR USE! BZZT.")
+            PressEnterToGoBack()
+            FieldDroid.Talk()
+        elif MedicFella.askedaboutdroid == True and FieldDroid.droidclearancegranted == False:
+            GMnarrate.write ("The Field Droid notices your approach: \n")
+            NPCtalk.write ("VALID AUTHORISATION REQUIRED FOR USE! BZZT.")
+            if MainCharacter.job == "Medic":
+                Interactions.FieldDroidClearanceGranted()
+                FieldDroid.droidclearancegranted = True
+                print (FieldDroid.droidclearancegranted)
+                FieldDroid.Talk()
+            else:
+                GMnarrate.write ("This thing looks familiar from your time in the military, but only the Medics had authorisation to use them off-base. You try reciting your old rank and service number, to no avail. The droid responds:")
+                NPCtalk.write("NON MEDICAL PERSONNEL ARE RESTRICTED FROM ACCESSING THIS UNIT AT THIS TIME.")
+                PressEnterToGoBack()
+    def FieldDroidClearanceGranted():
+        print()
+        GMnarrate.write ("Remembering what the old medic mentioned earlier, you recite your former military rank and service number to the droid.   \nAfter a moment, the droid sputters a response:    \n")
+        NPCtalk.write ("BZT... CLEARANCE... GRANTED. \n")
+        GMnarrate.write ("With some surprise at your success, you examine the droid more closely. You definitely used these during the war. They weren't perfect, but miles better than the field dressings you could provide. ")
+        PressEnterToGoBack()
+    def FieldDroidAlreadyCleared():
+        GMnarrate.write ("The droid looks directly at you. It's optic lenses feel like they're staring straight through you.    \n")
+        NPCtalk.write("NEGATIVE. SINGULAR ACCESS REQUIRED. MEDICAL ASSISTANCE NOT REQUESTED. CEASING INTERACTION.")
+        PressEnterToGoBack()
+        FieldDroid.Talk()
+    def FieldDroidHealing():
+        if MainCharacter.hp < (MainCharacter.hpmax/100*85):
+            MainCharacter.hp = (MainCharacter.hpmax/100*85)
+            GMnarrate.write("The medical droid looks you over with a myriad of old tools - hardly cutting edge now, but it's more capable than the old medic.   \n")
+            NPCtalk.write("COMBATANT RESTORED TO ACCEPTABLE CONDITION. REST TIME - NOT APPLICABLE. REPORT TO YOUR SENIOR OFFICER FOR FURTHER ORDERS, SOLDIER. \n")
+            GMtalk.write(f"{MainCharacter.name} health restored to {MainCharacter.hp}/{MainCharacter.hpmax}")
+            PressEnterToGoBack()
+            FieldDroid.Talk()
+        else:
+            GMnarrate.write ("The droid examines you with it's array of (somewhat rusted) equipment - the years since the war have not been kind to this droid. It finally looks at you and barks a response:   \n")
+            NPCtalk.write("COMBATANT CONDITION WITHIN ACCEPTABLE PARAMETERS. NO FURTHER ACTION REQUIRED. CEASING INTERACTION.")
+            PressEnterToGoBack()
+            FieldDroid.Talk()
 
     def PowerStationBoss1():
         GMnarrate.write ("POWER STATION BOSS PLACEHOLDER DESCRIPTION 1")
     def PowerStationBoss2():
-        GMnarrate.write ("POWER STATION BOSS PLACEHOLDER DESCRIPTION 2")
-    
+        GMnarrate.write ("POWER STATION BOSS PLACEHOLDER DESCRIPTION 2")    
     def PowerStationBossConfirmArena():
         GMnarrate.write("The Boss Man asks")
         NPCtalk.write("You sure you wanna go in?")
@@ -1485,8 +1572,7 @@ class Interactions:
         PowerStationBoss.talkoption2 = "No, I'll come back later."
         PowerStationBoss.talkselect1 = Interactions.PowerStationBossArenaConfirmed
         PowerStationBoss.talkselect2 = MainCharacter.currentlocation
-        PowerStationBoss.Talk()
-    
+        PowerStationBoss.Talk()    
     def PowerStationBossArenaConfirmed():
         MainCharacter.holdlocation = MainCharacter.currentlocation
         PowerStationArena.Area()
@@ -1502,7 +1588,6 @@ class Interactions:
         else:
             GMnarrate.write ("The individual looks at you with a vacant expression... they look like they've been here a while  \n")
             NPCtalk.write ("Hey, uhh... what's up?")
-
     def VendorPresentItems():
         option = random.randint(1,4)
         if option == 1:
@@ -1513,7 +1598,6 @@ class Interactions:
             NPCtalk.write ("What catches your eye there?  \n")
         else:
             NPCtalk.write ("Got some good stuff for sale!  \n")
-
     def VendorNoMoney():
         greeting = random.randint(1,13)
         if greeting in range (1,5):
