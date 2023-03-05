@@ -112,7 +112,7 @@ class quicktype():
 # These are message classes that format text automatically
 class GMtalk(type):
     def write (mytext):
-        type.write(f'{type.italic}{mytext}{type.reset}\n')
+        type.write(f'{type.fg_silver}{type.italic}{mytext}{type.reset}\n')
 
 class GMnarrate(type):
     def write (mytext):
