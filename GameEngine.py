@@ -228,9 +228,9 @@ class Player(Character):
             self.armstr = 10
             self.armdef = 10
 
-            self.phyweapons = [Knife]
+            self.phyweapons = []
             self.physequip = [BareKnuckles]
-            self.armweapons = [ScanningGlove, ArmaGauntlet]
+            self.armweapons = []
             self.armequip = []
 
             self.items = collections.Counter()
@@ -604,7 +604,7 @@ Would you like to select this class, or view another?
                             else:
                                 self.ap -= selectedmove.apcost
                         if selectedmove.effect == "Physical":
-                            damage = (self.phystr + selectedmove.damage + self.phyweapons[0].damage - self.selectedtarget.phydef)
+                            damage = (self.phystr + selectedmove.damage + self.physequip[0].damage - self.selectedtarget.phydef)
                             self.selectedtarget.hp = (BattleSystem.selectedtarget.hp - damage)
                             GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
                             BattleSystem.CheckEnemyStatus()
@@ -636,7 +636,7 @@ Would you like to select this class, or view another?
         GMtalk.write ("Select an item to use:")
         self.MenuSelection()
         if self.menuselect == "0":
-            if not self.combatlocation:
+            if self.combatlocation == False:
                 PressEnterToGoBack()
                 self.currentlocation()
             PressEnterToGoBack()
@@ -715,7 +715,8 @@ Would you like to select this class, or view another?
         self.items[self.itemselected] -= 1
         if self.items[self.itemselected] == 0:
             del self.items[self.itemselected]
-        BattleSystem.CheckEnemyStatus()
+        if MainCharacter.combatlocation:
+            BattleSystem.CheckEnemyStatus()
 
 # NPC CHARACTER SUBCLASS CAN BE INTERACTED WITH BY THE PLAYER TO TRIGGER CONVERSATIONS AND EVENTS
 class NPC(Character):
@@ -731,11 +732,11 @@ class NPC(Character):
     talkselect3 = ""
 
     def Talk(self):
+        WorldBuilding.LocationUpdate()
         if self.firstmeet:
             self.gmintro1()
         else:
             self.gmintro2()
-        WorldBuilding.LocationUpdate()
         MenuTitle.write (f"\n{self.name}")
         PlayerInput.write (f"0: Leave this conversation")
         PlayerInput.write (f"1: {self.talkoption1}")
@@ -852,12 +853,11 @@ class Medic (NPC):
 # ENEMY CHARACTERS ARE USED IN COMBAT
 class Enemy(Character):
 
-    def __init__(self, name, level):
+    def __init__(self, name):
         
         self.name = name
-        self.level = level
 
-        if level == 1:
+        if self.name == "Vagrant":
             self.job = "Vagrant"
             self.hpmax = 250
             self.hp = 250
@@ -865,7 +865,17 @@ class Enemy(Character):
             self.phydef = 5
             self.armstr = 5
             self.armdef = 5
-            self.moveset = [Lunge]
+            self.moveset = [Lunge, KnifeCuts]
+        elif self.name == "Bouncer":
+            self.job = "Bouncer"
+            self.hpmax = 350
+            self.hp = 350
+            self.phystr = 12
+            self.phydef = 10
+            self.armstr = 10
+            self.armdef = 8
+            self.moveset = [Punches, StrongFist]
+
 
     def MoveSelect(self):
         misschance = random.randint (1,100)
@@ -920,8 +930,9 @@ MedicFella = Medic ("Medic")
 FieldDroid = Medic ("Field Droid")
 
 # ENEMY CHARACTERS
-Vagrant = Enemy ("Vagrant", 1)
-Vagrant2 = Enemy ("Vagrant 2", 1)
+Vagrant = Enemy ("Vagrant")
+Vagrant2 = Enemy ("Vagrant 2")
+Bouncer = Enemy ("Bouncer")
 
 ############################
 ############################
@@ -1041,23 +1052,29 @@ class Battles:
 # FOR AT THE BEGINNING AND END OF ARENA BATTLES
 
     def ArenaFightStart():
-        if MainCharacter.arenaroundcomplete:
+        if MainCharacter.arenaroundcomplete == True:
             GMnarrate.write ("There's nobody for you to fight right now")
             PressEnterToContinue()
             MainCharacter.currentlocation()
-        else:
+        elif MainCharacter.arenaroundcomplete == False:
             if MainCharacter.arenawins == 0:
                 BattleSystem.enemies = [Vagrant]
                 BattleSystem.battlestart = True
-                MainCharacter.arenaroundcomplete = False
+                BattleSystem.Fight()
+            elif MainCharacter.arenawins == 1:
+                BattleSystem.enemies = [Bouncer]
+                BattleSystem.battlestart = True
                 BattleSystem.Fight()
 
     def ArenaVictory():
         if MainCharacter.arenawins == 1:
             print ("FIRST MATCH COMPLETE")
-            MainCharacter.combatlocation = False
-            PressEnterToContinue()
-            MainCharacter.currentlocation()
+        elif MainCharacter.arenawins == 2:
+            print ("SECOND MATCH COMPLETE")
+        MainCharacter.combatlocation = False
+        PressEnterToContinue()
+        MainCharacter.currentlocation()
+
 
 ###################################
 ###################################
@@ -1314,7 +1331,16 @@ class WorldBuilding:
             VendorItem.items[HiPotion] += 1
             VendorArmatek.items[ScanningGlove] += 1
             VendorPhysical.items[Knife] += 1
-    
+
+    # def NPCConversationUpdate():
+    #     if MainCharacter.arenaroundcomplete == True:
+    #         PowerStationBoss.talkoption1 = "I need to get into the fights"
+    #         PowerStationBoss.talkoption2 = ""
+    #         PowerStationBoss.talkoption3 = ""
+    #         PowerStationBoss.talkselect1 = Interactions.PowerStationBossConfirmArena
+    #         PowerStationBoss.talkselect2 = ""
+    #         PowerStationBoss.talkselect3 = ""
+
     def ThisFunctionTookGodSixWholeDays():
         WorldBuilding.NPCUpdate()
         WorldBuilding.VendorUpdate()
@@ -1564,10 +1590,13 @@ class Interactions:
     def PowerStationBoss1():
         GMnarrate.write ("POWER STATION BOSS PLACEHOLDER DESCRIPTION 1")
     def PowerStationBoss2():
-        GMnarrate.write ("POWER STATION BOSS PLACEHOLDER DESCRIPTION 2")    
+        if MainCharacter.arenawins == 0:
+            GMnarrate.write("The Boss Man asks")
+            NPCtalk.write("You sure you wanna go in?")
+        elif MainCharacter.arenawins == 1:
+            GMnarrate.write("The Boss Man asks")
+            NPCtalk.write("You won one round - let's see how you handle someone capable.") 
     def PowerStationBossConfirmArena():
-        GMnarrate.write("The Boss Man asks")
-        NPCtalk.write("You sure you wanna go in?")
         PowerStationBoss.talkoption1 = "Yes"
         PowerStationBoss.talkoption2 = "No, I'll come back later."
         PowerStationBoss.talkselect1 = Interactions.PowerStationBossArenaConfirmed
@@ -1575,6 +1604,7 @@ class Interactions:
         PowerStationBoss.Talk()    
     def PowerStationBossArenaConfirmed():
         MainCharacter.holdlocation = MainCharacter.currentlocation
+        MainCharacter.arenaroundcomplete = False
         PowerStationArena.Area()
 
     def VendorGreeting():
