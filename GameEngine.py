@@ -219,7 +219,7 @@ class Player(Character):
             self.job = ""
 
             self.hpmax = 1000
-            self.hp = 101
+            self.hp = 1000
             self.apmax = 100
             self.ap = 100
 
@@ -603,6 +603,8 @@ Would you like to select this class, or view another?
                                 GMtalk.write("You don't have enough AP for that right now!")
                             else:
                                 self.ap -= selectedmove.apcost
+                        else:
+                            pass
                         if selectedmove.effect == "Physical":
                             damage = (self.phystr + selectedmove.damage + self.physequip[0].damage - self.selectedtarget.phydef)
                             self.selectedtarget.hp = (BattleSystem.selectedtarget.hp - damage)
@@ -754,13 +756,13 @@ class NPC(Character):
             MainCharacter.currentlocation()
         elif self.menuselect == "1":
             if self.talkselect1 == "":
-                InvalidChoice()
+                self.InvalidChoice()
             else:
                 ClearScreen()
                 self.talkselect1()
         elif self.menuselect == "2":
             if self.talkselect2 == "":
-                InvalidChoice()
+                self.InvalidChoice()
             else:
                 ClearScreen()
                 self.talkselect2()
@@ -800,7 +802,10 @@ class Vendor (NPC):
             NPCtalk.write ("No worries - later now.")
             PressEnterToGoBack()
             self.Talk()
-        elif self.menuselectint in range (1,listitem+1):
+        else:
+            pass
+        
+        if self.menuselectint in range (1,listitem+1):
             itemsforsale = list(self.items)
             selecteditem = itemsforsale[self.menuselectint-1]
             NPCtalk.write (f"You sure about that {selecteditem.name}?. The developer hasn't programmed me to buy it back!   \n")
@@ -836,6 +841,10 @@ class Vendor (NPC):
             elif self.menuselect == "2":
                 NPCtalk.write ("No worries - have a look at what I have.")
                 PressEnterToGoBack()
+                self.SaleDisplay()
+            else:
+                NPCtalk.write ("What? I didn't quite catch that. Have another look and let me know if you need anything.    \n")
+                InvalidChoice()
                 self.SaleDisplay()
         else:
             NPCtalk.write ("What? I didn't quite catch that.    \n")
@@ -931,7 +940,6 @@ FieldDroid = Medic ("Field Droid")
 
 # ENEMY CHARACTERS
 Vagrant = Enemy ("Vagrant")
-Vagrant2 = Enemy ("Vagrant 2")
 Bouncer = Enemy ("Bouncer")
 
 ############################
@@ -975,6 +983,7 @@ class BattleSystem:
         # BattleSystem.CheckForVictory()
         Player.playerturn = not Player.playerturn
         PressEnterToContinue()
+
 #now enemy is selected, move is confirmed. 
     def PlayerSelectAbilityTargetConfirmed():
             BattleSystem.playermovechoice = int(BattleSystem.playermovechoice)
@@ -1010,9 +1019,8 @@ class BattleSystem:
 #checks to see if all enemies are down 
     def PlayerCheckVictory():
             if len(BattleSystem.enemies) == 0:
-                MainCharacter.arenawins += 1
-                MainCharacter.arenaroundcomplete = True
-                Battles.ArenaVictory()
+                Battles.FightWon()
+                
 
 #runs at battle start to determine who goes first
     def FirstStrike():
@@ -1051,6 +1059,13 @@ class Battles:
 
 # FOR AT THE BEGINNING AND END OF ARENA BATTLES
 
+    def FightWon():
+        if MainCharacter.currentlocation == PowerStationArena.Area:
+            Battles.ArenaVictory()
+        else:
+            print (MainCharacter.currentlocation)
+            GMnarrate.write("You won the battle!")
+    
     def ArenaFightStart():
         if MainCharacter.arenaroundcomplete == True:
             GMnarrate.write ("There's nobody for you to fight right now")
@@ -1067,12 +1082,14 @@ class Battles:
                 BattleSystem.Fight()
 
     def ArenaVictory():
+        MainCharacter.arenawins += 1
+        MainCharacter.arenaroundcomplete = True
         if MainCharacter.arenawins == 1:
-            print ("FIRST MATCH COMPLETE")
+            StoryEvent.FirstArenaWin()
         elif MainCharacter.arenawins == 2:
-            print ("SECOND MATCH COMPLETE")
-        MainCharacter.combatlocation = False
+            StoryEvent.SecondArenaWin()
         PressEnterToContinue()
+        MainCharacter.combatlocation = False
         MainCharacter.currentlocation()
 
 
@@ -1297,8 +1314,6 @@ class WorldBuilding:
         PowerStationBoss.talkselect2 = ""
         PowerStationBoss.talkselect3 = ""
 
-    def VendorUpdate():
-        
         VendorItem.gmintro1 = Interactions.VendorGreeting
         VendorItem.gmintro2 = Interactions.VendorGreeting
         VendorItem.talkoption1 = ""
@@ -1326,24 +1341,8 @@ class WorldBuilding:
         VendorArmatek.talkselect2 = ""
         VendorArmatek.talkselect3 = VendorArmatek.SaleDisplay
         
-        if MainCharacter.arenawins == 0:
-            VendorItem.items[Potion] += 2
-            VendorItem.items[HiPotion] += 1
-            VendorArmatek.items[ScanningGlove] += 1
-            VendorPhysical.items[Knife] += 1
-
-    # def NPCConversationUpdate():
-    #     if MainCharacter.arenaroundcomplete == True:
-    #         PowerStationBoss.talkoption1 = "I need to get into the fights"
-    #         PowerStationBoss.talkoption2 = ""
-    #         PowerStationBoss.talkoption3 = ""
-    #         PowerStationBoss.talkselect1 = Interactions.PowerStationBossConfirmArena
-    #         PowerStationBoss.talkselect2 = ""
-    #         PowerStationBoss.talkselect3 = ""
-
     def ThisFunctionTookGodSixWholeDays():
         WorldBuilding.NPCUpdate()
-        WorldBuilding.VendorUpdate()
         WorldBuilding.LocationUpdate()
 
 ############################
@@ -1449,6 +1448,19 @@ class StoryEvent:
         GMnarrate.write("Story beat goes here. This is where our player character meets a stranger who gifts them their first items. Main character does have inventory for now")
         PressEnterToContinue()
         Train.Area()
+
+    def FirstArenaWin():
+        print ("FIRST MATCH COMPLETE")
+        VendorItem.items[Potion] += 1
+        VendorItem.items[HiPotion] += 1
+        VendorArmatek.items[ScanningGlove] += 1
+        VendorPhysical.items[Knife] += 1
+    
+    def SecondArenaWin():
+        print ("SECOND MATCH COMPLETE")
+        VendorItem.items[Potion] += 5
+        VendorItem.items[HiPotion] += 5
+        VendorArmatek.items[ArmaGauntlet] += 1
 
 # SELF EXPLANATORY
 class BoilerplateSpeech:
