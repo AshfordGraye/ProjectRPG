@@ -27,7 +27,9 @@ KnifeCuts = Ability ("Knife Cuts", "Physical", 25, 10, 2, 30)
 
 Punches = Ability ("Punches", "Physical", 15, 15, 3, 30)
 StrongFist = Ability ("Strong Fist", "Physical", 30, 5, 1, 10)
+AnchorStrike = Ability ("Anchor Strike", "Physical", 15, 15, 1, 15)
 
 #ARMATEK ABILITIES
 
 Scan = Ability ("Scan", "Scan", 0, 5, 1, 0)
+LoaderFist = Ability ("Loader Fist", "Armatek", 25, 25, 2, 30)

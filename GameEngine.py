@@ -240,7 +240,7 @@ class Player(Character):
             self.items[Grenade] += 2
             
 
-            self.moveset = [Attack, StrongFist, "-", ListItems]
+            self.moveset = [Attack, Punches, "-", ListItems]
             self.arenawins = 0
             self.arenaroundcomplete = False
 
@@ -601,6 +601,7 @@ Would you like to select this class, or view another?
                         if selectedmove.apcost > 0:
                             if selectedmove.apcost > self.ap:
                                 GMtalk.write("You don't have enough AP for that right now!")
+                                self.PlayerTurnDisplay()
                             else:
                                 self.ap -= selectedmove.apcost
                         else:
@@ -884,6 +885,15 @@ class Enemy(Character):
             self.armstr = 10
             self.armdef = 8
             self.moveset = [Punches, StrongFist]
+        elif self.name == "Docker":
+            self.job = "Docker"
+            self.hpmax = 250
+            self.hp = 250
+            self.phystr = 10
+            self.phydef = 10
+            self.armstr = 12
+            self.armdef = 8
+            self.moveset = [AnchorStrike, LoaderFist]
 
 
     def MoveSelect(self):
@@ -898,6 +908,9 @@ class Enemy(Character):
         target = BattleSystem.party[random.randint(1,len(BattleSystem.party))-1]
         if self.movechoice.effect == "Physical":
             totaldamage = (self.movechoice.damage + self.phystr - target.phydef)
+            target.hp -= totaldamage
+        elif self.movechoice.effect == "Armatek":
+            totaldamage = (self.movechoice.damage + self.armstr - target.armdef)
             target.hp -= totaldamage
         GMnarrate.write (f"{self.name} used {self.movechoice.name} for {totaldamage} damage \n")
 
@@ -941,6 +954,7 @@ FieldDroid = Medic ("Field Droid")
 # ENEMY CHARACTERS
 Vagrant = Enemy ("Vagrant")
 Bouncer = Enemy ("Bouncer")
+Docker = Enemy ("Docker")
 
 ############################
 ############################
@@ -1067,11 +1081,7 @@ class Battles:
             GMnarrate.write("You won the battle!")
     
     def ArenaFightStart():
-        if MainCharacter.arenaroundcomplete == True:
-            GMnarrate.write ("There's nobody for you to fight right now")
-            PressEnterToContinue()
-            MainCharacter.currentlocation()
-        elif MainCharacter.arenaroundcomplete == False:
+        if MainCharacter.arenaroundcomplete == False:
             if MainCharacter.arenawins == 0:
                 BattleSystem.enemies = [Vagrant]
                 BattleSystem.battlestart = True
@@ -1080,6 +1090,17 @@ class Battles:
                 BattleSystem.enemies = [Bouncer]
                 BattleSystem.battlestart = True
                 BattleSystem.Fight()
+            elif MainCharacter.arenawins == 2:
+                BattleSystem.enemies = [Docker]
+                BattleSystem.battlestart = True
+                BattleSystem.Fight()
+            else:
+                pass
+
+        else:
+            GMnarrate.write ("There's nobody for you to fight right now")
+            PressEnterToContinue()
+            MainCharacter.currentlocation()
 
     def ArenaVictory():
         MainCharacter.arenawins += 1
@@ -1534,6 +1555,10 @@ class Interactions:
             PressEnterToGoBack()
             MedicFella.Talk()
     def MedicHealing():
+        if MainCharacter.ap < (MainCharacter.apmax/100*70):
+            MainCharacter.ap = (MainCharacter.apmax/100*70)
+        else:
+            pass
         if MainCharacter.hp < (MainCharacter.hpmax/100*70):
             MainCharacter.hp = (MainCharacter.hpmax/100*70)
             GMnarrate.write("After the medic has finished examining you and administering some kind of injected formula, you can feel some of your pain begin to ease   \n")
@@ -1586,6 +1611,10 @@ class Interactions:
         PressEnterToGoBack()
         FieldDroid.Talk()
     def FieldDroidHealing():
+        if MainCharacter.ap < (MainCharacter.apmax/100*85):
+            MainCharacter.ap = (MainCharacter.apmax/100*85)
+        else:
+            pass
         if MainCharacter.hp < (MainCharacter.hpmax/100*85):
             MainCharacter.hp = (MainCharacter.hpmax/100*85)
             GMnarrate.write("The medical droid looks you over with a myriad of old tools - hardly cutting edge now, but it's more capable than the old medic.   \n")
@@ -1608,6 +1637,9 @@ class Interactions:
         elif MainCharacter.arenawins == 1:
             GMnarrate.write("The Boss Man asks")
             NPCtalk.write("You won one round - let's see how you handle someone capable.") 
+        elif MainCharacter.arenawins == 2:
+            GMnarrate.write ("The Boss looks almost amused - it must be a while since he saw anyone winning fights here.")
+            NPCtalk.write ("Alright then, you've got something. I've got something better...")
     def PowerStationBossConfirmArena():
         PowerStationBoss.talkoption1 = "Yes"
         PowerStationBoss.talkoption2 = "No, I'll come back later."
