@@ -593,32 +593,29 @@ Would you like to select this class, or view another?
                 InvalidChoice()
                 BattleSystem.PlayerTurn()
             else:
-                for i in range (1,selectedmove.rounds+1):
-                    accuracycheck = random.randint (1,100)
-                    if accuracycheck in range (selectedmove.chancetomiss): # so if the accuracycheck falls within the misschance of the selected move, it misses.
-                        GMnarrate.write  (f"You tried to use {selectedmove.name}, but missed!  \n")
-                    else: #otherwise, it hits and so determines how damage or buffs work here base on the selected move effect value
-                        if selectedmove.apcost > 0:
-                            if selectedmove.apcost > self.ap:
-                                GMtalk.write("You don't have enough AP for that right now!")
-                                self.PlayerTurnDisplay()
-                            else:
-                                self.ap -= selectedmove.apcost
-                        else:
-                            pass
-                        if selectedmove.effect == "Physical":
-                            damage = (self.phystr + selectedmove.damage + self.physequip[0].damage - self.selectedtarget.phydef)
-                            self.selectedtarget.hp = (BattleSystem.selectedtarget.hp - damage)
-                            GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
-                            BattleSystem.CheckEnemyStatus()
-                        
-                        elif selectedmove.effect == "Scan":
-                            self.selectedtarget.ShowCurrentStats()
-                        
-                        elif selectedmove.effect == "Items":
-                            self.PlayerSelectItems()
+                if selectedmove.apcost > self.ap:
+                    GMtalk.write("You don't have enough AP for that right now!")
+                    self.PlayerTurnDisplay()
+                else:
+                    self.ap -= selectedmove.apcost
+                    for i in range (1,selectedmove.rounds+1):
+                        accuracycheck = random.randint (1,100)
+                        if accuracycheck in range (selectedmove.chancetomiss): # so if the accuracycheck falls within the misschance of the selected move, it misses.
+                            GMnarrate.write  (f"You tried to use {selectedmove.name}, but missed!  \n")
+                        else: #otherwise, it hits and so determines how damage or buffs work here base on the selected move effect value
+                            if selectedmove.effect == "Physical":
+                                damage = (self.phystr + selectedmove.damage + self.physequip[0].damage - self.selectedtarget.phydef)
+                                self.selectedtarget.hp = (BattleSystem.selectedtarget.hp - damage)
+                                GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
+                                BattleSystem.CheckEnemyStatus()
+                            
+                            elif selectedmove.effect == "Scan":
+                                self.selectedtarget.ShowCurrentStats()
+                            
+                            elif selectedmove.effect == "Items":
+                                self.PlayerSelectItems()
 
-                        elif selectedmove.effect == "Legendary":
+                            elif selectedmove.effect == "Legendary":
                                 if self.hp <= ((self.hpmax / 100) * 10):
                                     damage = (self.phystr * selectedmove.damage)
                                     self.selectedtarget.hp = (self.selectedtarget.hp - damage)
@@ -628,6 +625,8 @@ Would you like to select this class, or view another?
                                     GMnarrate.write ("You can't use your Limit Break ability unless your health is below 10%!")
                                     PressEnterToGoBack()
                                     BattleSystem.PlayerTurn()
+                            else:
+                                pass
 
     def PlayerSelectItems(self):
         listitems = 0
@@ -894,6 +893,24 @@ class Enemy(Character):
             self.armstr = 12
             self.armdef = 8
             self.moveset = [AnchorStrike, LoaderFist]
+        elif self.name == "Officer":
+            self.job = "Officer"
+            self.hpmax = 450
+            self.hp = 450
+            self.phystr = 10
+            self.phydef = 10
+            self.armstr = 8
+            self.armdef = 14
+            self.moveset = [PistolShot, ArmaScopeShot]
+        elif self.name == "Assassin":
+            self.job = "Assassin"
+            self.hpmax = 450
+            self.hp = 450
+            self.phystr = 14
+            self.phydef = 8
+            self.armstr = 10
+            self.armdef = 10
+            self.moveset = [VibraSwordSlice, VibraSwordSlashes]
 
 
     def MoveSelect(self):
@@ -955,6 +972,8 @@ FieldDroid = Medic ("Field Droid")
 Vagrant = Enemy ("Vagrant")
 Bouncer = Enemy ("Bouncer")
 Docker = Enemy ("Docker")
+Officer = Enemy ("Officer")
+Assassin = Enemy ("Assassin")
 
 ############################
 ############################
@@ -1094,9 +1113,16 @@ class Battles:
                 BattleSystem.enemies = [Docker]
                 BattleSystem.battlestart = True
                 BattleSystem.Fight()
+            elif MainCharacter.arenawins == 3:
+                BattleSystem.enemies = [Officer]
+                BattleSystem.battlestart = True
+                BattleSystem.Fight()            
+            elif MainCharacter.arenawins == 4: 
+                BattleSystem.enemies = [Assassin]
+                BattleSystem.battlestart = True
+                BattleSystem.Fight()
             else:
                 pass
-
         else:
             GMnarrate.write ("There's nobody for you to fight right now")
             PressEnterToContinue()
@@ -1640,6 +1666,12 @@ class Interactions:
         elif MainCharacter.arenawins == 2:
             GMnarrate.write ("The Boss looks almost amused - it must be a while since he saw anyone winning fights here.")
             NPCtalk.write ("Alright then, you've got something. I've got something better...")
+        elif MainCharacter.arenawins == 3:
+                    GMnarrate.write ("The Boss is pleased with you - perhaps he's been making more money from this than usual.")
+                    NPCtalk.write ("Right, I figure you for an ex military sort - I've got someone you might know this time")
+        elif MainCharacter.arenawins == 4:
+                    GMnarrate.write ("For once the Boss isn't beaming at you - he may not have banked on anyone ever getting this far.")
+                    NPCtalk.write ("Got a special surprise for you... can't have you winning too many times or you'll start to make us look bad. ")
     def PowerStationBossConfirmArena():
         PowerStationBoss.talkoption1 = "Yes"
         PowerStationBoss.talkoption2 = "No, I'll come back later."
@@ -1684,3 +1716,4 @@ class Interactions:
             GMnarrate.write ("The Vendor looks kind of angry, perhaps you upset them…  \n")
             NPCtalk.write ("Do I look like a damn charity to you? Get the hell outta here until you've got soemthing WORTH MY TIME!!!  \n")
         PressEnterToGoBack()
+x
