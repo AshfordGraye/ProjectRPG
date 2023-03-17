@@ -3,7 +3,7 @@ import random
 from os import system, name
 from time import sleep
 from x_Typewriter_Text import *
-from x_Items_And_Weapons import *
+from x_Attacks_And_Abilities import *
 
 ############################
 ##### GLOBAL FUNCTIONS #####
@@ -41,9 +41,11 @@ def CountDown():
         sleep(1)
     ClearScreen()
 
-#############################################
-##### SECTION - OBJECT CLASS CREATION #####
-#############################################
+#####################################
+#####################################
+##### SECTION - LOCATION SYSTEM #####
+#####################################
+#####################################
 
 # LOCATION CLASS PROVIDES VARIABLES AND FUNCTIONS FOR LOCATIONS TO DISPLAY INFORMATION CONSISTENTLY
 class Location:
@@ -97,9 +99,7 @@ class Location:
     def Selection(self):
         GMtalk.write ("What would you like to do?   \n")
         selection = input()
-        if selection in range (1,7):
-            self.firstvisit = False
-        elif selection == "1":
+        if selection == "1":
             if self.selecttravel1 == "-":
                 self.InvalidChoice()
             else:
@@ -142,7 +142,7 @@ class Location:
                 ClearScreen()
                 self.selectoption3()
         elif selection == "7":
-            MainCharacter.PlayerSelectItems()
+            ConsumableSystem.ShowConsumables()
             PressEnterToGoBack()
             self.Area()
         elif selection == "8":
@@ -160,6 +160,111 @@ class Location:
     def InvalidChoice(self):
         InvalidChoice()
         self.Area()
+
+
+#######################################
+#######################################
+##### SECTION - CONSUMABLE SYSTEM #####
+#######################################
+#######################################
+
+class ConsumableSystem:
+    
+    listofitems = ""
+    selectedconsumable = ""
+    selectedtarget = ""
+    
+    def ShowConsumables():
+        #list the consumable items available
+        listconsumables = 0
+        MenuTitle.write("Items:")
+        PlayerInput.write ("\n0: Cancel   \n") 
+        for count in MainCharacter.items:
+            listconsumables += 1
+            PlayerInput.write(f"{listconsumables}: {MainCharacter.items[count]} x {count}  \n")
+        #let player select consumable
+        GMtalk.write ("Select an item to use:")
+        DecisionMaker.MenuSelection()
+        if DecisionMaker.menuselect == "0":
+            #check if player is outside of combat - if so will return to player's current location. If in combat will restart player turn
+            if MainCharacter.combatlocation == False:
+                PressEnterToGoBack()
+                MainCharacter.currentlocation()
+            else:
+                PressEnterToGoBack()
+                BattleSystem.Fight()
+        #check to see if entered value is valid
+        elif DecisionMaker.menuselectint in range(1,len(MainCharacter.items)+1):
+            #cast count of items as a standard list, define the selection and then select the item in the list 
+            ConsumableSystem.listofitems = list(MainCharacter.items)
+            ConsumableSystem.selectedconsumable = ConsumableSystem.listofitems[DecisionMaker.menuselectint-1]
+            #check to see if player is out of combat and if item is not a buff to reject usage of offensive items, otherwise move onto target selection.
+            if not MainCharacter.combatlocation and "Buff" not in ConsumableSystem.selectedconsumable.effect:
+                GMtalk.write ("You can't use that here!")
+            else:
+                ConsumableSystem.SelectConsumableTarget()
+        else:
+            InvalidChoice()
+            ConsumableSystem.ShowConsumables()
+        
+    def SelectConsumableTarget(): 
+        listoftargets = 0
+        #check to see if the item effect is a buff - if it is, it will be used against friendly characters. else, it will be used against enemy characters
+        if "Buff" in ConsumableSystem.selectedconsumable.effect:
+            
+            #check to see if there's only one person in the party. if there is, it'll be selected automatically. if not it will list the party members and let the player choose one.
+            if len(BattleSystem.party) == 1:
+                ConsumableSystem.selectedtarget = BattleSystem.party[0]
+                ConsumableSystem.ConsumableTargetConfirmed()
+            else:
+                MenuTitle.write("Targets:")
+                for elem in BattleSystem.party:
+                    listoftargets += 1
+                    PlayerInput.write (f"{listoftargets}: {elem.name}")
+                    DecisionMaker.MenuSelection()
+                    ConsumableSystem.selectedtarget = BattleSystem.enemies[DecisionMaker.menuselectint-1]
+                    ConsumableSystem.ConsumableTargetConfirmed()
+        else:
+            #same check as just before but for enemies. one enemy is automatically selected, more than one will allow player selection of the target. 
+            if len(BattleSystem.enemies) == 1:
+                ConsumableSystem.selectedtarget = BattleSystem.enemies[0]
+                PressEnterToContinue()
+                ConsumableSystem.ConsumableTargetConfirmed()
+            else:
+                MenuTitle.write("Targets:")
+                for elem in BattleSystem.enemies:
+                    listoftargets += 1
+                    PlayerInput.write (f"{listoftargets}: {elem.name}")
+                DecisionMaker.MenuSelection()
+                ConsumableSystem.selectedtarget = BattleSystem.enemies[DecisionMaker.menuselectint-1]
+                if ConsumableSystem.selectedtarget in range (1,listoftargets+1):
+
+                    ConsumableSystem.ConsumableTargetConfirmed()
+                else:
+                    InvalidChoice()
+                    ConsumableSystem.SelectConsumableTarget()
+
+    def ConsumableTargetConfirmed():
+        #runs item action and removes one instance of the item from player inventory 
+        ConsumableSystem.selectedconsumable.action()
+        MainCharacter.items[ConsumableSystem.selectedconsumable] -= 1
+        if MainCharacter.items[ConsumableSystem.selectedconsumable] == 0:
+            del MainCharacter.items[ConsumableSystem.selectedconsumable]
+        else:
+            pass
+        #check to see if in combat, if so will check enemy status, if not will continue.
+        if MainCharacter.combatlocation:
+            BattleSystem.CheckEnemyStatus()
+        else:
+            pass
+
+
+#######################################
+#######################################
+##### SECTION - CHARACTERS SYSTEM #####
+#######################################
+#######################################
+
 
 # MAIN CHARACTER CLASS WITH VARIABLES NECESSARY FOR ALL CHARACTERS
 class Character:
@@ -229,18 +334,14 @@ class Player(Character):
             self.armdef = 10
 
             self.phyweapons = []
-            self.physequip = [BareKnuckles]
+            self.physequip = []
             self.armweapons = []
             self.armequip = []
 
             self.items = collections.Counter()
             
-            self.items[Potion] += 2
-            self.items[HiPotion] += 2
-            self.items[Grenade] += 2
-            
 
-            self.moveset = [Attack, Punches, "-", ListItems]
+            self.moveset = [Attack, Punches, "-"]
             self.arenawins = 0
             self.arenaroundcomplete = False
 
@@ -540,6 +641,7 @@ Would you like to select this class, or view another?
         elif self.ap <= (self.apmax /100 *25):
             print (f' {type.fg_orange}MP:{type.reset}   {type.fg_red}{self.ap}{type.reset}/{type.fg_green}{self.apmax}{type.reset}\n')
         print()
+        self.PlayerSelectAbility()
 
     def PlayerSelectAbility(self):
         listmoves = 0 #to number the ability list dynamically 
@@ -555,12 +657,17 @@ Would you like to select this class, or view another?
         for elem in self.moveset:
             listmoves += 1
             PlayerInput.write (f" {listmoves}: {elem} \n")
+        listmoves+=1
+        PlayerInput.write(f"{listmoves}: Items")
         #get player selection
-        self.MenuSelection()
+        DecisionMaker.MenuSelection()
 
         #check to see if selection is valid, then move to select the enemy 
-        if self.menuselect in (str(i) for i in range(1, listmoves+1)):
-            self.PlayerSelectAbilityTarget()
+        if DecisionMaker.menuselectint in range(1, listmoves+1):
+            if DecisionMaker.menuselectint == 4:
+                ConsumableSystem.ShowConsumables()
+            else:
+                self.PlayerSelectAbilityTarget()
         else:
             InvalidChoice()
             BattleSystem.PlayerTurn()
@@ -586,8 +693,7 @@ Would you like to select this class, or view another?
                 self.PlayerSelectAbilityTarget()
 
     def PlayerSelectAbilityTargetConfirmed(self):
-            self.menuselect = int(self.menuselect)
-            selectedmove = self.moveset[self.menuselect-1]
+            selectedmove = self.moveset[DecisionMaker.menuselectint-1]
             #accuracycheck checks against the misschance of the selected move.
             if selectedmove == "-":
                 InvalidChoice()
@@ -628,101 +734,9 @@ Would you like to select this class, or view another?
                             else:
                                 pass
 
-    def PlayerSelectItems(self):
-        listitems = 0
-        MenuTitle.write("Items:")
-        PlayerInput.write ("\n0: Cancel   \n") 
-        for count in self.items:
-            listitems += 1
-            PlayerInput.write(f"{listitems}: {self.items[count]} x {count}  \n")
-        GMtalk.write ("Select an item to use:")
-        self.MenuSelection()
-        if self.menuselect == "0":
-            if self.combatlocation == False:
-                PressEnterToGoBack()
-                self.currentlocation()
-            PressEnterToGoBack()
-            BattleSystem.PlayerTurn()
-        elif self.menuselect in (str(n) for n in range(1,len(self.items)+1)):
-            self.listofitems = list(self.items)
-            self.listselection = int(self.menuselect)
-            if self.listselection not in range (len(self.items)+1):
-                InvalidChoice()
-                self.PlayerSelectItems()
-            self.itemselected = self.listofitems[self.listselection-1]
-            if not self.combatlocation and self.itemselected.effect == "Physical":
-                GMtalk.write ("You can't use that here!")
-            else:
-                self.PlayerSelectItemsTarget()
-        else:
-            InvalidChoice()
-            self.PlayerSelectItems()
-
-    def PlayerSelectItemsTarget(self):
-        listoftargets = 0
-
-        if self.itemselected.effect == "Healing":
-            if len(BattleSystem.party) == 1:
-                self.selectedtarget == BattleSystem.party[0]
-                self.PlayerSelectItemsTargetConfirmed()
-            else:
-                MenuTitle.write("Targets:")
-                for elem in BattleSystem.party:
-                    listoftargets += 1
-                    PlayerInput.write (f"{listoftargets}: {elem.name}")
-                    self.MenuSelection()
-                    self.selectedtarget = BattleSystem.enemies[self.menuselect-1]
-                    self.PlayerSelectItemsTargetConfirmed()
-        elif self.itemselected.effect in ("Physical" , "Armatek"):
-            if len(BattleSystem.enemies) == 1:
-                self.selectedtarget == BattleSystem.enemies[0]
-                print("Target Selected")
-                PressEnterToContinue()
-                self.PlayerSelectItemsTargetConfirmed()
-            else:
-                MenuTitle.write("Targets:")
-                for elem in BattleSystem.enemies:
-                    listoftargets += 1
-                    PlayerInput.write (f"{listoftargets}: {elem.name}")
-                self.MenuSelection()
-                self.selectedtarget = BattleSystem.enemies[self.menuselect-1]
-                if self.selectedtarget in range (1,listoftargets+1):
-
-                    self.PlayerSelectItemsTargetConfirmed()
-                else:
-                    InvalidChoice()
-                    self.PlayerSelectItemsTarget()
-                    
-    def PlayerSelectItemsTargetConfirmed(self):
-
-        if self.itemselected.effect == "Healing":
-            self.hp += self.itemselected.damage
-            GMtalk.write (f"{self.itemselected.name} used, {self.name} HP raised to {self.hp}!")
-            if not self.combatlocation:
-                self.items[self.itemselected] -= 1
-                if self.items[self.itemselected] == 0:
-                    del self.items[self.itemselected]
-                PressEnterToGoBack()
-                self.currentlocation()
-
-        elif self.itemselected.effect == "Physical":
-            damage = (self.itemselected.damage + self.selectedtarget.phydef)
-            print (self.itemselected)
-            self.selectedtarget.hp = (BattleSystem.selectedtarget.hp - damage)
-            GMnarrate.write (f"You used {self.itemselected.name} to inflict {damage} damage. \n")
-        else:
-            PressEnterToGoBack()
-            BattleSystem.PlayerTurn()
-
-        self.items[self.itemselected] -= 1
-        if self.items[self.itemselected] == 0:
-            del self.items[self.itemselected]
-        if MainCharacter.combatlocation:
-            BattleSystem.CheckEnemyStatus()
-
 # NPC CHARACTER SUBCLASS CAN BE INTERACTED WITH BY THE PLAYER TO TRIGGER CONVERSATIONS AND EVENTS
 class NPC(Character):
-    
+
     firstmeet = True
     gmintro1 = ""
     gmintro2 = ""
@@ -748,25 +762,25 @@ class NPC(Character):
         self.TalkSelection()
 
     def TalkSelection(self):
-        self.MenuSelection()
-        if self.menuselect in [str(n) for n in range (1,4)]:
+        DecisionMaker.MenuSelection()
+        if DecisionMaker.menuselectint in range (1,4):
             self.firstmeet = False
-        if self.menuselect == "0":
+        if DecisionMaker.menuselectint == 0:
             ClearScreen()
             MainCharacter.currentlocation()
-        elif self.menuselect == "1":
+        elif DecisionMaker.menuselectint == 1:
             if self.talkselect1 == "":
                 self.InvalidChoice()
             else:
                 ClearScreen()
                 self.talkselect1()
-        elif self.menuselect == "2":
+        elif DecisionMaker.menuselectint == 2:
             if self.talkselect2 == "":
                 self.InvalidChoice()
             else:
                 ClearScreen()
                 self.talkselect2()
-        elif self.menuselect == "3":
+        elif DecisionMaker.menuselectint == 3:
             if self.talkselect3 == "":
                 InvalidChoice()
             else:
@@ -935,13 +949,96 @@ class Enemy(Character):
         MenuTitle.write (f"{self.name}  \n")
         MenuTitle.write ("HP:"); GMtalk.write(f"{self.hp}/{self.hpmax}  \n")
 
+# MEDIIIIIIIIIIIC!
+class Medic (NPC):
+    def Healing(self):
+        if self.name == "Medic":
+            Interactions.MedicHealing()
+        elif self.name == "Field Droid":
+            Interactions.FieldDroidHealing()
+
+
+
+class Item:
+    def __init__(self, name, effect, action, actionlevel, damage, hits, value):
+        self.name = name
+        self.effect = effect
+        self.action = action
+        self.actionlevel = actionlevel
+        self.damage = damage
+        self.hits = hits
+        self.value = value
+        self.totaleffect = self.actionlevel * self.damage
+
+    def __repr__(self):
+        return (f"{self.name} - {self.effect} effect for {self.damage} points")
+
+class ItemEffects(Item): 
+    
+    def HPBuff():
+        if ConsumableSystem.selectedtarget.hp == ConsumableSystem.selectedtarget.hpmax:
+            GMtalk.write(f"{ConsumableSystem.selectedtarget.name} is already at full health!")
+            PressEnterToGoBack()
+            ConsumableSystem.ShowConsumables()
+        else:
+            pass
+        ConsumableSystem.selectedtarget.hp += ConsumableSystem.selectedconsumable.totaleffect
+        if ConsumableSystem.selectedtarget.hp > ConsumableSystem.selectedtarget.hpmax:
+            ConsumableSystem.selectedtarget.hp = ConsumableSystem.selectedtarget.hpmax
+        else:
+            pass
+        GMnarrate.write(f"{ConsumableSystem.selectedtarget.name} HP raised to {ConsumableSystem.selectedtarget.hp}")
+
+    def APBuff():
+        if ConsumableSystem.selectedtarget.ap == ConsumableSystem.selectedtarget.apmax:
+            GMtalk.write(f"{ConsumableSystem.selectedtarget.name} is already at full health!")
+        else:
+            pass
+        ConsumableSystem.selectedtarget.ap += ConsumableSystem.selectedconsumable.totaleffect
+        if ConsumableSystem.selectedtarget.ap > ConsumableSystem.selectedtarget.apmax:
+            ConsumableSystem.selectedtarget.ap = ConsumableSystem.selectedtarget.apmax
+        else:
+            pass
+        GMnarrate.write(f"{ConsumableSystem.selectedtarget.name} AP raised to {ConsumableSystem.selectedtarget.ap}")
+
+class Weapon:
+    def __init__(self, name, effect, damage, special, value):
+        self.name = name
+        self.effect = effect
+        self.damage = damage
+        self.special = special
+        self.value = value
+    def __repr__(self):
+        if self.special == "":
+            return (f"{self.name} - {self.effect} weapon for {self.damage} points.")
+        else:
+            return (f"{self.name} - {self.effect} weapon for {self.damage} points. Gives abiility: {self.special.name} for {self.special.apcost} AP cost.")
+
+class Armatek:
+    def __init__(self, name, effect, damage, special, value):
+        self.name = name
+        self.effect = effect
+        self.damage = damage
+        self.special = special
+        self.value = value
+    def __repr__(self):
+        if self.special == "":
+            return (f"{self.name} - {self.effect} weapon for {self.damage} points.")
+        else:
+            return (f"{self.name} - {self.effect} weapon for {self.damage} points. Gives abiility: {self.special.name} for {self.special.apcost} AP cost.")
+
+
 #######################################
 ###### SECTION - OBJECT CREATION ######
 #######################################
 
 #  NOW THE PREVIOUS SECTION TOOK CARE OF CREATING THE OBJECT CLASSES, WE'LL CREATE THE OBJECTS IN THEIR OWN SUBSECTIONS HERE
 
-# LOCATIONS
+
+    ##########
+    # PLACES #
+    ##########
+
 TutorialWorld = Location("The name of your current location")
 Train = Location("Skytrain")
 SkytrainDock = Location("Skytrain Dock")
@@ -950,16 +1047,23 @@ PowerStationMedicArea = Location("Power Station - Medic's Station")
 PowerStationBazaar = Location("PowerStation - Bazaar")
 PowerStationArena = Location("Power Station - Arena")
 
-# PLAYABLE CHARACTERS
+
+    ##############
+    # CHARACTERS #
+    ##############
+
+    # PLAYABLE CHARACTERS
+
+DecisionMaker = Player ("DecisionMaker")
 MainCharacter = Player ("Player")
 
-# NPC CHARACTERS
+    # NPC CHARACTERS
 TutorialCharacter = NPC("Tutorial NPC")
 DockPorter = NPC ("Skytrain Dock Porter")
 HomelessGuy = NPC ("Homeless Guy")
 PowerStationBoss = NPC ("Power Station Boss")
 
-# STORE VENDORS 
+    # STORE VENDORS 
 VendorItem = Vendor("Item Vendor")
 VendorPhysical = Vendor ("Physical Equipment Vendor")
 VendorArmatek = Vendor ("Armatek Equipment Vendor")
@@ -975,17 +1079,59 @@ Docker = Enemy ("Docker")
 Officer = Enemy ("Officer")
 Assassin = Enemy ("Assassin")
 
-############################
-############################
-##### SECTION - COMBAT #####
-############################
-############################
+    # ENEMY CHARACTERS
+Vagrant = Enemy ("Vagrant")
+Bouncer = Enemy ("Bouncer")
+Docker = Enemy ("Docker")
+Officer = Enemy ("Officer")
+Assassin = Enemy ("Assassin")
+
+    ###############
+    # CONSUMABLES #
+    ###############
+
+ItemEffectsList = ItemEffects
+
+    # DEFENSIVE / BUFFS
+
+FieldDressing = Item ("Field Dressing", "HP Buff", ItemEffectsList.HPBuff, 1, 30, 1, 20)
+MorphineShot = Item ("Morphine Shot", "HP Buff", ItemEffectsList.HPBuff, 2, 30, 1, 40)
+
+AdrenoShot = Item ("Adreno Shot", "AP Buff", ItemEffectsList.APBuff, 1, 20, 1, 20)
+AdrenoPlus = Item ("Adreno Plus", "AP Buff", ItemEffectsList.APBuff, 2, 20, 1, 20)
+
+
+    # OFFENSIVE / DEBUFFS
+
+# Grenade = Item ("Grenade", "Physical", 150, 1, 50)
+
+    ###########
+    # WEAPONS #
+    ###########
+
+BareKnuckles = Weapon ("Bare Knuckles", "Physical", 10, StrongFist, 0)
+Knife = Weapon ("Knife", "Physical", 15, KnifeCuts, 50)
+
+    ###########
+    # ARMATEK #
+    ###########
+
+ScanningGlove = Armatek ("Scanning Glove", "Armatek", 0, Scan, 100)
+ArmaGauntlet = Armatek ("Mecha Gauntlet", "Armatek", 18, StrongFist, 50)
+
+
+###################################
+###################################
+##### SECTION - COMBAT SYSTEM #####
+###################################
+###################################
 
 # BATTLE SYSTEM INITIATES TURN BASED COMBAT USING THE PLAYER AND ENEMY FUNCTIONS
 class BattleSystem:
     
     #
     battlestart = True
+    activeturn = True
     #enemy list gets populated at battle start and selectedtarget is populated when a player selectes an enemy to attack
     party = [MainCharacter]
     enemies = []
@@ -1002,7 +1148,7 @@ class BattleSystem:
         for elem in BattleSystem.enemies:
             elem.MoveSelect()
         # BattleSystem.CheckForVictory()
-        Player.playerturn = not Player.playerturn
+        BattleSystem.activeturn = not BattleSystem.activeturn
         if MainCharacter.hp <= 0:
             StoryEvent.EndTheGame()
         else:
@@ -1012,9 +1158,8 @@ class BattleSystem:
     def PlayerTurn():
         for elem in BattleSystem.party:
             elem.PlayerTurnDisplay()
-            elem.PlayerSelectAbility()
         # BattleSystem.CheckForVictory()
-        Player.playerturn = not Player.playerturn
+        BattleSystem.activeturn = not BattleSystem.activeturn
         PressEnterToContinue()
 
 #now enemy is selected, move is confirmed. 
@@ -1048,6 +1193,8 @@ class BattleSystem:
             GMnarrate.write (f"{BattleSystem.selectedtarget.name} is down!")
             BattleSystem.enemies.remove (BattleSystem.selectedtarget)
             BattleSystem.PlayerCheckVictory()
+        else: 
+            pass
 
 #checks to see if all enemies are down 
     def PlayerCheckVictory():
@@ -1059,11 +1206,11 @@ class BattleSystem:
     def FirstStrike():
         cointoss = random.randint(1,2)
         if cointoss == 1:
-            Player.playerturn = True
+            BattleSystem.activeturn = True
             GMnarrate.write(f'You move fast for the first strike!   \n')
             BattleSystem.PlayerTurn()
         elif cointoss == 2:
-            Player.playerturn = False
+            BattleSystem.activeturn = False
             GMnarrate.write(f'Your opponent strikes first!   \n')
             BattleSystem.EnemyTurn()
 
@@ -1080,10 +1227,10 @@ class BattleSystem:
             else:
                 GMnarrate.write (f"Multiple Enemies!")
                 BattleSystem.FirstStrike()
-        if Player.playerturn == True:
+        if BattleSystem.activeturn == True:
             BattleSystem.PlayerTurn()
             BattleSystem.Fight()    
-        elif Player.playerturn == False:
+        elif BattleSystem.activeturn == False:
             BattleSystem.EnemyTurn()
             BattleSystem.Fight()
 
@@ -1387,7 +1534,14 @@ class WorldBuilding:
         VendorArmatek.talkselect1 = ""
         VendorArmatek.talkselect2 = ""
         VendorArmatek.talkselect3 = VendorArmatek.SaleDisplay
-        
+
+    def VendorUpdate():
+        if MainCharacter.arenawins == 0:
+            VendorItem.items[FieldDressing] += 2
+            VendorItem.items[MorphineShot] += 1
+            VendorArmatek.items[ScanningGlove] += 1
+            VendorPhysical.items[Knife] += 1
+    
     def ThisFunctionTookGodSixWholeDays():
         WorldBuilding.NPCUpdate()
         WorldBuilding.LocationUpdate()
@@ -1496,18 +1650,49 @@ class StoryEvent:
         PressEnterToContinue()
         Train.Area()
 
+
+    def ArenaVictory():
+        MainCharacter.arenawins += 1
+        MainCharacter.arenaroundcomplete = True
+        if MainCharacter.arenawins == 1:
+            StoryEvent.FirstArenaWin()
+        elif MainCharacter.arenawins == 2:
+            StoryEvent.SecondArenaWin()
+        PressEnterToContinue()
+        MainCharacter.combatlocation = False
+        MainCharacter.currentlocation()
+
     def FirstArenaWin():
-        print ("FIRST MATCH COMPLETE")
-        VendorItem.items[Potion] += 1
-        VendorItem.items[HiPotion] += 1
+        print ("FIRST ROUND COMPLETE")
+        GMnarrate.write ("Story beat for after the first round of combat goes here.")
+        VendorItem.items[FieldDressing] += 1
+        # VendorItem.items[MorphineShot] += 1
         VendorArmatek.items[ScanningGlove] += 1
         VendorPhysical.items[Knife] += 1
     
     def SecondArenaWin():
-        print ("SECOND MATCH COMPLETE")
-        VendorItem.items[Potion] += 5
-        VendorItem.items[HiPotion] += 5
+        print ("SECOND ROUND COMPLETE")
+        GMnarrate.write ("Story beat for after the second round of combat goes here.")
+        VendorItem.items[FieldDressing] += 5
+        # VendorItem.items[MorphineShot] += 5
         VendorArmatek.items[ArmaGauntlet] += 1
+
+    def ThirdArenaWin():
+        print ("THIRD ROUND COMPLETE")
+        GMnarrate.write ("Story beat for after the third round of combat goes here.")
+
+
+    def FourthArenaWin():
+        print ("FOURTH ROUND COMPLETE")
+        GMnarrate.write ("Story beat for after the fourth round of combat goes here.")
+
+    def FifthArenaWin():
+        print ("FIFTH ROUND COMPLETE")
+        GMnarrate.write ("Story beat for after the fifth round of combat goes here.")
+
+
+
+
 
 # SELF EXPLANATORY
 class BoilerplateSpeech:
@@ -1546,7 +1731,6 @@ class Interactions:
         NPCtalk.write ("What're you doing back here? I told you already, bloke calling himself Game Master will take you from the here.")
         PressEnterToContinue()
         TutorialWorld.Area()
-
     def TutorialCharacter_WhatNext():
         GMnarrate.write("The NPC chuckles at your brusque response  \n")
         NPCtalk.write("What you do now mate, is get on with the story! Bloke calling himself Game Master will take care of you from here.   \n")
@@ -1716,4 +1900,3 @@ class Interactions:
             GMnarrate.write ("The Vendor looks kind of angry, perhaps you upset them…  \n")
             NPCtalk.write ("Do I look like a damn charity to you? Get the hell outta here until you've got soemthing WORTH MY TIME!!!  \n")
         PressEnterToGoBack()
-x

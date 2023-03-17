@@ -13,16 +13,17 @@ class Ability:
         else:
             return (f'''{self.name} \n   AP: {self.apcost}''')
 
-
-ListItems = Ability("Items","Items",0,0,1,0) #THIS ONE JUST PRETENDS TO BE AN ITEM IN ORDER TO TRIGGER A FUNCTION IN COMBAT
-
 #PHYSICAL ATTACKS
 
 Attack = Ability ("Attack", "Physical", 20, 0, 1, 10)
 
 LimitBreak = Ability ("Limit Break", "Legendary", 10, 0, 1, 0)
 
-Lunge = Ability ("Lunge", "Physical", 10, 0, 1, 10)
+Punches = Ability ("Punches", "Physical Damage", 30, 15, 3, 25)
+
+StrongFist = Ability ("Strong Fist", "Physical", 30, 5, 1, 5)
+
+Lunge = Ability ("Lunge", "Physical Damage", 30, 5, 1 ,20)
 KnifeCuts = Ability ("Knife Cuts", "Physical", 25, 10, 2, 30)
 
 Punches = Ability ("Punches", "Physical", 15, 15, 3, 30)
