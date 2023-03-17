@@ -1,9 +1,10 @@
 # Folders
-
+/build
+/dist
 
 # Files
-x_TestingFile.py
 
 # Filetypes
 *.DS_Store
 *.pyc
+*.spec

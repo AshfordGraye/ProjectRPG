@@ -2,7 +2,9 @@ import collections
 import random
 from os import system, name
 from time import sleep
-from Module_TypewriterText import *
+import os
+import sys
+import time
 
 ############################
 ##### GLOBAL FUNCTIONS #####
@@ -39,6 +41,167 @@ def CountDown():
         timer -= 1
         sleep(1)
     ClearScreen()
+
+##################################
+##################################
+##### SECTION - USABLE MOVES #####
+##################################
+##################################
+
+# THIS SECTION IS FOR USABLE MOVES BY THE PLAYER AND ENEMIES - IT'S UP AT THE TOP BECAUSE ENEMY CHARACTERS WON'T INITIALISE UNLESS THESE COME FIRST
+
+# ABILITY CLASS ALLOWS FOR CREATION OF ABILITY OBJECTS THAT WILL BE HELD WITHIN WEAPON OBJECTS WHICH ALLOWS DYNAMIC ABILITY SWAPPING.
+class Ability:
+    def __init__(self, name, effect, damage, apcost, rounds, chancetomiss):
+        self.name = name
+        self.effect = effect
+        self.damage = damage
+        self.apcost = apcost
+        self.rounds = rounds
+        self.chancetomiss = chancetomiss
+
+    def __repr__(self):
+        if self.rounds > 1:
+            return (f'''{self.name} - can hit {self.rounds} times.\n   AP: {self.apcost}''')
+        else:
+            return (f'''{self.name} \n   AP: {self.apcost}''')   
+
+##################
+# PHYSICAL MOVES #
+##################
+# LIMIT BREAK IS FOR PLAYER ONLY, REPLACES STANDARD ATTACK WHEN HEALTH IS LOW
+LimitBreak = Ability ("Limit Break", "Legendary", 10, 0, 1, 0)
+
+Attack = Ability ("Attack", "Physical", 20, 0, 1, 10)
+Punches = Ability ("Punches", "Physical", 15, 15, 3, 30)
+StrongFist = Ability ("Strong Fist", "Physical", 30, 5, 1, 10)
+
+Lunge = Ability ("Lunge", "Physical", 30, 5, 1 ,20)
+KnifeCuts = Ability ("Knife Cuts", "Physical", 25, 10, 2, 30)
+
+AnchorStrike = Ability ("Anchor Strike", "Physical", 15, 15, 1, 15)
+
+PistolShot = Ability ("Pistol Shot", "Physical", 40, 20, 1, 10)
+
+VibraSwordSlice = Ability ("VibraSword Slice", "Physical", 40, 20, 1, 10)
+VibraSwordSlashes = Ability ("VibraSword Slashes", "Physical", 25, 30, 3, 20)
+
+#################
+# ARMATEK MOVES #
+#################
+Scan = Ability ("Scan", "Scan", 0, 5, 1, 0)
+LoaderFist = Ability ("Loader Fist", "Armatek", 25, 25, 2, 30)
+ArmaScopeShot = Ability ("ArmaScope Shot", "Physical", 40, 30, 1, 1)
+
+################################################
+################################################
+##### SECTION - USABLE ITEMS AND EQUIPMENT #####
+################################################
+################################################
+class Item:
+    def __init__(self, name, effect, action, actionlevel, damage, hits, value):
+        self.name = name
+        self.effect = effect
+        self.action = action
+        self.actionlevel = actionlevel
+        self.damage = damage
+        self.hits = hits
+        self.value = value
+        self.totaleffect = self.actionlevel * self.damage
+
+    def __repr__(self):
+        return (f"{self.name} - {self.effect} effect for {self.damage} points")
+
+class ItemEffects(Item): 
+    
+    def HPBuff():
+        if ConsumableSystem.selectedtarget.hp == ConsumableSystem.selectedtarget.hpmax:
+            GMtalk.write(f"{ConsumableSystem.selectedtarget.name} is already at full health!")
+            PressEnterToGoBack()
+            ConsumableSystem.ShowConsumables()
+        else:
+            pass
+        ConsumableSystem.selectedtarget.hp += ConsumableSystem.selectedconsumable.totaleffect
+        if ConsumableSystem.selectedtarget.hp > ConsumableSystem.selectedtarget.hpmax:
+            ConsumableSystem.selectedtarget.hp = ConsumableSystem.selectedtarget.hpmax
+        else:
+            pass
+        GMnarrate.write(f"{ConsumableSystem.selectedtarget.name} HP raised to {ConsumableSystem.selectedtarget.hp}")
+
+    def APBuff():
+        if ConsumableSystem.selectedtarget.ap == ConsumableSystem.selectedtarget.apmax:
+            GMtalk.write(f"{ConsumableSystem.selectedtarget.name} is already at full health!")
+        else:
+            pass
+        ConsumableSystem.selectedtarget.ap += ConsumableSystem.selectedconsumable.totaleffect
+        if ConsumableSystem.selectedtarget.ap > ConsumableSystem.selectedtarget.apmax:
+            ConsumableSystem.selectedtarget.ap = ConsumableSystem.selectedtarget.apmax
+        else:
+            pass
+        GMnarrate.write(f"{ConsumableSystem.selectedtarget.name} AP raised to {ConsumableSystem.selectedtarget.ap}")
+
+    def PhysicalDamage():
+        BattleSystem.selectedtarget.hp -= (ConsumableSystem.selectedconsumable.totaleffect - BattleSystem.selectedtarget.phydef)
+        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {ConsumableSystem.selectedtarget.name} to cause {ConsumableSystem.selectedconsumable.totaleffect} damage.")
+
+class Weapon:
+    def __init__(self, name, effect, damage, special, value):
+        self.name = name
+        self.effect = effect
+        self.damage = damage
+        self.special = special
+        self.value = value
+    def __repr__(self):
+        if self.special == "":
+            return (f"{self.name} - {self.effect} weapon for {self.damage} points.")
+        else:
+            return (f"{self.name} - {self.effect} weapon for {self.damage} points. Gives abiility: {self.special.name} for {self.special.apcost} AP cost.")
+
+class Armatek:
+    def __init__(self, name, effect, damage, special, value):
+        self.name = name
+        self.effect = effect
+        self.damage = damage
+        self.special = special
+        self.value = value
+    def __repr__(self):
+        if self.special == "":
+            return (f"{self.name} - {self.effect} weapon for {self.damage} points.")
+        else:
+            return (f"{self.name} - {self.effect} weapon for {self.damage} points. Gives abiility: {self.special.name} for {self.special.apcost} AP cost.")
+
+
+
+    # DEFENSIVE / BUFFS
+
+# THIS OBJECT HOLDS ALL AVAILABLE ITEM EFFECT FUNCTIONS
+ItemEffectsList = ItemEffects
+
+#########
+# BUFFS #
+#########
+HPup1 = Item ("Field Dressing", "HP Buff", ItemEffectsList.HPBuff, 1, 30, 1, 20)
+HPup2 = Item ("Morphine Shot", "HP Buff", ItemEffectsList.HPBuff, 2, 30, 1, 40)
+APup1 = Item ("Adreno Shot", "AP Buff", ItemEffectsList.APBuff, 1, 20, 1, 20)
+APup2 = Item ("Adreno Plus", "AP Buff", ItemEffectsList.APBuff, 2, 20, 1, 20)
+
+###########
+# DEBUFFS #
+###########
+Grenade = Item ("Grenade", "Physical Damage", ItemEffects.PhysicalDamage, 1, 200, 1, 50)
+
+###########
+# WEAPONS #
+###########
+BareKnuckles = Weapon ("Bare Knuckles", "Physical", 10, StrongFist, 0)
+Knife = Weapon ("Knife", "Physical", 15, KnifeCuts, 50)
+
+###########
+# ARMATEK #
+###########
+ScanningGlove = Armatek ("Scanning Glove", "Armatek", 0, Scan, 100)
+ArmaGauntlet = Armatek ("Mecha Gauntlet", "Armatek", 18, StrongFist, 50)
+
 
 ################################
 ################################
@@ -829,166 +992,6 @@ PowerStationGrounds = Location("Power Station - Grounds")
 PowerStationMedicArea = Location("Power Station - Medic's Station")
 PowerStationBazaar = Location("PowerStation - Bazaar")
 PowerStationArena = Location("Power Station - Arena")
-
-##################################
-##################################
-##### SECTION - USABLE MOVES #####
-##################################
-##################################
-
-# THIS SECTION IS FOR USABLE MOVES BY THE PLAYER AND ENEMIES
-
-# ABILITY CLASS ALLOWS FOR CREATION OF ABILITY OBJECTS THAT WILL BE HELD WITHIN WEAPON OBJECTS WHICH ALLOWS DYNAMIC ABILITY SWAPPING.
-class Ability:
-    def __init__(self, name, effect, damage, apcost, rounds, chancetomiss):
-        self.name = name
-        self.effect = effect
-        self.damage = damage
-        self.apcost = apcost
-        self.rounds = rounds
-        self.chancetomiss = chancetomiss
-
-    def __repr__(self):
-        if self.rounds > 1:
-            return (f'''{self.name} - can hit {self.rounds} times.\n   AP: {self.apcost}''')
-        else:
-            return (f'''{self.name} \n   AP: {self.apcost}''')   
-
-##################
-# PHYSICAL MOVES #
-##################
-# LIMIT BREAK IS FOR PLAYER ONLY, REPLACES STANDARD ATTACK WHEN HEALTH IS LOW
-LimitBreak = Ability ("Limit Break", "Legendary", 10, 0, 1, 0)
-
-Attack = Ability ("Attack", "Physical", 20, 0, 1, 10)
-Punches = Ability ("Punches", "Physical", 15, 15, 3, 30)
-StrongFist = Ability ("Strong Fist", "Physical", 30, 5, 1, 10)
-
-Lunge = Ability ("Lunge", "Physical", 30, 5, 1 ,20)
-KnifeCuts = Ability ("Knife Cuts", "Physical", 25, 10, 2, 30)
-
-AnchorStrike = Ability ("Anchor Strike", "Physical", 15, 15, 1, 15)
-
-PistolShot = Ability ("Pistol Shot", "Physical", 40, 20, 1, 10)
-
-VibraSwordSlice = Ability ("VibraSword Slice", "Physical", 40, 20, 1, 10)
-VibraSwordSlashes = Ability ("VibraSword Slashes", "Physical", 25, 30, 3, 20)
-
-#################
-# ARMATEK MOVES #
-#################
-Scan = Ability ("Scan", "Scan", 0, 5, 1, 0)
-LoaderFist = Ability ("Loader Fist", "Armatek", 25, 25, 2, 30)
-ArmaScopeShot = Ability ("ArmaScope Shot", "Physical", 40, 30, 1, 1)
-
-################################################
-################################################
-##### SECTION - USABLE ITEMS AND EQUIPMENT #####
-################################################
-################################################
-class Item:
-    def __init__(self, name, effect, action, actionlevel, damage, hits, value):
-        self.name = name
-        self.effect = effect
-        self.action = action
-        self.actionlevel = actionlevel
-        self.damage = damage
-        self.hits = hits
-        self.value = value
-        self.totaleffect = self.actionlevel * self.damage
-
-    def __repr__(self):
-        return (f"{self.name} - {self.effect} effect for {self.damage} points")
-
-class ItemEffects(Item): 
-    
-    def HPBuff():
-        if ConsumableSystem.selectedtarget.hp == ConsumableSystem.selectedtarget.hpmax:
-            GMtalk.write(f"{ConsumableSystem.selectedtarget.name} is already at full health!")
-            PressEnterToGoBack()
-            ConsumableSystem.ShowConsumables()
-        else:
-            pass
-        ConsumableSystem.selectedtarget.hp += ConsumableSystem.selectedconsumable.totaleffect
-        if ConsumableSystem.selectedtarget.hp > ConsumableSystem.selectedtarget.hpmax:
-            ConsumableSystem.selectedtarget.hp = ConsumableSystem.selectedtarget.hpmax
-        else:
-            pass
-        GMnarrate.write(f"{ConsumableSystem.selectedtarget.name} HP raised to {ConsumableSystem.selectedtarget.hp}")
-
-    def APBuff():
-        if ConsumableSystem.selectedtarget.ap == ConsumableSystem.selectedtarget.apmax:
-            GMtalk.write(f"{ConsumableSystem.selectedtarget.name} is already at full health!")
-        else:
-            pass
-        ConsumableSystem.selectedtarget.ap += ConsumableSystem.selectedconsumable.totaleffect
-        if ConsumableSystem.selectedtarget.ap > ConsumableSystem.selectedtarget.apmax:
-            ConsumableSystem.selectedtarget.ap = ConsumableSystem.selectedtarget.apmax
-        else:
-            pass
-        GMnarrate.write(f"{ConsumableSystem.selectedtarget.name} AP raised to {ConsumableSystem.selectedtarget.ap}")
-
-    def PhysicalDamage():
-        BattleSystem.selectedtarget.hp -= (ConsumableSystem.selectedconsumable.totaleffect - BattleSystem.selectedtarget.phydef)
-        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {ConsumableSystem.selectedtarget.name} to cause {ConsumableSystem.selectedconsumable.totaleffect} damage.")
-
-class Weapon:
-    def __init__(self, name, effect, damage, special, value):
-        self.name = name
-        self.effect = effect
-        self.damage = damage
-        self.special = special
-        self.value = value
-    def __repr__(self):
-        if self.special == "":
-            return (f"{self.name} - {self.effect} weapon for {self.damage} points.")
-        else:
-            return (f"{self.name} - {self.effect} weapon for {self.damage} points. Gives abiility: {self.special.name} for {self.special.apcost} AP cost.")
-
-class Armatek:
-    def __init__(self, name, effect, damage, special, value):
-        self.name = name
-        self.effect = effect
-        self.damage = damage
-        self.special = special
-        self.value = value
-    def __repr__(self):
-        if self.special == "":
-            return (f"{self.name} - {self.effect} weapon for {self.damage} points.")
-        else:
-            return (f"{self.name} - {self.effect} weapon for {self.damage} points. Gives abiility: {self.special.name} for {self.special.apcost} AP cost.")
-
-
-
-    # DEFENSIVE / BUFFS
-
-# THIS OBJECT HOLDS ALL AVAILABLE ITEM EFFECT FUNCTIONS
-ItemEffectsList = ItemEffects
-
-#########
-# BUFFS #
-#########
-HPup1 = Item ("Field Dressing", "HP Buff", ItemEffectsList.HPBuff, 1, 30, 1, 20)
-HPup2 = Item ("Morphine Shot", "HP Buff", ItemEffectsList.HPBuff, 2, 30, 1, 40)
-APup1 = Item ("Adreno Shot", "AP Buff", ItemEffectsList.APBuff, 1, 20, 1, 20)
-APup2 = Item ("Adreno Plus", "AP Buff", ItemEffectsList.APBuff, 2, 20, 1, 20)
-
-###########
-# DEBUFFS #
-###########
-Grenade = Item ("Grenade", "Physical Damage", ItemEffects.PhysicalDamage, 1, 200, 1, 50)
-
-###########
-# WEAPONS #
-###########
-BareKnuckles = Weapon ("Bare Knuckles", "Physical", 10, StrongFist, 0)
-Knife = Weapon ("Knife", "Physical", 15, KnifeCuts, 50)
-
-###########
-# ARMATEK #
-###########
-ScanningGlove = Armatek ("Scanning Glove", "Armatek", 0, Scan, 100)
-ArmaGauntlet = Armatek ("Mecha Gauntlet", "Armatek", 18, StrongFist, 50)
 
 #########################################
 #########################################
@@ -1871,3 +1874,148 @@ class Interactions:
             GMnarrate.write ("The Vendor looks kind of angry, perhaps you upset them…  \n")
             NPCtalk.write ("Do I look like a damn charity to you? Get the hell outta here until you've got soemthing WORTH MY TIME!!!  \n")
         PressEnterToGoBack()
+
+####################################
+####################################
+##### SECTION - TEXT ANIMATION #####
+####################################
+####################################
+        
+class type():
+    def write(text, speed=0.001):
+        for char in text:
+            sys.stdout.write(char)
+            sys.stdout.flush()
+
+            time.sleep(speed)
+
+    print("")
+
+    def clear():
+        os.system('clear')
+        
+    def fg(r,g,b):
+        return f'\033[38;2;{r};{g};{b}m'
+
+    def bg(r,g,b):
+        return f"\033[48;2;{r};{g};{b}m"
+
+    fg_red = fg(242,78,78)
+    fg_orange = fg(255,168,5)
+    fg_yellow = fg(249,255,89)
+    fg_lightgreen = '\033[92m'
+    fg_green = fg(54,200,99)
+    fg_lightblue = '\033[94m'
+    fg_lightestblue = fg(128,128,255)
+    fg_blue = '\033[34m'
+    fg_purple = fg(151,71,255)
+    fg_brown = fg(190,140,100)
+    fg_black = fg(0,0,0)
+    fg_silver = fg(191,191,191)
+
+    bg_red = bg(255,0,69)
+    bg_orange = bg(255,100,0)
+    bg_yellow = bg(255,255,0)
+    bg_lightgreen = '\033[102m'
+    bg_green = bg(54,150,50)
+    bg_lightblue = '\033[104m'
+    bg_blue = '\033[44m'
+    bg_purple = bg(151,50,250)
+    bg_brown = bg(190,100,77)
+    bg_silver = bg(163,163,163)
+
+    bold = '\033[1m'
+    dim = '\033[2m'
+    italic = '\033[3m'
+    underline = '\033[4m'
+    reverse = '\033[7m'
+    invisible = '\033[8m'
+    crossover = '\033[9m'
+    reset = '\033[0m'
+
+class quicktype():
+    def write(text, speed=0.001):
+        for char in text:
+            sys.stdout.write(char)
+            sys.stdout.flush()
+
+            time.sleep(speed)
+
+    print("")
+
+    def clear():
+        os.system('clear')
+    def fg(r,g,b):
+        return f'\033[38;2;{r};{g};{b}m'
+
+    def bg(r,g,b):
+        return f"\033[48;2;{r};{g};{b}m"
+
+    fg_red = fg(242,78,78)
+    fg_orange = fg(255,168,5)
+    fg_yellow = fg(249,255,89)
+    fg_lightgreen = '\033[92m'
+    fg_green = fg(54,200,99)
+    fg_lightblue = '\033[94m'
+    fg_lightestblue = fg(128,128,255)
+    fg_blue = '\033[34m'
+    fg_purple = fg(151,71,255)
+    fg_brown = fg(190,140,100)
+    fg_black = fg(0,0,0)
+    fg_silver = fg(191,191,191)
+
+    bg_red = bg(255,0,69)
+    bg_orange = bg(255,100,0)
+    bg_yellow = bg(255,255,0)
+    bg_lightgreen = '\033[102m'
+    bg_green = bg(54,150,50)
+    bg_lightblue = '\033[104m'
+    bg_blue = '\033[44m'
+    bg_purple = bg(151,50,250)
+    bg_brown = bg(190,100,77)
+    bg_silver = bg(163,163,163)
+
+    bold = '\033[1m'
+    dim = '\033[2m'
+    italic = '\033[3m'
+    underline = '\033[4m'
+    reverse = '\033[7m'
+    invisible = '\033[8m'
+    crossover = '\033[9m'
+    reset = '\033[0m'
+
+# These are message classes that format text automatically
+class GMtalk(type):
+    def write (mytext):
+        type.write(f'{type.fg_silver}{type.italic}{mytext}{type.reset}\n')
+
+class GMnarrate(type):
+    def write (mytext):
+        type.write(f'{type.fg_orange}{type.italic}{mytext}{type.reset}\n')
+
+class NPCtalk(type):
+    def write (mytext):
+        type.write(f'{type.fg_green}{type.italic}{mytext}{type.reset}\n')
+
+class PlayerInput(type):
+    def write (mytext):
+        quicktype.write(f'{type.fg_blue}{type.bold}{mytext}{type.reset}\n')
+
+class ScreenTitle(type):
+    def write (mytext):
+        type.write(f'{type.bold}{mytext}{type.reset}\n')
+
+class MenuTitle(type):
+    def write(mytext):
+        quicktype.write(f'{type.fg_purple}{mytext}{type.reset}\n')
+
+#######################
+#######################
+##### RUN ZE GAME #####
+#######################
+#######################
+
+WorldBuilding.ThisFunctionTookGodSixWholeDays()
+MainCharacter.items[HPup2] += 2
+MainCharacter.items[Grenade] += 5
+StoryEvent.StartTheGame()
