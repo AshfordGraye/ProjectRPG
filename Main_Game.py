@@ -2,8 +2,7 @@ import collections
 import random
 from os import system, name
 from time import sleep
-from x_Typewriter_Text import *
-from x_Attacks_And_Abilities import *
+from Module_TypewriterText import *
 
 ############################
 ##### GLOBAL FUNCTIONS #####
@@ -41,230 +40,11 @@ def CountDown():
         sleep(1)
     ClearScreen()
 
-#####################################
-#####################################
-##### SECTION - LOCATION SYSTEM #####
-#####################################
-#####################################
-
-# LOCATION CLASS PROVIDES VARIABLES AND FUNCTIONS FOR LOCATIONS TO DISPLAY INFORMATION CONSISTENTLY
-class Location:
-    
-    def __init__(self, name):
-        self.name = name
-    firstvisit = True
-    describe1 = ""
-    describe2 = ""
-    option1 = "-"
-    option2 = "-"
-    option3 = "-"
-    travel1 = "-"
-    travel2 = "-"
-    travel3 = "-"
-    selectoption1 = "-"
-    selectoption2 = "-"
-    selectoption3 = "-"
-    selecttravel1 = "-"
-    selecttravel2 = "-"
-    selecttravel3 = "-"
-
-    # LOADS WHEN A LOCATION IS TRAVELLED TO - DISPLAYS LOCATION INFO AND SORTS TRAVEL BACK TO PREVIOUS  
-    def Area (self):
-        MainCharacter.currentlocation = self.Area
-        MainCharacter.lastlocation = MainCharacter.holdlocation
-        WorldBuilding.LocationUpdate()
-        if self.firstvisit:
-            self.describe1()
-            print()
-        else:
-            self.describe2()
-            print()
-        ScreenTitle.write (f"{self.name}\n")
-        MenuTitle.write ("Travel Menu")
-        PlayerInput.write (f"1: {self.travel1}")
-        PlayerInput.write (f"2: {self.travel2}")
-        PlayerInput.write (f"3: {self.travel3}")
-        MenuTitle.write ("Action Menu")
-        PlayerInput.write (f"4: {self.option1}")
-        PlayerInput.write (f"5: {self.option2}")
-        PlayerInput.write (f"6: {self.option3}")
-        MenuTitle.write ("Player Menu")
-        PlayerInput.write (f"7: Check Items")
-        PlayerInput.write (f"8: Check Weapons")
-        PlayerInput.write (f"9: Check Stats")
-        print ()
-        self.Selection()
-
-    # FACILITATES PLAYER SELECTION IN THE NAV SCREEN
-    def Selection(self):
-        GMtalk.write ("What would you like to do?   \n")
-        selection = input()
-        if selection == "1":
-            if self.selecttravel1 == "-":
-                self.InvalidChoice()
-            else:
-                ClearScreen()
-                self.firstvisit = False
-                MainCharacter.holdlocation = MainCharacter.currentlocation
-                self.selecttravel1()
-        elif selection == "2":
-            if self.selecttravel2 == "-":
-                self.InvalidChoice()
-            else:
-                ClearScreen()
-                self.firstvisit = False
-                MainCharacter.holdlocation = MainCharacter.currentlocation
-                self.selecttravel2()
-        elif selection == "3":
-            if self.selecttravel3 == "-":
-                self.InvalidChoice()
-            else:
-                ClearScreen()
-                self.firstvisit = False
-                MainCharacter.holdlocation = MainCharacter.currentlocation
-                self.selecttravel3()
-        elif selection == "4":
-            if self.selectoption1 == "-":
-                self.InvalidChoice()
-            else:
-                ClearScreen()
-                self.selectoption1()
-        elif selection == "5":
-            if self.selectoption2 == "-":
-                self.InvalidChoice()
-            else:
-                ClearScreen()
-                self.selectoption2()
-        elif selection == "6":
-            if self.selectoption3 == "-":
-                self.InvalidChoice()
-            else:
-                ClearScreen()
-                self.selectoption3()
-        elif selection == "7":
-            ConsumableSystem.ShowConsumables()
-            PressEnterToGoBack()
-            self.Area()
-        elif selection == "8":
-            MainCharacter.ShowWeapons()
-            PressEnterToGoBack()
-            self.Area()
-        elif selection == "9":
-            MainCharacter.ShowStats()
-            PressEnterToGoBack()
-            self.Area()
-        else:
-            self.InvalidChoice()
-    
-    # SELF EXPLANATORY  
-    def InvalidChoice(self):
-        InvalidChoice()
-        self.Area()
-
-
-#######################################
-#######################################
-##### SECTION - CONSUMABLE SYSTEM #####
-#######################################
-#######################################
-
-class ConsumableSystem:
-    
-    listofitems = ""
-    selectedconsumable = ""
-    selectedtarget = ""
-    
-    def ShowConsumables():
-        #list the consumable items available
-        listconsumables = 0
-        MenuTitle.write("Items:")
-        PlayerInput.write ("\n0: Cancel   \n") 
-        for count in MainCharacter.items:
-            listconsumables += 1
-            PlayerInput.write(f"{listconsumables}: {MainCharacter.items[count]} x {count}  \n")
-        #let player select consumable
-        GMtalk.write ("Select an item to use:")
-        DecisionMaker.MenuSelection()
-        if DecisionMaker.menuselect == "0":
-            #check if player is outside of combat - if so will return to player's current location. If in combat will restart player turn
-            if MainCharacter.combatlocation == False:
-                PressEnterToGoBack()
-                MainCharacter.currentlocation()
-            else:
-                PressEnterToGoBack()
-                BattleSystem.Fight()
-        #check to see if entered value is valid
-        elif DecisionMaker.menuselectint in range(1,len(MainCharacter.items)+1):
-            #cast count of items as a standard list, define the selection and then select the item in the list 
-            ConsumableSystem.listofitems = list(MainCharacter.items)
-            ConsumableSystem.selectedconsumable = ConsumableSystem.listofitems[DecisionMaker.menuselectint-1]
-            #check to see if player is out of combat and if item is not a buff to reject usage of offensive items, otherwise move onto target selection.
-            if not MainCharacter.combatlocation and "Buff" not in ConsumableSystem.selectedconsumable.effect:
-                GMtalk.write ("You can't use that here!")
-            else:
-                ConsumableSystem.SelectConsumableTarget()
-        else:
-            InvalidChoice()
-            ConsumableSystem.ShowConsumables()
-        
-    def SelectConsumableTarget(): 
-        listoftargets = 0
-        #check to see if the item effect is a buff - if it is, it will be used against friendly characters. else, it will be used against enemy characters
-        if "Buff" in ConsumableSystem.selectedconsumable.effect:
-            
-            #check to see if there's only one person in the party. if there is, it'll be selected automatically. if not it will list the party members and let the player choose one.
-            if len(BattleSystem.party) == 1:
-                ConsumableSystem.selectedtarget = BattleSystem.party[0]
-                ConsumableSystem.ConsumableTargetConfirmed()
-            else:
-                MenuTitle.write("Targets:")
-                for elem in BattleSystem.party:
-                    listoftargets += 1
-                    PlayerInput.write (f"{listoftargets}: {elem.name}")
-                    DecisionMaker.MenuSelection()
-                    ConsumableSystem.selectedtarget = BattleSystem.enemies[DecisionMaker.menuselectint-1]
-                    ConsumableSystem.ConsumableTargetConfirmed()
-        else:
-            #same check as just before but for enemies. one enemy is automatically selected, more than one will allow player selection of the target. 
-            if len(BattleSystem.enemies) == 1:
-                ConsumableSystem.selectedtarget = BattleSystem.enemies[0]
-                PressEnterToContinue()
-                ConsumableSystem.ConsumableTargetConfirmed()
-            else:
-                MenuTitle.write("Targets:")
-                for elem in BattleSystem.enemies:
-                    listoftargets += 1
-                    PlayerInput.write (f"{listoftargets}: {elem.name}")
-                DecisionMaker.MenuSelection()
-                ConsumableSystem.selectedtarget = BattleSystem.enemies[DecisionMaker.menuselectint-1]
-                if ConsumableSystem.selectedtarget in range (1,listoftargets+1):
-
-                    ConsumableSystem.ConsumableTargetConfirmed()
-                else:
-                    InvalidChoice()
-                    ConsumableSystem.SelectConsumableTarget()
-
-    def ConsumableTargetConfirmed():
-        #runs item action and removes one instance of the item from player inventory 
-        ConsumableSystem.selectedconsumable.action()
-        MainCharacter.items[ConsumableSystem.selectedconsumable] -= 1
-        if MainCharacter.items[ConsumableSystem.selectedconsumable] == 0:
-            del MainCharacter.items[ConsumableSystem.selectedconsumable]
-        else:
-            pass
-        #check to see if in combat, if so will check enemy status, if not will continue.
-        if MainCharacter.combatlocation:
-            BattleSystem.CheckEnemyStatus()
-        else:
-            pass
-
-
-#######################################
-#######################################
-##### SECTION - CHARACTERS SYSTEM #####
-#######################################
-#######################################
-
+################################
+################################
+##### SECTION - CHARACTERS #####
+################################
+################################
 
 # MAIN CHARACTER CLASS WITH VARIABLES NECESSARY FOR ALL CHARACTERS
 class Character:
@@ -341,7 +121,7 @@ class Player(Character):
             self.items = collections.Counter()
             
 
-            self.moveset = [Attack, Punches, "-"]
+            self.moveset = []
             self.arenawins = 0
             self.arenaroundcomplete = False
 
@@ -349,14 +129,17 @@ class Player(Character):
 
 
     def Naming(self):
-        PlayerInput.write("Enter your name:")
-        self.name = "Player"
-        print ()
+        PlayerInput.write("Enter your name: \n")
+        self.name = str(input())
+        if self.name == "":
+            self.Naming()
+        else:
+            pass
     
-    def ClassChoice():
+    def ClassChoice(self):
         GMtalk.write ('''
 Different roles will affect your how strong your Physical and Armatek abilities are, and how well you can defend against them. 
-As you progress in the game you will have the option of usig different weapons and items that also influence these stats.
+The damage you deal and receive will be influenced by these stats. 
 
 Remember, your enemies will have strengths and weaknesses too!
     ''')
@@ -369,139 +152,62 @@ What was your role in the military? Enter a role number to view it's stats.
     4: Officer''')
 
 
-        viewclass = "1"
+        DecisionMaker.MenuSelection()
 
-        if viewclass.lower() == "1":
-            Player.job = "Soldier"
-            Player.phystr += (Player.phystr /100 *30)
-            Player.armdef -= (Player.armdef /100 *30)
-            Player.moves = {"Attack": random.randint(25,35) + Player.phystr}
-            GMnarrate.write (f'''
-A former {Player.job}, you fought in the Alliance Army as a Shock Trooper.
-The Army's excellent training has given you great strength when fighting. 
+        if DecisionMaker.menuselect == "1":
+            self.job = "Soldier"
+            GMnarrate.write ("A former Soldier, you fought in the Alliance Army as a Shock Trooper.The Army's excellent training has given you great strength when fighting.    \n")
+            GMtalk.write ("Your stats will be:     \n13 Physical Strength        \n10 Physical Defense     \n10 Armatek Strength     \n8  Armatek Defense")  
+            self.ClassChoiceConfirm()
 
-Your stats will be:
-{Player.phystr} Physical Strength
-{Player.phydef} Physical Defense
-{Player.armstr} Armatek Strength
-{Player.armdef} Armatek Defense
-    ''')
-            PlayerInput.write ('''
-Would you like to select this class, or view another?
-    1: Select Role
-    2: Go Back to select another Role''')
-            roleselect = "1"
-            if roleselect == "1":
-                print ("selected")
-            elif roleselect == "2":
-                GMtalk.write ("Okay, this section of the tutorial will restart so you can choose another class.")
-                Player.job = ""
-                Player.phystr = 10
-                Player.phydef = 10
-                Player.armstr = 10
-                Player.armdef = 10
-                Player.ClassChoice()
-            else:
-                GMtalk.write ("Please enter the number of your selection")
+        elif DecisionMaker.menuselect == "2":
+            self.job = "Scientist"
+            GMnarrate.write ("A former Scientist, you designed weaponry to be used against the enemy.   \nYour knowledge of Armatek gives you an advantage when using Armatek equipment.    \n")
+            GMtalk.write ("Your stats will be:     \n10  Physical Strength        \n8  Physical Defense     \n13 Armatek Strength     \n10 Armatek Defense")  
+            self.ClassChoiceConfirm()
 
-        elif viewclass.lower() == "2":
-            Player.job = "Scientist"
-            Player.armstr += (Player.armstr /100 *30)
-            Player.phydef -= (Player.phydef /100 *30)
-            Player.moves = {"Attack": random.randint(25,35) + Player.phystr}
-            GMnarrate.write (f'''
-A former {Player.job}, you designed weaponry to be used against the enemy.
-Your knowledge of Armatek gives you an advantage when using Armatek abilities.
+        elif DecisionMaker.menuselect == "3":
+            self.job = "Medic"
+            GMnarrate.write ("A former Medic you served and saved alongside you solder brothers.Your hardiness earned in battle has given you stronger physical defense.    \n")
+            GMtalk.write ("Your stats will be:     \n8  Physical Strength        \n13 Physical Defense     \n10 Armatek Strength     \n10 Armatek Defense")
+            self.ClassChoiceConfirm()
 
-Your stats will be:
-{Player.phystr} Physical Strength
-{Player.phydef} Physical Defense
-{Player.armstr} Armatek Strength
-{Player.armdef} Armatek Defense
-    ''')
-            PlayerInput.write ('''
-Would you like to select this class, or view another?
-    1: Select Role
-    2: Go Back to select another Role''')
-            roleselect = str(input("\n"))
-            if roleselect == "1":
-                print ("selected")
-            elif roleselect == "2":
-                GMtalk.write ("Okay, this section of the tutorial will restart so you can choose another class.")
-                Player.job = ""
-                Player.phystr = 10
-                Player.phydef = 10
-                Player.armstr = 10
-                Player.armdef = 10
-                Player.ClassChoice()
-            else:
-                GMtalk.write ("Please enter the number of your selection")
+        elif DecisionMaker.menuselect == "4":
+            self.job = "Officer"
+            GMnarrate.write ("A former Officer in the Alliance Navy, you commanded SkyCruiser fleets against the Commonwealth. Your officer's training gave you increased defense against Armatek abilities.    \n")
+            MenuTitle.write ("Your stats will be:   \n10 Physical Strength    \n10 Physical Defense \n8  Armatek Strength \n13 Armatek Defense")
+            self.ClassChoiceConfirm()
+           
+    def ClassChoiceConfirm(self):
+                PlayerInput.write ('''
+    Would you like to select this class, or view another?
+        1: Select Role
+        2: Go Back to select another Role''')
+                DecisionMaker.MenuSelection()
+                if DecisionMaker.menuselect == "1":
+                    print (f"Selected {self.job}")
+                    if self.job == "Soldier":
+                        self.phystr = 13
+                        self.armdef = 8
+                    elif self.job == "Scientist":
+                        self.phydef = 8
+                        self.armstr = 13
+                    elif self.job == "Medic":
+                        self.phydef = 13
+                        self.phystr = 8
+                    elif self.job == "Officer":
+                        self.armdef = 13
+                        self.armstr = 8
+                    else:
+                        pass
+                elif DecisionMaker.menuselect == "2":
+                    GMtalk.write ("Okay, this section of the tutorial will restart so you can choose another class.")
+                    PressEnterToGoBack()
+                    MainCharacter.ClassChoice()
+                else:
+                    GMtalk.write ("Please enter the number of your selection")
+                    MainCharacter.ClassChoiceConfirm()
 
-        elif viewclass.lower() == "3":
-            Player.job = "Medic"
-            Player.phydef += (Player.phydef /100 *30)
-            Player.phystr -= (Player.phystr /100 *30)
-            Player.moves = {"Attack": random.randint(25,35) + Player.phystr}
-            GMnarrate.write (f'''
-A former {Player.job} you served and saved alongside you solder brothers. 
-Your hardiness earned in battle has given you stronger physical defense.
-
-Your stats will be:
-{Player.phystr} Physical Strength
-{Player.phydef} Physical Defense
-{Player.armstr} Armatek Strength
-{Player.armdef} Armatek Defense
-    ''')
-            PlayerInput.write ('''
-Would you like to select this class, or view another?
-    1: Select Role
-    2: Go Back to select another Role''')
-            roleselect = str(input("\n"))
-            if roleselect == "1":
-                print ("selected")
-            elif roleselect == "2":
-                GMtalk.write ("Okay, this section of the tutorial will restart so you can choose another class.")
-                Player.job = ""
-                Player.phystr = 10
-                Player.phydef = 10
-                Player.armstr = 10
-                Player.armdef = 10
-                Player.ClassChoice()
-            else:
-                GMtalk.write ("Please enter the number of your selection")
-
-        elif viewclass.lower() == "4":
-            Player.job = "Officer"
-            Player.armdef += (Player.armdef /100 *30)
-            Player.armstr -= (Player.armstr /100 *30)
-            Player.moves = {"Attack": random.randint(25,35) + Player.phystr}
-            GMnarrate.write (f'''
-A former {Player.job} in the Alliance Navy, you commanded SkyCruiser fleets against the Commonwealth.
-Your officer's training gave you increased defense against Armatek abilities. 
-
-Your stats will be:
-{Player.phystr} Physical Strength
-{Player.phydef} Physical Defense
-{Player.armstr} Armatek Strength
-{Player.armdef} Armatek Defense
-    ''')
-            PlayerInput.write ('''
-Would you like to select this class, or view another?
-    1: Select Role
-    2: Go Back to select another Role''')
-            roleselect = str(input("\n"))
-            if roleselect == "1":
-                print ("selected")
-            elif roleselect == "2":
-                GMtalk.write ("Okay, this section of the tutorial will restart so you can choose another class.")
-                Player.job = ""
-                Player.phystr = 10
-                Player.phydef = 10
-                Player.armstr = 10
-                Player.armdef = 10
-                Player.ClassChoice()
-            else:
-                GMtalk.write ("Please enter the number of your selection")
 
     # NON COMBAT EQUIPMENT FUNCTIONS
 
@@ -718,9 +424,6 @@ Would you like to select this class, or view another?
                             elif selectedmove.effect == "Scan":
                                 self.selectedtarget.ShowCurrentStats()
                             
-                            elif selectedmove.effect == "Items":
-                                self.PlayerSelectItems()
-
                             elif selectedmove.effect == "Legendary":
                                 if self.hp <= ((self.hpmax / 100) * 10):
                                     damage = (self.phystr * selectedmove.damage)
@@ -731,6 +434,7 @@ Would you like to select this class, or view another?
                                     GMnarrate.write ("You can't use your Limit Break ability unless your health is below 10%!")
                                     PressEnterToGoBack()
                                     BattleSystem.PlayerTurn()
+                            
                             else:
                                 pass
 
@@ -948,17 +652,240 @@ class Enemy(Character):
     def ShowCurrentStats(self):
         MenuTitle.write (f"{self.name}  \n")
         MenuTitle.write ("HP:"); GMtalk.write(f"{self.hp}/{self.hpmax}  \n")
+        MenuTitle.write ("Physical Strength:");GMtalk.write(f"{self.phystr}  \n")
+        MenuTitle.write ("Physical Defense: ");GMtalk.write(f"{self.phydef}  \n")
+        MenuTitle.write ("Armatek Strength: ");GMtalk.write(f"{self.armstr}  \n")
+        MenuTitle.write ("Armatek Defense:  ");GMtalk.write(f"{self.armdef}  \n")
+        print()
+        MenuTitle.write ("Abilities:        ")
+        for elem in self.moveset:
+            GMtalk.write (f"{elem}")
 
-# MEDIIIIIIIIIIIC!
-class Medic (NPC):
-    def Healing(self):
-        if self.name == "Medic":
-            Interactions.MedicHealing()
-        elif self.name == "Field Droid":
-            Interactions.FieldDroidHealing()
+##############
+# CHARACTERS #
+##############
 
+# PLAYABLE CHARACTERS
 
+DecisionMaker = Player ("DecisionMaker") #THIS GUY EXISTS PURELY SO THAT DECISIONS ARE HANDED OFF INSTEAD OF RELYING ON SELF FOR CHARACTERS, MAKES LIFE EASIER FOR ME. 
+MainCharacter = Player ("Player")
 
+# NPC CHARACTERS
+TutorialCharacter = NPC("Tutorial NPC")
+DockPorter = NPC ("Skytrain Dock Porter")
+HomelessGuy = NPC ("Homeless Guy")
+PowerStationBoss = NPC ("Power Station Boss")
+
+# STORE VENDORS 
+VendorItem = Vendor("Item Vendor")
+VendorPhysical = Vendor ("Physical Equipment Vendor")
+VendorArmatek = Vendor ("Armatek Equipment Vendor")
+
+# MEDIIIIIIIC!!!!!
+MedicFella = Medic ("Medic")
+FieldDroid = Medic ("Field Droid")
+
+# ENEMY CHARACTERS
+Vagrant = Enemy ("Vagrant")
+Bouncer = Enemy ("Bouncer")
+Docker = Enemy ("Docker")
+Officer = Enemy ("Officer")
+Assassin = Enemy ("Assassin")
+
+    # ENEMY CHARACTERS
+Vagrant = Enemy ("Vagrant")
+Bouncer = Enemy ("Bouncer")
+Docker = Enemy ("Docker")
+Officer = Enemy ("Officer")
+Assassin = Enemy ("Assassin")
+
+################################
+################################
+##### SECTION - NAVIGATION #####
+################################
+################################
+
+# THE LOCATION CLASS AND LOCATION OBJECTS SHOW INFORMATION ABOUT THE PLAYER'S LOCATION AND FACILITATE NAVIGATION
+class Location:
+    
+    def __init__(self, name):
+        self.name = name
+    firstvisit = True
+    describe1 = ""
+    describe2 = ""
+    option1 = "-"
+    option2 = "-"
+    option3 = "-"
+    travel1 = "-"
+    travel2 = "-"
+    travel3 = "-"
+    selectoption1 = "-"
+    selectoption2 = "-"
+    selectoption3 = "-"
+    selecttravel1 = "-"
+    selecttravel2 = "-"
+    selecttravel3 = "-"
+
+    # LOADS WHEN A LOCATION IS TRAVELLED TO - DISPLAYS LOCATION INFO AND SORTS TRAVEL BACK TO PREVIOUS  
+    def Area (self):
+        MainCharacter.currentlocation = self.Area
+        MainCharacter.lastlocation = MainCharacter.holdlocation
+        WorldBuilding.LocationUpdate()
+        if self.firstvisit:
+            self.describe1()
+            print()
+        else:
+            self.describe2()
+            print()
+        ScreenTitle.write (f"{self.name}\n")
+        MenuTitle.write ("Travel Menu")
+        PlayerInput.write (f"1: {self.travel1}")
+        PlayerInput.write (f"2: {self.travel2}")
+        PlayerInput.write (f"3: {self.travel3}")
+        MenuTitle.write ("Action Menu")
+        PlayerInput.write (f"4: {self.option1}")
+        PlayerInput.write (f"5: {self.option2}")
+        PlayerInput.write (f"6: {self.option3}")
+        MenuTitle.write ("Player Menu")
+        PlayerInput.write (f"7: Check Items")
+        PlayerInput.write (f"8: Check Weapons")
+        PlayerInput.write (f"9: Check Stats")
+        print ()
+        self.Selection()
+
+    # FACILITATES PLAYER SELECTION IN THE NAV SCREEN
+    def Selection(self):
+        GMtalk.write ("What would you like to do?   \n")
+        selection = input()
+        if selection == "1":
+            if self.selecttravel1 == "-":
+                self.InvalidChoice()
+            else:
+                ClearScreen()
+                self.firstvisit = False
+                MainCharacter.holdlocation = MainCharacter.currentlocation
+                self.selecttravel1()
+        elif selection == "2":
+            if self.selecttravel2 == "-":
+                self.InvalidChoice()
+            else:
+                ClearScreen()
+                self.firstvisit = False
+                MainCharacter.holdlocation = MainCharacter.currentlocation
+                self.selecttravel2()
+        elif selection == "3":
+            if self.selecttravel3 == "-":
+                self.InvalidChoice()
+            else:
+                ClearScreen()
+                self.firstvisit = False
+                MainCharacter.holdlocation = MainCharacter.currentlocation
+                self.selecttravel3()
+        elif selection == "4":
+            if self.selectoption1 == "-":
+                self.InvalidChoice()
+            else:
+                ClearScreen()
+                self.selectoption1()
+        elif selection == "5":
+            if self.selectoption2 == "-":
+                self.InvalidChoice()
+            else:
+                ClearScreen()
+                self.selectoption2()
+        elif selection == "6":
+            if self.selectoption3 == "-":
+                self.InvalidChoice()
+            else:
+                ClearScreen()
+                self.selectoption3()
+        elif selection == "7":
+            ConsumableSystem.ShowConsumables()
+            PressEnterToGoBack()
+            self.Area()
+        elif selection == "8":
+            MainCharacter.ShowWeapons()
+            PressEnterToGoBack()
+            self.Area()
+        elif selection == "9":
+            MainCharacter.ShowStats()
+            PressEnterToGoBack()
+            self.Area()
+        else:
+            self.InvalidChoice()
+    
+    # SELF EXPLANATORY  
+    def InvalidChoice(self):
+        InvalidChoice()
+        self.Area()
+
+#############
+# LOCATIONS #
+#############
+TutorialWorld = Location("The name of your current location")
+Train = Location("Skytrain")
+SkytrainDock = Location("Skytrain Dock")
+PowerStationGrounds = Location("Power Station - Grounds")
+PowerStationMedicArea = Location("Power Station - Medic's Station")
+PowerStationBazaar = Location("PowerStation - Bazaar")
+PowerStationArena = Location("Power Station - Arena")
+
+##################################
+##################################
+##### SECTION - USABLE MOVES #####
+##################################
+##################################
+
+# THIS SECTION IS FOR USABLE MOVES BY THE PLAYER AND ENEMIES
+
+# ABILITY CLASS ALLOWS FOR CREATION OF ABILITY OBJECTS THAT WILL BE HELD WITHIN WEAPON OBJECTS WHICH ALLOWS DYNAMIC ABILITY SWAPPING.
+class Ability:
+    def __init__(self, name, effect, damage, apcost, rounds, chancetomiss):
+        self.name = name
+        self.effect = effect
+        self.damage = damage
+        self.apcost = apcost
+        self.rounds = rounds
+        self.chancetomiss = chancetomiss
+
+    def __repr__(self):
+        if self.rounds > 1:
+            return (f'''{self.name} - can hit {self.rounds} times.\n   AP: {self.apcost}''')
+        else:
+            return (f'''{self.name} \n   AP: {self.apcost}''')   
+
+##################
+# PHYSICAL MOVES #
+##################
+# LIMIT BREAK IS FOR PLAYER ONLY, REPLACES STANDARD ATTACK WHEN HEALTH IS LOW
+LimitBreak = Ability ("Limit Break", "Legendary", 10, 0, 1, 0)
+
+Attack = Ability ("Attack", "Physical", 20, 0, 1, 10)
+Punches = Ability ("Punches", "Physical", 15, 15, 3, 30)
+StrongFist = Ability ("Strong Fist", "Physical", 30, 5, 1, 10)
+
+Lunge = Ability ("Lunge", "Physical", 30, 5, 1 ,20)
+KnifeCuts = Ability ("Knife Cuts", "Physical", 25, 10, 2, 30)
+
+AnchorStrike = Ability ("Anchor Strike", "Physical", 15, 15, 1, 15)
+
+PistolShot = Ability ("Pistol Shot", "Physical", 40, 20, 1, 10)
+
+VibraSwordSlice = Ability ("VibraSword Slice", "Physical", 40, 20, 1, 10)
+VibraSwordSlashes = Ability ("VibraSword Slashes", "Physical", 25, 30, 3, 20)
+
+#################
+# ARMATEK MOVES #
+#################
+Scan = Ability ("Scan", "Scan", 0, 5, 1, 0)
+LoaderFist = Ability ("Loader Fist", "Armatek", 25, 25, 2, 30)
+ArmaScopeShot = Ability ("ArmaScope Shot", "Physical", 40, 30, 1, 1)
+
+################################################
+################################################
+##### SECTION - USABLE ITEMS AND EQUIPMENT #####
+################################################
+################################################
 class Item:
     def __init__(self, name, effect, action, actionlevel, damage, hits, value):
         self.name = name
@@ -1001,6 +928,10 @@ class ItemEffects(Item):
             pass
         GMnarrate.write(f"{ConsumableSystem.selectedtarget.name} AP raised to {ConsumableSystem.selectedtarget.ap}")
 
+    def PhysicalDamage():
+        BattleSystem.selectedtarget.hp -= (ConsumableSystem.selectedconsumable.totaleffect - BattleSystem.selectedtarget.phydef)
+        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {ConsumableSystem.selectedtarget.name} to cause {ConsumableSystem.selectedconsumable.totaleffect} damage.")
+
 class Weapon:
     def __init__(self, name, effect, damage, special, value):
         self.name = name
@@ -1028,105 +959,44 @@ class Armatek:
             return (f"{self.name} - {self.effect} weapon for {self.damage} points. Gives abiility: {self.special.name} for {self.special.apcost} AP cost.")
 
 
-#######################################
-###### SECTION - OBJECT CREATION ######
-#######################################
-
-#  NOW THE PREVIOUS SECTION TOOK CARE OF CREATING THE OBJECT CLASSES, WE'LL CREATE THE OBJECTS IN THEIR OWN SUBSECTIONS HERE
-
-
-    ##########
-    # PLACES #
-    ##########
-
-TutorialWorld = Location("The name of your current location")
-Train = Location("Skytrain")
-SkytrainDock = Location("Skytrain Dock")
-PowerStationGrounds = Location("Power Station - Grounds")
-PowerStationMedicArea = Location("Power Station - Medic's Station")
-PowerStationBazaar = Location("PowerStation - Bazaar")
-PowerStationArena = Location("Power Station - Arena")
-
-
-    ##############
-    # CHARACTERS #
-    ##############
-
-    # PLAYABLE CHARACTERS
-
-DecisionMaker = Player ("DecisionMaker")
-MainCharacter = Player ("Player")
-
-    # NPC CHARACTERS
-TutorialCharacter = NPC("Tutorial NPC")
-DockPorter = NPC ("Skytrain Dock Porter")
-HomelessGuy = NPC ("Homeless Guy")
-PowerStationBoss = NPC ("Power Station Boss")
-
-    # STORE VENDORS 
-VendorItem = Vendor("Item Vendor")
-VendorPhysical = Vendor ("Physical Equipment Vendor")
-VendorArmatek = Vendor ("Armatek Equipment Vendor")
-
-# MEDIIIIIIIC!!!!!
-MedicFella = Medic ("Medic")
-FieldDroid = Medic ("Field Droid")
-
-# ENEMY CHARACTERS
-Vagrant = Enemy ("Vagrant")
-Bouncer = Enemy ("Bouncer")
-Docker = Enemy ("Docker")
-Officer = Enemy ("Officer")
-Assassin = Enemy ("Assassin")
-
-    # ENEMY CHARACTERS
-Vagrant = Enemy ("Vagrant")
-Bouncer = Enemy ("Bouncer")
-Docker = Enemy ("Docker")
-Officer = Enemy ("Officer")
-Assassin = Enemy ("Assassin")
-
-    ###############
-    # CONSUMABLES #
-    ###############
-
-ItemEffectsList = ItemEffects
 
     # DEFENSIVE / BUFFS
 
-FieldDressing = Item ("Field Dressing", "HP Buff", ItemEffectsList.HPBuff, 1, 30, 1, 20)
-MorphineShot = Item ("Morphine Shot", "HP Buff", ItemEffectsList.HPBuff, 2, 30, 1, 40)
+# THIS OBJECT HOLDS ALL AVAILABLE ITEM EFFECT FUNCTIONS
+ItemEffectsList = ItemEffects
 
-AdrenoShot = Item ("Adreno Shot", "AP Buff", ItemEffectsList.APBuff, 1, 20, 1, 20)
-AdrenoPlus = Item ("Adreno Plus", "AP Buff", ItemEffectsList.APBuff, 2, 20, 1, 20)
+#########
+# BUFFS #
+#########
+HPup1 = Item ("Field Dressing", "HP Buff", ItemEffectsList.HPBuff, 1, 30, 1, 20)
+HPup2 = Item ("Morphine Shot", "HP Buff", ItemEffectsList.HPBuff, 2, 30, 1, 40)
+APup1 = Item ("Adreno Shot", "AP Buff", ItemEffectsList.APBuff, 1, 20, 1, 20)
+APup2 = Item ("Adreno Plus", "AP Buff", ItemEffectsList.APBuff, 2, 20, 1, 20)
 
+###########
+# DEBUFFS #
+###########
+Grenade = Item ("Grenade", "Physical Damage", ItemEffects.PhysicalDamage, 1, 200, 1, 50)
 
-    # OFFENSIVE / DEBUFFS
-
-# Grenade = Item ("Grenade", "Physical", 150, 1, 50)
-
-    ###########
-    # WEAPONS #
-    ###########
-
+###########
+# WEAPONS #
+###########
 BareKnuckles = Weapon ("Bare Knuckles", "Physical", 10, StrongFist, 0)
 Knife = Weapon ("Knife", "Physical", 15, KnifeCuts, 50)
 
-    ###########
-    # ARMATEK #
-    ###########
-
+###########
+# ARMATEK #
+###########
 ScanningGlove = Armatek ("Scanning Glove", "Armatek", 0, Scan, 100)
 ArmaGauntlet = Armatek ("Mecha Gauntlet", "Armatek", 18, StrongFist, 50)
 
+#########################################
+#########################################
+##### SECTION - INTERACTIVE SYSTEMS #####
+#########################################
+#########################################
 
-###################################
-###################################
-##### SECTION - COMBAT SYSTEM #####
-###################################
-###################################
-
-# BATTLE SYSTEM INITIATES TURN BASED COMBAT USING THE PLAYER AND ENEMY FUNCTIONS
+# BATTLE SYSTEM ALLOWS TURN BASED COMBAT USING THE PLAYER AND ENEMY FUNCTIONS
 class BattleSystem:
     
     #
@@ -1134,6 +1004,7 @@ class BattleSystem:
     activeturn = True
     #enemy list gets populated at battle start and selectedtarget is populated when a player selectes an enemy to attack
     party = [MainCharacter]
+    currentplayer = ""
     enemies = []
     selectedtarget = ""
 
@@ -1157,35 +1028,11 @@ class BattleSystem:
 #player turn!
     def PlayerTurn():
         for elem in BattleSystem.party:
-            elem.PlayerTurnDisplay()
+            BattleSystem.currentplayer = elem
+            BattleSystem.currentplayer.PlayerTurnDisplay()
+            PressEnterToContinue()
         # BattleSystem.CheckForVictory()
         BattleSystem.activeturn = not BattleSystem.activeturn
-        PressEnterToContinue()
-
-#now enemy is selected, move is confirmed. 
-    def PlayerSelectAbilityTargetConfirmed():
-            BattleSystem.playermovechoice = int(BattleSystem.playermovechoice)
-            selectedmove = Player.moveset[BattleSystem.playermovechoice-1]
-            #accuracycheck checks against the misschance of the selected move.
-            accuracycheck = random.randint (1,100)
-            if accuracycheck in range (selectedmove.misschance): # so if the accuracycheck falls within the misschance of the selected move, it misses.
-                GMnarrate.write  ("You missed!  \n")
-            else: #otherwise, it hits and so determines how damage or buffs work here base on the selected move effect value
-                if selectedmove.effect == "Physical":
-                    damage = (Player.phystr + selectedmove.damage - BattleSystem.selectedtarget.phydef)
-                    BattleSystem.selectedtarget.hp = (BattleSystem.selectedtarget.hp - damage)
-                    GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
-                    BattleSystem.CheckEnemyStatus()
-                elif selectedmove.effect == "Legendary":
-                    if Player.hp <= ((Player.hpmax / 100) * 10):
-                        damage = (Player.phystr * selectedmove.damage)
-                        BattleSystem.selectedtarget.hp = (BattleSystem.selectedtarget.hp - damage)
-                        GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
-                        BattleSystem.CheckEnemyStatus()
-                    else:
-                        GMnarrate.write ("You can't use your Limit Break ability unless your health is below 10%!")
-                        PressEnterToGoBack()
-                        BattleSystem.PlayerTurn()
 
 #check to see if enemy is dead after attacking
     def CheckEnemyStatus():
@@ -1234,7 +1081,7 @@ class BattleSystem:
             BattleSystem.EnemyTurn()
             BattleSystem.Fight()
 
-# BATTLES CLASS LOADS IN ENEMIES FOR DIFFERENT KINDS OF FIGHTS, ALSO FACILITATES THE ARENA ROUNDS FUNCTIONALITY :)
+# BATTLES CLASS LOADS IN ENEMIES FOR DIFFERENT KINDS OF FIGHTS,  FACILITATES THE ARENA ROUNDS FUNCTIONALITY :)
 class Battles:
 
 # FOR AT THE BEGINNING AND END OF ARENA BATTLES
@@ -1286,6 +1133,95 @@ class Battles:
         MainCharacter.combatlocation = False
         MainCharacter.currentlocation()
 
+# CONSUMABLE SYSTEM ALLOWS USERS TO SELECT AND USE CONSUMABLE ITEMS IN OR OUT OF COMBAT.
+class ConsumableSystem:
+    
+    listofitems = ""
+    selectedconsumable = ""
+    selectedtarget = ""
+    
+    def ShowConsumables():
+        #list the consumable items available
+        listconsumables = 0
+        MenuTitle.write("Items:")
+        PlayerInput.write ("\n0: Cancel   \n") 
+        for count in MainCharacter.items:
+            listconsumables += 1
+            PlayerInput.write(f"{listconsumables}: {MainCharacter.items[count]} x {count}  \n")
+        #let player select consumable
+        GMtalk.write ("Select an item to use:")
+        DecisionMaker.MenuSelection()
+        if DecisionMaker.menuselect == "0":
+            #check if player is outside of combat - if so will return to player's current location. If in combat will restart player turn
+            if MainCharacter.combatlocation == False:
+                PressEnterToGoBack()
+                MainCharacter.currentlocation()
+            else:
+                PressEnterToGoBack()
+                BattleSystem.currentplayer.PlayerTurnDisplay()
+        #check to see if entered value is valid
+        elif DecisionMaker.menuselectint in range(1,len(MainCharacter.items)+1):
+            #cast count of items as a standard list, define the selection and then select the item in the list 
+            ConsumableSystem.listofitems = list(MainCharacter.items)
+            ConsumableSystem.selectedconsumable = ConsumableSystem.listofitems[DecisionMaker.menuselectint-1]
+            #check to see if player is out of combat and if item is not a buff to reject usage of offensive items, otherwise move onto target selection.
+            if not MainCharacter.combatlocation and "Buff" not in ConsumableSystem.selectedconsumable.effect:
+                GMtalk.write ("You can't use that here!")
+            else:
+                ConsumableSystem.SelectConsumableTarget()
+        else:
+            InvalidChoice()
+            ConsumableSystem.ShowConsumables()
+        
+    def SelectConsumableTarget(): 
+        listoftargets = 0
+        #check to see if the item effect is a buff - if it is, it will be used against friendly characters. else, it will be used against enemy characters
+        if "Buff" in ConsumableSystem.selectedconsumable.effect:
+            
+            #check to see if there's only one person in the party. if there is, it'll be selected automatically. if not it will list the party members and let the player choose one.
+            if len(BattleSystem.party) == 1:
+                ConsumableSystem.selectedtarget = BattleSystem.party[0]
+                ConsumableSystem.ConsumableTargetConfirmed()
+            else:
+                MenuTitle.write("Targets:")
+                for elem in BattleSystem.party:
+                    listoftargets += 1
+                    PlayerInput.write (f"{listoftargets}: {elem.name}")
+                    DecisionMaker.MenuSelection()
+                    ConsumableSystem.selectedtarget = BattleSystem.enemies[DecisionMaker.menuselectint-1]
+                    ConsumableSystem.ConsumableTargetConfirmed()
+        else:
+            #same check as just before but for enemies. one enemy is automatically selected, more than one will allow player selection of the target. 
+            if len(BattleSystem.enemies) == 1:
+                ConsumableSystem.selectedtarget = BattleSystem.enemies[0]
+                ConsumableSystem.ConsumableTargetConfirmed()
+            else:
+                MenuTitle.write("Targets:")
+                for elem in BattleSystem.enemies:
+                    listoftargets += 1
+                    PlayerInput.write (f"{listoftargets}: {elem.name}")
+                DecisionMaker.MenuSelection()
+                ConsumableSystem.selectedtarget = BattleSystem.enemies[DecisionMaker.menuselectint-1]
+                if ConsumableSystem.selectedtarget in range (1,listoftargets+1):
+
+                    ConsumableSystem.ConsumableTargetConfirmed()
+                else:
+                    InvalidChoice()
+                    ConsumableSystem.SelectConsumableTarget()
+
+    def ConsumableTargetConfirmed():
+        #runs item action and removes one instance of the item from player inventory 
+        ConsumableSystem.selectedconsumable.action()
+        MainCharacter.items[ConsumableSystem.selectedconsumable] -= 1
+        if MainCharacter.items[ConsumableSystem.selectedconsumable] == 0:
+            del MainCharacter.items[ConsumableSystem.selectedconsumable]
+        else:
+            pass
+        #check to see if in combat, if so will check enemy status, if not will continue.
+        if MainCharacter.combatlocation:
+            BattleSystem.CheckEnemyStatus()
+        else:
+            pass
 
 ###################################
 ###################################
@@ -1537,12 +1473,16 @@ class WorldBuilding:
 
     def VendorUpdate():
         if MainCharacter.arenawins == 0:
-            VendorItem.items[FieldDressing] += 2
-            VendorItem.items[MorphineShot] += 1
+            VendorItem.items[HPup1] += 2
+            VendorItem.items[HPup2] += 1
+            VendorItem.items[APup1] += 2
+            VendorItem.items[APup2] += 1
             VendorArmatek.items[ScanningGlove] += 1
             VendorPhysical.items[Knife] += 1
     
     def ThisFunctionTookGodSixWholeDays():
+        MainCharacter.physequip = [BareKnuckles]
+        MainCharacter.moveset = [Attack,Punches,"-"]
         WorldBuilding.NPCUpdate()
         WorldBuilding.LocationUpdate()
 
@@ -1646,10 +1586,72 @@ class StoryEvent:
         TutorialWorld.Area()
 
     def Introduction_AboardTheSkytrain():
-        GMnarrate.write("Story beat goes here. This is where our player character meets a stranger who gifts them their first items. Main character does have inventory for now")
+
+        GMnarrate.write ('''
+You're riding the skytrain to Piston, a city on the Southern Alliance's edge. You served the Alliance during it's last war against the Northern Commonwealth. 
+The Empire won, but you were cast aside afterwards, just like the rest of the conscriptions.
+Now you're barely getting by - but an underground fight tournament in Piston may give you just enough fortune to start the new life you deserve...
+While looking out the brass port hole you notice the stranger opposite peering at you through his goggles. After meeting your eyes, he introduces himself with a familiar Pistonian drawl:
+        ''')
+        NPCtalk.write ('''
+    'Well hey there friend, Armish Cornwall's the name - Who do I got the pleasure of acquantancin' today?'
+        ''')
+        MainCharacter.Naming()
+        NPCtalk.write (f'''
+    'Howdy, {MainCharacter.name} - a pleasure. You go' dat stern look about yer feller, one only an Alliance vet could git. 
+    I were a low rank soldier in the war, how'd they git you to serve?'
+        ''')
+        MainCharacter.ClassChoice()
+        if MainCharacter.job == "Soldier":
+            NPCtalk.write ('''
+    Well I'll be, I had feelings yer might be a brother in arms
+        ''')
+        elif MainCharacter.job == "Scientist":
+            NPCtalk.write ('''
+    Shoot, you one o' dem fancy science types huh?
+    Well I'm grateful fer the tech you nerds done worked up fer us!
+        ''')
+        elif MainCharacter.job == "Medic":
+            NPCtalk.write ('''
+    Hell, you boys were all whut kept us going some days... thank you, brother.
+        ''')
+        elif MainCharacter.job == "Officer":
+            NPCtalk.write ('''
+    Officer, huh... higher ups always lookin' down on us rank and file...
+    I suppose yer orders kept us alive.
+        ''')
+        else:
+            pass
+        GMnarrate.write ("Armish leans back in his chair and studies you")
+        NPCtalk.write ('''
+    ... Yer never been ter Piston, have yer? Rough place, no Alliance peacekeepers around this far out. I gotta spare knife. Not much, but it's better than yer fists. A healing salve too, in case someone manages to get too close.
+    ''')
+        GMnarrate.write ('''
+Armish hands you a knife. The blade is serrated, but rusted. Handle seems sturdy enough.
+He also hands you a healing salve. Looks like a standard spray applicator.
+        ''')
+        MainCharacter.phyweapons.append (Knife)
+        MainCharacter.items[HPup1] += 1
+        GMtalk.write ('''
+    A Knife has been added to your weapons list.
+    A Healing Salve has been added to your items list.
+        ''')
+        GMnarrate.write ('''
+Armish looks out the window. You are nearing Piston now, the gleaming metal superstructures piercing the clouds you are now descending towards.
+He stands to leave and turns to you:
+        ''')
+        NPCtalk.write (f'''
+    It were good makin' yer acquaintanceship the day, friend - maybe we'll see each other round the way.
+    Stay safe, now, {MainCharacter.name}.
+        ''')
+        GMnarrate.write (f'''
+After watching Armish leave, you look around the skytrain cabin. 
+The battered leather seats haven't been fixed in years, and the once polished brass has started to rust in places.
+You glance out of the port hole one last time at the incoming city - the skytrain is on it's landing approach. 
+You turn and walk through the rusted cabin door into the skytrain's passenger corridor...
+        ''')
         PressEnterToContinue()
         Train.Area()
-
 
     def ArenaVictory():
         MainCharacter.arenawins += 1
@@ -1665,7 +1667,7 @@ class StoryEvent:
     def FirstArenaWin():
         print ("FIRST ROUND COMPLETE")
         GMnarrate.write ("Story beat for after the first round of combat goes here.")
-        VendorItem.items[FieldDressing] += 1
+        VendorItem.items[HPup1] += 1
         # VendorItem.items[MorphineShot] += 1
         VendorArmatek.items[ScanningGlove] += 1
         VendorPhysical.items[Knife] += 1
@@ -1673,14 +1675,13 @@ class StoryEvent:
     def SecondArenaWin():
         print ("SECOND ROUND COMPLETE")
         GMnarrate.write ("Story beat for after the second round of combat goes here.")
-        VendorItem.items[FieldDressing] += 5
+        VendorItem.items[HPup1] += 5
         # VendorItem.items[MorphineShot] += 5
         VendorArmatek.items[ArmaGauntlet] += 1
 
     def ThirdArenaWin():
         print ("THIRD ROUND COMPLETE")
         GMnarrate.write ("Story beat for after the third round of combat goes here.")
-
 
     def FourthArenaWin():
         print ("FOURTH ROUND COMPLETE")
@@ -1689,36 +1690,6 @@ class StoryEvent:
     def FifthArenaWin():
         print ("FIFTH ROUND COMPLETE")
         GMnarrate.write ("Story beat for after the fifth round of combat goes here.")
-
-
-
-
-
-# SELF EXPLANATORY
-class BoilerplateSpeech:
-    def GMLocationTest1():
-        GMnarrate.write ("First Location Test \n")
-    
-    def GMLocationTest2():
-        GMnarrate.write ("Second Location Test \n")
-    
-    def GMIntroTest1():
-        GMnarrate.write ("First Introduction Test \n")
-    
-    def GMIntroTest2():
-        GMnarrate.write ("Second Introduction Test \n")
-
-    def NPCspeechtest1():
-        NPCtalk.write ("First NPC Interaction Test \n")
-
-    def NPCspeechtest2():
-        NPCtalk.write ("Second NPC Interaction Test \n")
-
-    def StoryTest1():
-        GMnarrate.write ("STORY EXAMPLE 1 \n")
-    
-    def StoryTest2():
-        GMnarrate.write ("STORY EXAMPLE 2 \n")
 
 # NPC INTERACTIONS ARE LOADED BY INDIVIDUAL NPCS WHEN YOU'RE HAVING A CHAT. EACH CHARACTER GETS ITS OWN GREETING FUNCTION AND THEN EXTRAS IF NECESSARY TO KEEP A CONVERSATION GOING.
 class Interactions:
