@@ -1304,8 +1304,13 @@ class WorldBuilding:
         Train.selectoption1 = "-"
         Train.selectoption2 = "-"
         Train.selectoption3 = "-"
-        if MainCharacter.currentlocation == Train.Area and MainCharacter.mostrecentbossarea == "Final Boss":
-            StoryEvent.HellOuttaDodge()
+        if MainCharacter.currentlocation == Train.Area:
+            if MainCharacter.arenawins == 5 and MainCharacter.mostrecentbossarea == "Arena" :
+                StoryEvent.FinalBossIntro()
+            elif MainCharacter.mostrecentbossarea == "Final Boss":
+                StoryEvent.HellOuttaDodge()
+        else:
+            pass
         
         SkytrainDock.describe1 = LocationIntroduction.SkytrainDock1
         SkytrainDock.describe2 = LocationIntroduction.SkytrainDock2
@@ -1321,11 +1326,6 @@ class WorldBuilding:
         SkytrainDock.selectoption1 = DockPorter.Talk
         SkytrainDock.selectoption2 = HomelessGuy.Talk
         SkytrainDock.selectoption3 = "-"
-        if MainCharacter.currentlocation == SkytrainDock.Area:
-            if MainCharacter.arenawins == 5 and MainCharacter.mostrecentbossarea == "Arena" :
-                StoryEvent.FinalBossIntro()
-            elif MainCharacter.mostrecentbossarea == "Final Boss" :
-                SkytrainDock.describe2 = StoryEvent.FinalBossDefeated
 
         PowerStationGrounds.describe1 = LocationIntroduction.PowerStationGrounds1
         PowerStationGrounds.describe2 = LocationIntroduction.PowerStationGrounds2
