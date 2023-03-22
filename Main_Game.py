@@ -84,7 +84,6 @@ class AbilityEffects(Ability):
         totaleffect = ((BattleSystem.currentplayer.phystr + BattleSystem.currentplayer.armstr) * 2) * 10
         GMnarrate.write (f"{BattleSystem.currentplayer.name} used {BattleSystem.movechoice.name} for {totaleffect} damage")
 
-
 ##################
 # STANDARD MOVES #
 ##################
@@ -111,7 +110,6 @@ ArmaMechArmHigh = Ability ("Grand Slam", AbilityEffectsList.PhysicalDamage, 30, 
 ArmaMechChestLow = Ability ("Arma Beam Blast", AbilityEffectsList.ArmatekDamage, 200, 1, 0, 50)
 ArmaMechChestHigh = Ability ("Arma Beam Bomb", AbilityEffectsList.ArmatekDamage, 150, 1, 0, 50)
 
-
 #################
 # ARMATEK MOVES #
 #################
@@ -121,7 +119,6 @@ LimitBreak = Ability ("Limit Break", AbilityEffectsList.Legendary, 10, 1,0, 0)
 
 # FAR LESS USEFUL THAN I'D LIKE... I SHOULD HAVE DONE SOME SORT OF SPECIAL ABILITIES SYSTEM WHERE WEAPON ABILTIES ARE EQUIPPED WITH WEAPONS AND ARMATEK ABILITES ARE ACQUIRED... MAYBE IN THE NEXT EDITION. I DOUBT V1.0 IS GONNA BE WHAT I HAND IN FOR THE ASSIGNMENT. 
 Scan = Ability ("Scan", AbilityEffectsList.Scan, 0, 1,5, 0)
-
 
 ################################################
 ################################################
@@ -255,7 +252,6 @@ ArmaGrenade = Item ("Arma Grenade", "Armatek Damage", ItemEffectsList.ArmatekDam
 ArmaGrenade2 = Item ("Hi Arma Grenade", "Armatek Damage", ItemEffectsList.ArmatekDamage, 1, 375, 1, 75 )
 ArmaGrenade3 = Item ("Mega Arma Grenade", "Armatek Damage", ItemEffectsList.ArmatekDamage, 1, 500, 1, 100 )
 
-
 ###########
 # WEAPONS #
 ###########
@@ -269,7 +265,6 @@ Pistol = Weapon ("Pistol", "Physical", 50, PistolShot, 150)
 ScanningGlove = Armatek ("Scanning Glove", "Armatek", 0, Scan, 100)
 ArmaGauntlet = Armatek ("Mecha Gauntlet", "Armatek", 18, ArmaFist, 10)
 ArmaRifle = Armatek ("Arma Rifle", "Armatek", 30, ArmaScopeShot, 100)
-
 
 ################################
 ################################
@@ -400,7 +395,7 @@ What was your role in the military? Enter a role number to view it's stats.
 
         elif DecisionMaker.menuselect == "3":
             self.job = "Medic"
-            GMnarrate.write ("A former Medic you served and saved alongside you solder brothers.Your hardiness earned in battle has given you stronger physical defense.    \n")
+            GMnarrate.write ("A former Medic you served and saved alongside you soldier brothers.Your hardiness earned in battle has given you stronger physical defense.    \n")
             GMtalk.write ("Your stats will be:     \n8  Physical Strength        \n13 Physical Defense     \n10 Armatek Strength     \n10 Armatek Defense")
             self.ClassChoiceConfirm()
 
@@ -1716,7 +1711,9 @@ You're riding the skytrain to Piston, a city on the Southern Alliance's edge. Yo
         GMnarrate.write ('''
 Armish leans back in his chair and studies you''')
         NPCtalk.write ('''
-    ... Yer never been ter Piston, have yer? Rough place, no Alliance peacekeepers around this far out. I gotta spare knife. Not much, but it's better than yer fists. A Field Dressing too, in case someone manages to get too close.''')
+    ... Yer never been ter Piston, have yer? Rough place, no Alliance peacekeepers around this far out. 
+        I gotta spare knife. Not much, but it's better than yer fists. 
+            A Field Dressing too, in case someone manages to get too close.''')
         GMnarrate.write ('''
 Armish hands you a knife. The blade is serrated, but rusted. Handle seems sturdy enough.
 He also hands you a healing salve. Looks like a standard spray applicator.''')
@@ -2125,7 +2122,7 @@ The NPC chuckles at your brusque response
 ####################################
         
 class type():
-    def write(text, speed=0.001):
+    def write(text, speed=0.01):
         for char in text:
             sys.stdout.write(char)
             sys.stdout.flush()
@@ -2177,7 +2174,7 @@ class type():
     reset = '\033[0m'
 
 class quicktype():
-    def write(text, speed=0.001):
+    def write(text, speed=0.0):
         for char in text:
             sys.stdout.write(char)
             sys.stdout.flush()
@@ -2250,7 +2247,7 @@ class ScreenTitle(type):
 
 class MenuTitle(type):
     def write(mytext):
-        quicktype.write(f'{type.fg_purple}{mytext}{type.reset}\n')
+        type.write(f'{type.fg_purple}{mytext}{type.reset}\n')
 
 #######################
 #######################
@@ -2259,10 +2256,4 @@ class MenuTitle(type):
 #######################
 
 WorldBuilding.ThisFunctionTookGodSixWholeDays()
-# MainCharacter.name = "Ash"
-# MainCharacter.job = "Medic"
-# MainCharacter.arenawins = 5
-# MainCharacter.combatarea = "Arena"
-# MainCharacter.phystr = 60
-# PowerStationDock.Area()
 StoryEvent.StartTheGame()
