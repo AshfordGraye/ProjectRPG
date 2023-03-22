@@ -48,11 +48,11 @@ def CountDown():
 ##################################
 ##################################
 
-# THIS SECTION IS FOR USABLE MOVES BY THE PLAYER AND ENEMIES - IT'S UP AT THE TOP BECAUSE ENEMY CHARACTERS WON'T INITIALISE UNLESS THESE COME FIRST
+# THIS SECTION IS FOR USABLE MOVES BY THE PLAYER AND ENEMIES - IT'S UP AT THE TOP BECAUSE CHARACTERS AND WEAPON ITEMS WON'T INITIALISE UNLESS THESE COME FIRST
 
 # ABILITY CLASS ALLOWS FOR CREATION OF ABILITY OBJECTS THAT WILL BE HELD WITHIN WEAPON OBJECTS WHICH ALLOWS DYNAMIC ABILITY SWAPPING.
 class Ability:
-    def __init__(self, name, effect, damage, apcost, rounds, chancetomiss):
+    def __init__(self, name, effect, damage, rounds, apcost, chancetomiss):
         self.name = name
         self.effect = effect
         self.damage = damage
@@ -66,32 +66,62 @@ class Ability:
         else:
             return (f'''{self.name} \n   AP: {self.apcost}''')   
 
+class AbilityEffects(Ability):
+    def PhysicalDamage():
+        totaleffect = (BattleSystem.movechoice.damage + BattleSystem.currentplayer.phystr - BattleSystem.selectedtarget.phydef)
+        BattleSystem.selectedtarget.hp -= totaleffect
+        GMnarrate.write (f"{BattleSystem.currentplayer.name} used {BattleSystem.movechoice.name} for {totaleffect} damage")
+    
+    def ArmatekDamage():
+        totaleffect = (BattleSystem.movechoice.damage + BattleSystem.currentplayer.armstr - BattleSystem.selectedtarget.armdef)
+        BattleSystem.selectedtarget.hp -= totaleffect
+        GMnarrate.write (f"{BattleSystem.currentplayer.name} used {BattleSystem.movechoice.name} for {totaleffect} damage")
+
+    def Scan():
+        BattleSystem.selectedtarget.ShowCurrentStats()
+    
+    def Legendary():
+        totaleffect = ((BattleSystem.currentplayer.phystr + BattleSystem.currentplayer.armstr) * 2) * 10
+        GMnarrate.write (f"{BattleSystem.currentplayer.name} used {BattleSystem.movechoice.name} for {totaleffect} damage")
+
+
 ##################
-# PHYSICAL MOVES #
+# STANDARD MOVES #
 ##################
-# LIMIT BREAK IS FOR PLAYER ONLY, REPLACES STANDARD ATTACK WHEN HEALTH IS LOW
-LimitBreak = Ability ("Limit Break", "Legendary", 10, 0, 1, 0)
 
-Attack = Ability ("Attack", "Physical", 20, 0, 1, 10)
-Punches = Ability ("Punches", "Physical", 15, 15, 3, 30)
-StrongFist = Ability ("Strong Fist", "Physical", 30, 5, 1, 10)
+# CONTAINS ALL AVAILABLE FUNCTIONS FOR ABILITIES TO SAVE MEMORY
+AbilityEffectsList = AbilityEffects
 
-Lunge = Ability ("Lunge", "Physical", 30, 5, 1 ,20)
-KnifeCuts = Ability ("Knife Cuts", "Physical", 25, 10, 2, 30)
+# ABILITIES ARE SHARED BETWEEN PLAYER AND ENEMY CHARACTERS. PLAYER ABIILITIES ARE EQUIPPED THROUGH WEAPONS, ENEMIES CAN JUST DO THEM.
+Attack = Ability ("Attack", AbilityEffectsList.PhysicalDamage, 20, 1, 0, 10)
+Punches = Ability ("Punches", AbilityEffectsList.PhysicalDamage, 15, 3, 15, 30)
+Lunge = Ability ("Lunge", AbilityEffectsList.PhysicalDamage, 30, 1, 5, 20)
+KnifeCuts = Ability ("Knife Cuts", AbilityEffectsList.PhysicalDamage, 25, 2, 10, 30)
+AnchorStrike = Ability ("Anchor Strike", AbilityEffectsList.PhysicalDamage, 15, 1, 15, 15)
+PistolShot = Ability ("Pistol Shot", AbilityEffectsList.PhysicalDamage, 60, 1, 10, 10)
+VibraSwordSlice = Ability ("VibraSword Slice", AbilityEffectsList.PhysicalDamage, 40, 1, 20, 10)
+VibraSwordSlashes = Ability ("VibraSword Slashes", AbilityEffectsList.PhysicalDamage, 25, 3, 30, 20)
+ArmaFist = Ability ("Arma Fist", AbilityEffectsList.PhysicalDamage, 50, 1, 10, 10)
 
-AnchorStrike = Ability ("Anchor Strike", "Physical", 15, 15, 1, 15)
+LoaderFist = Ability ("Loader Fist", AbilityEffectsList.ArmatekDamage, 25, 2,25, 30)
+ArmaScopeShot = Ability ("ArmaScope Shot", AbilityEffectsList.ArmatekDamage, 40, 1,30, 1)
 
-PistolShot = Ability ("Pistol Shot", "Physical", 40, 20, 1, 10)
+ArmaMechArmLow = Ability ("Pneumatic Fist", AbilityEffectsList.PhysicalDamage, 40, 1, 0, 10)
+ArmaMechArmHigh = Ability ("Grand Slam", AbilityEffectsList.PhysicalDamage, 30, 2, 0, 20)
+ArmaMechChestLow = Ability ("Arma Beam Blast", AbilityEffectsList.ArmatekDamage, 200, 1, 0, 50)
+ArmaMechChestHigh = Ability ("Arma Beam Bomb", AbilityEffectsList.ArmatekDamage, 150, 1, 0, 50)
 
-VibraSwordSlice = Ability ("VibraSword Slice", "Physical", 40, 20, 1, 10)
-VibraSwordSlashes = Ability ("VibraSword Slashes", "Physical", 25, 30, 3, 20)
 
 #################
 # ARMATEK MOVES #
 #################
-Scan = Ability ("Scan", "Scan", 0, 5, 1, 0)
-LoaderFist = Ability ("Loader Fist", "Armatek", 25, 25, 2, 30)
-ArmaScopeShot = Ability ("ArmaScope Shot", "Physical", 40, 30, 1, 1)
+
+# LIMIT BREAK IS FOR PLAYER ONLY, REPLACES STANDARD ATTACK WHEN HEALTH IS LOW
+LimitBreak = Ability ("Limit Break", AbilityEffectsList.Legendary, 10, 1,0, 0)
+
+# FAR LESS USEFUL THAN I'D LIKE... I SHOULD HAVE DONE SOME SORT OF SPECIAL ABILITIES SYSTEM WHERE WEAPON ABILTIES ARE EQUIPPED WITH WEAPONS AND ARMATEK ABILITES ARE ACQUIRED... MAYBE IN THE NEXT EDITION. I DOUBT V1.0 IS GONNA BE WHAT I HAND IN FOR THE ASSIGNMENT. 
+Scan = Ability ("Scan", AbilityEffectsList.Scan, 0, 1,5, 0)
+
 
 ################################################
 ################################################
@@ -144,6 +174,26 @@ class ItemEffects(Item):
         BattleSystem.selectedtarget.hp -= (ConsumableSystem.selectedconsumable.totaleffect - BattleSystem.selectedtarget.phydef)
         GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name} to cause {ConsumableSystem.selectedconsumable.totaleffect} damage.")
 
+    def ArmatekDamage():
+        BattleSystem.selectedtarget.hp -= (ConsumableSystem.selectedconsumable.totaleffect - BattleSystem.selectedtarget.armdef)
+        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name} to cause {ConsumableSystem.selectedconsumable.totaleffect} damage.")
+
+    def PhyDefBoost():
+        BattleSystem.selectedtarget.phydef += (ConsumableSystem.selectedconsumable.totaleffect)
+        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Physical Defense to {BattleSystem.selectedtarget.phydef}.")
+
+    def PhyStrBoost():
+        BattleSystem.selectedtarget.phystr += (ConsumableSystem.selectedconsumable.totaleffect)
+        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Physical Defense to {BattleSystem.selectedtarget.phystr}.")
+
+    def ArmDefBoost():
+        BattleSystem.selectedtarget.armdef += (ConsumableSystem.selectedconsumable.totaleffect)
+        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Physical Defense to {BattleSystem.selectedtarget.armdef}.")
+
+    def ArmStrBoost():
+        BattleSystem.selectedtarget.armstr += (ConsumableSystem.selectedconsumable.totaleffect)
+        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Physical Defense to {BattleSystem.selectedtarget.armstr}.")
+
 class Weapon:
     def __init__(self, name, effect, damage, special, value):
         self.name = name
@@ -177,30 +227,48 @@ class Armatek:
 # THIS OBJECT HOLDS ALL AVAILABLE ITEM EFFECT FUNCTIONS
 ItemEffectsList = ItemEffects
 
-#########
-# BUFFS #
-#########
+##############
+# BUFF ITEMS #
+##############
 HPup1 = Item ("Field Dressing", "HP Buff", ItemEffectsList.HPBuff, 1, 30, 1, 20)
-HPup2 = Item ("Morphine Shot", "HP Buff", ItemEffectsList.HPBuff, 2, 30, 1, 40)
-APup1 = Item ("Adreno Shot", "AP Buff", ItemEffectsList.APBuff, 1, 20, 1, 20)
-APup2 = Item ("Adreno Plus", "AP Buff", ItemEffectsList.APBuff, 2, 20, 1, 20)
+HPup2 = Item ("Medkit", "HP Buff", ItemEffectsList.HPBuff, 2, 30, 1, 40)
+HPup3 = Item ("Doctor's Kit", "HP Buff", ItemEffectsList.HPBuff, 3, 30, 1, 60)
 
-###########
-# DEBUFFS #
-###########
+APup1 = Item ("Adreno Shot", "AP Buff", ItemEffectsList.APBuff, 1, 20, 1, 20)
+APup2 = Item ("Hi Adreno Shot", "AP Buff", ItemEffectsList.APBuff, 2, 20, 1, 20)
+APup3 = Item ("Mega Adreno Shot", "AP Buff", ItemEffectsList.APBuff, 3, 20, 1, 60)
+
+
+DefBooster = Item ("PhyDef Booster", "Physical Defense Boost", ItemEffectsList.PhyDefBoost, 1, 20, 1, 200)
+StrBooster = Item ("PhyStr Booster", "Physical Strength Boost", ItemEffectsList.PhyStrBoost, 1, 20, 1, 200)
+ArmDefBooster = Item ("ArmDef Booster", "Armatek Defense Boost", ItemEffectsList.ArmDefBoost, 1, 20, 1, 200)
+ArmStrBooster = Item ("ArmStr Booster", "Armatek Strength Boost", ItemEffectsList.ArmStrBoost, 1, 20, 1, 200)
+
+################
+# DEBUFF ITEMS #
+################
 Grenade = Item ("Grenade", "Physical Damage", ItemEffects.PhysicalDamage, 1, 200, 1, 50)
+Grenade2 = Item ("Hi Grenade", "Physical Damage", ItemEffects.PhysicalDamage, 1, 375, 1, 75)
+Grenade3 = Item ("Mega Grenade", "Physical Damage", ItemEffects.PhysicalDamage, 1, 500, 1, 100)
+
+ArmaGrenade = Item ("Arma Grenade", "Armatek Damage", ItemEffectsList.ArmatekDamage, 1, 200, 1, 50 )
+ArmaGrenade2 = Item ("Hi Arma Grenade", "Armatek Damage", ItemEffectsList.ArmatekDamage, 1, 375, 1, 75 )
+ArmaGrenade3 = Item ("Mega Arma Grenade", "Armatek Damage", ItemEffectsList.ArmatekDamage, 1, 500, 1, 100 )
+
 
 ###########
 # WEAPONS #
 ###########
-BareKnuckles = Weapon ("Bare Knuckles", "Physical", 10, StrongFist, 0)
-Knife = Weapon ("Knife", "Physical", 15, KnifeCuts, 50)
+BareKnuckles = Weapon ("Bare Knuckles", "Physical", 10, Punches, 0)
+Knife = Weapon ("Knife", "Physical", 15, KnifeCuts, 0)
+Pistol = Weapon ("Pistol", "Physical", 50, PistolShot, 150)
 
 ###########
 # ARMATEK #
 ###########
 ScanningGlove = Armatek ("Scanning Glove", "Armatek", 0, Scan, 100)
-ArmaGauntlet = Armatek ("Mecha Gauntlet", "Armatek", 18, StrongFist, 50)
+ArmaGauntlet = Armatek ("Mecha Gauntlet", "Armatek", 18, ArmaFist, 10)
+ArmaRifle = Armatek ("Arma Rifle", "Armatek", 30, ArmaScopeShot, 100)
 
 
 ################################
@@ -261,7 +329,7 @@ class Player(Character):
             self.holdlocation = ""
             self.lastlocation = ""
             self.activecombat = False
-            self.mostrecentbossarea = ""
+            self.combatarea = ""
 
             self.credits = 200
             
@@ -278,14 +346,14 @@ class Player(Character):
             self.armdef = 10
 
             self.phyweapons = []
-            self.physequip = []
+            self.physequip = [BareKnuckles]
             self.armweapons = []
             self.armequip = []
 
             self.items = collections.Counter()
             
 
-            self.moveset = []
+            self.moveset = [Attack,Punches,"-"]
             self.arenawins = 0
             self.arenaroundcomplete = False
 
@@ -349,7 +417,6 @@ What was your role in the military? Enter a role number to view it's stats.
         2: Go Back to select another Role''')
                 DecisionMaker.MenuSelection()
                 if DecisionMaker.menuselect == "1":
-                    print (f"Selected {self.job}")
                     if self.job == "Soldier":
                         self.phystr = 13
                         self.armdef = 8
@@ -563,45 +630,46 @@ What was your role in the military? Enter a role number to view it's stats.
                 self.PlayerSelectAbilityTarget()
 
     def PlayerSelectAbilityTargetConfirmed(self):
-            selectedmove = self.moveset[DecisionMaker.menuselectint-1]
+            BattleSystem.movechoice = self.moveset[DecisionMaker.menuselectint-1]
             #accuracycheck checks against the misschance of the selected move.
-            if selectedmove == "-":
+            if BattleSystem.movechoice == "-":
                 InvalidChoice()
                 BattleSystem.PlayerTurn()
             else:
-                if selectedmove.apcost > self.ap:
+                if BattleSystem.movechoice.apcost > self.ap:
                     GMtalk.write("You don't have enough AP for that right now!")
                     self.PlayerTurnDisplay()
                 else:
-                    self.ap -= selectedmove.apcost
-                    for i in range (1,selectedmove.rounds+1):
+                    self.ap -= BattleSystem.movechoice.apcost
+                    for i in range (1,BattleSystem.movechoice.rounds+1):
                         accuracycheck = random.randint (1,100)
-                        if accuracycheck in range (selectedmove.chancetomiss): # so if the accuracycheck falls within the misschance of the selected move, it misses.
-                            GMnarrate.write  (f"You tried to use {selectedmove.name}, but missed!  \n")
+                        if accuracycheck in range (BattleSystem.movechoice.chancetomiss): # so if the accuracycheck falls within the misschance of the selected move, it misses.
+                            GMnarrate.write  (f"You tried to use {BattleSystem.movechoice.name}, but missed!  \n")
                         else: #otherwise, it hits and so determines how damage or buffs work here base on the selected move effect value
-                            if selectedmove.effect == "Physical":
-                                damage = (self.phystr + selectedmove.damage + self.physequip[0].damage - BattleSystem.selectedtarget.phydef)
-                                BattleSystem.selectedtarget.hp -= damage
-                                GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
-                                
+                            BattleSystem.movechoice.effect()
+
+
+                            # elif selectedmove.effect == "Armatek":
+                            #     pass
                             
-                            elif selectedmove.effect == "Scan":
-                                BattleSystem.selectedtarget.ShowCurrentStats()
+                            # elif selectedmove.effect == "Scan":
+                            #     BattleSystem.selectedtarget.ShowCurrentStats()
                             
-                            elif selectedmove.effect == "Legendary":
-                                if self.hp <= ((self.hpmax / 100) * 10):
-                                    damage = (self.phystr * selectedmove.damage)
-                                    BattleSystem.selectedtarget.hp -= damage
-                                    GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
-                                    BattleSystem.CheckEnemyStatus()
-                                else:
-                                    GMnarrate.write ("You can't use your Limit Break ability unless your health is below 10%!")
-                                    PressEnterToGoBack()
-                                    BattleSystem.PlayerTurn()
+                            # elif selectedmove.effect == "Legendary":
+                            #     if self.hp <= ((self.hpmax / 100) * 10):
+                            #         damage = (self.phystr * selectedmove.damage)
+                            #         BattleSystem.selectedtarget.hp -= damage
+                            #         GMnarrate.write (f"You used {selectedmove.name} to inflict {damage} damage. \n")
+                            #         BattleSystem.CheckEnemyStatus()
+                            #     else:
+                            #         GMnarrate.write ("You can't use your Limit Break ability unless your health is below 10%!")
+                            #         PressEnterToGoBack()
+                            #         BattleSystem.PlayerTurn()
                             
-                            else:
-                                pass
+                            # else:
+                            #     pass
                         BattleSystem.CheckEnemyStatus()
+
 # NPC CHARACTER SUBCLASS CAN BE INTERACTED WITH BY THE PLAYER TO TRIGGER CONVERSATIONS AND EVENTS
 class NPC(Character):
 
@@ -616,7 +684,7 @@ class NPC(Character):
     talkselect3 = ""
 
     def Talk(self):
-        WorldBuilding.LocationUpdate()
+        WorldBuilding.WorldUpdater()
         if self.firstmeet:
             self.gmintro1()
         else:
@@ -667,10 +735,10 @@ class Vendor (NPC):
     def SaleDisplay(self):
         ScreenTitle.write (f"{self.name}    \n")
         if len (self.items) == 0:
-            GMnarrate.write ("The Vendor shakes hs head...  \n")
-            NPCtalk.write ("I'm afraid I've got nothing else in stock. Be sure to coe back and try again later.")
+            GMnarrate.write ("The Vendor shakes their head...  \n")
+            NPCtalk.write ("I'm not selling anything else right now. Be sure to come back and try again later.")
             PressEnterToGoBack()
-            self.Talk()
+            MainCharacter.currentlocation()
         else:
             Interactions.VendorPresentItems()
             listitem = 0
@@ -683,7 +751,7 @@ class Vendor (NPC):
         if self.menuselect == "0":
             NPCtalk.write ("No worries - later now.")
             PressEnterToGoBack()
-            self.Talk()
+            MainCharacter.currentlocation()
         else:
             pass
         
@@ -758,15 +826,15 @@ class Enemy(Character):
             self.armdef = 5
             self.moveset = [Lunge, KnifeCuts]
         elif self.job == "Bouncer":
-            self.hpmax = 350
+            self.hpmax = 300
             self.hp = 350
             self.phystr = 12
             self.phydef = 10
             self.armstr = 10
             self.armdef = 8
-            self.moveset = [Punches, StrongFist]
+            self.moveset = [Punches, ArmaFist]
         elif self.job == "Docker":
-            self.hpmax = 250
+            self.hpmax = 350
             self.hp = 250
             self.phystr = 10
             self.phydef = 10
@@ -774,7 +842,7 @@ class Enemy(Character):
             self.armdef = 8
             self.moveset = [AnchorStrike, LoaderFist]
         elif self.job == "Officer":
-            self.hpmax = 450
+            self.hpmax = 400
             self.hp = 450
             self.phystr = 10
             self.phydef = 10
@@ -796,7 +864,7 @@ class Enemy(Character):
             self.phydef = 18
             self.armstr = 15
             self.armdef = 15
-            self.moveset = [VibraSwordSlice, VibraSwordSlashes]
+            self.moveset = [ArmaMechArmLow, ArmaMechArmHigh]
         elif self.job == "Arma Tank Core":
             self.hpmax = 500
             self.hp = 500
@@ -804,25 +872,19 @@ class Enemy(Character):
             self.phydef = 20
             self.armstr = 20
             self.armdef = 20
-            self.moveset = [VibraSwordSlice, VibraSwordSlashes]
+            self.moveset = [ArmaMechChestLow, ArmaMechChestHigh]
 
     def MoveSelect(self):
         misschance = random.randint (1,100)
-        self.movechoice = self.moveset [(random.randint (1,len(self.moveset)))-1]
-        if misschance in range (1,self.movechoice.chancetomiss+1):
-            GMnarrate.write (f"{self.name} tried to attack, but missed!  \n")
+        BattleSystem.movechoice = self.moveset [(random.randint (1,len(self.moveset)))-1]
+        if misschance in range (1,BattleSystem.movechoice.chancetomiss+1):
+            GMnarrate.write (f"{self.name} tried to attack, but missed!")
         else:
             Enemy.DamageCalculation(self)
 
     def DamageCalculation(self):
-        target = BattleSystem.party[random.randint(1,len(BattleSystem.party))-1]
-        if self.movechoice.effect == "Physical":
-            totaldamage = (self.movechoice.damage + self.phystr - target.phydef)
-            target.hp -= totaldamage
-        elif self.movechoice.effect == "Armatek":
-            totaldamage = (self.movechoice.damage + self.armstr - target.armdef)
-            target.hp -= totaldamage
-        GMnarrate.write (f"{self.name} used {self.movechoice.name} for {totaldamage} damage \n")
+        BattleSystem.selectedtarget = BattleSystem.party[random.randint(1,len(BattleSystem.party))-1]
+        BattleSystem.movechoice.effect()
 
     def ShowCurrentStats(self):
         MenuTitle.write (f"{self.name}  \n")
@@ -853,7 +915,7 @@ PowerStationBoss = NPC ("Power Station Boss")
 
 # STORE VENDORS 
 VendorItem = Vendor("Item Vendor")
-VendorPhysical = Vendor ("Physical Equipment Vendor")
+VendorWeapon = Vendor ("Physical Equipment Vendor")
 VendorArmatek = Vendor ("Armatek Equipment Vendor")
 
 # MEDIIIIIIIC!!!!!
@@ -862,8 +924,6 @@ FieldDroid = Medic ("Field Droid")
 
     # ENEMY CHARACTERS
 Vagrant = Enemy ("Vagrant", "Vagrant")
-Vagrant2 = Enemy ("Vagrant 2", "Vagrant")
-Vagrant3 = Enemy ("Vagrant 3", "Vagrant")
 Bouncer = Enemy ("Bouncer", "Bouncer")
 Docker = Enemy ("Docker", "Docker")
 Officer = Enemy ("Officer", "Officer")
@@ -903,7 +963,7 @@ class Location:
     def Area (self):
         MainCharacter.currentlocation = self.Area
         MainCharacter.lastlocation = MainCharacter.holdlocation
-        WorldBuilding.LocationUpdate()
+        WorldBuilding.WorldUpdater()
         if self.firstvisit:
             self.describe1()
             print()
@@ -997,11 +1057,11 @@ class Location:
 #############
 TutorialWorld = Location("The name of your current location")
 Train = Location("Skytrain")
-SkytrainDock = Location("Skytrain Dock")
-PowerStationGrounds = Location("Power Station - Grounds")
+# SkytrainDock = Location("Skytrain Dock")
+PowerStationDock = Location("Power Station - Dock Area")
 PowerStationMedicArea = Location("Power Station - Medic's Station")
 PowerStationBazaar = Location("PowerStation - Bazaar")
-PowerStationArena = Location("Power Station - Arena")
+PowerStationArena = Location("Power Station - Workfloor Arena")
 
 #########################################
 #########################################
@@ -1017,20 +1077,17 @@ class BattleSystem:
     activeturn = True
     #enemy list gets populated at battle start and selectedtarget is populated when a player selectes an enemy to attack
     party = [MainCharacter]
-    currentplayer = ""
     enemies = []
+    currentplayer = ""
     selectedtarget = ""
-
-    #variables for listing and selection of abilities across functions
-    playermovelist = 0
-    playermovechoice = 0
-    playerenemychoice = 0
+    movechoice = ""
 
 #what goes on during the enemy turn 
     def EnemyTurn():
         MenuTitle.write ("Enemy Turn:   \n")
         for elem in BattleSystem.enemies:
-            elem.MoveSelect()
+            BattleSystem.currentplayer = elem
+            BattleSystem.currentplayer.MoveSelect()
         # BattleSystem.CheckForVictory()
         BattleSystem.activeturn = not BattleSystem.activeturn
         if MainCharacter.hp <= 0:
@@ -1059,6 +1116,7 @@ class BattleSystem:
 #checks to see if all enemies are down 
     def PlayerCheckVictory():
             if len(BattleSystem.enemies) == 0:
+                PressEnterToContinue()
                 Battles.FightWon()
                 
 
@@ -1098,17 +1156,17 @@ class Battles:
 # FOR AT THE BEGINNING AND END OF ARENA BATTLES
 
     def FightWon():
-        if MainCharacter.currentlocation == PowerStationArena.Area:
+        if MainCharacter.combatarea == "Arena":
             Battles.ArenaVictory()
-
+        elif MainCharacter.combatarea == "FinalBoss":
+            StoryEvent.HellOuttaDodge()
         else:
-            print (MainCharacter.currentlocation)
-            GMnarrate.write("You won the battle!")
+            GMnarrate.write ("You won the battle!")
     
     def ArenaFightStart():
         if MainCharacter.arenaroundcomplete == False:
             if MainCharacter.arenawins == 0:
-                BattleSystem.enemies = [Vagrant, Vagrant2, Vagrant3]
+                BattleSystem.enemies = [Vagrant]
             elif MainCharacter.arenawins == 1:
                 BattleSystem.enemies = [Bouncer]
             elif MainCharacter.arenawins == 2:
@@ -1119,7 +1177,7 @@ class Battles:
                 BattleSystem.enemies = [Assassin]
             else:
                 pass
-            MainCharacter.mostrecentbossarea = "Arena"
+            MainCharacter.combatarea = "Arena"
             BattleSystem.battlestart = True
             BattleSystem.Fight()
         else:
@@ -1134,15 +1192,22 @@ class Battles:
             StoryEvent.FirstArenaWin()
         elif MainCharacter.arenawins == 2:
             StoryEvent.SecondArenaWin()
+        elif MainCharacter.arenawins == 3:
+            StoryEvent.ThirdArenaWin()
+        elif MainCharacter.arenawins == 4:
+            StoryEvent.FourthArenaWin()
+        elif MainCharacter.arenawins == 5:
+            StoryEvent.FifthArenaWin()
         PressEnterToContinue()
         MainCharacter.activecombat = False
         MainCharacter.currentlocation()
 
     def FinalBossBattle():
         BattleSystem.enemies = [ArmaTankLeftArm, ArmaTankCentre, ArmaTankRightArm]
-        MainCharacter.mostrecentbossarea = "FinalBoss"
+        MainCharacter.combatarea = "FinalBoss"
         BattleSystem.battlestart = True
         BattleSystem.Fight()
+
 # CONSUMABLE SYSTEM ALLOWS USERS TO SELECT AND USE CONSUMABLE ITEMS IN OR OUT OF COMBAT.
 class ConsumableSystem:
     
@@ -1246,7 +1311,7 @@ class ConsumableSystem:
 class WorldBuilding:
     
     # updates location objects
-    def LocationUpdate():
+    def LocationBuilder():
 
         # FRAMEWORK FOR FUTURE LOCATION CREATION
 
@@ -1264,8 +1329,6 @@ class WorldBuilding:
         # xinfo.selectoption1 = "-"
         # xinfo.selectoption2 = "-"
         # xinfo.selectoption3 = "-"
-
-        #LOCATION INFORMATION LIST TO POPULATE LOCATION INFO - THIS WAY LETS US CHANGE STUFF EASILY LATER
         
         TutorialWorld.describe1 = LocationIntroduction.TutorialWorld1
         TutorialWorld.describe2 = LocationIntroduction.TutorialWorld2
@@ -1280,16 +1343,7 @@ class WorldBuilding:
         TutorialWorld.selectoption1 = TutorialCharacter.Talk
         TutorialWorld.selectoption2 = "-"
         TutorialWorld.selectoption3 = "-"
-        if MainCharacter.currentlocation == TutorialWorld.Area:
-            if TutorialCharacter.firstmeet:
-                TutorialWorld.describe2 = LocationIntroduction.TutorialWorld1
-                TutorialWorld.travel1 = "Go to another location"
-            elif not TutorialCharacter.firstmeet:
-                TutorialWorld.firstvisit = False
-                TutorialWorld.describe2 = LocationIntroduction.TutorialWorld2
-                TutorialWorld.travel1 = "Continue the story"
-                TutorialWorld.selecttravel1 = StoryEvent.Introduction_AboardTheSkytrain
-
+        
         Train.describe1 = LocationIntroduction.Train1
         Train.describe2 = LocationIntroduction.Train1
         Train.travel1 = "Leave the Skytrain"
@@ -1298,101 +1352,75 @@ class WorldBuilding:
         Train.option1 = "-"
         Train.option2 = "-"
         Train.option3 = "-"
-        Train.selecttravel1 = SkytrainDock.Area
+        Train.selecttravel1 = PowerStationDock.Area
         Train.selecttravel2 = "-"
         Train.selecttravel3 = "-"
         Train.selectoption1 = "-"
         Train.selectoption2 = "-"
         Train.selectoption3 = "-"
-        if MainCharacter.currentlocation == Train.Area:
-            if MainCharacter.arenawins == 5 and MainCharacter.mostrecentbossarea == "Arena" :
-                StoryEvent.FinalBossIntro()
-            elif MainCharacter.mostrecentbossarea == "Final Boss":
-                StoryEvent.HellOuttaDodge()
-        else:
-            pass
         
-        SkytrainDock.describe1 = LocationIntroduction.SkytrainDock1
-        SkytrainDock.describe2 = LocationIntroduction.SkytrainDock2
-        SkytrainDock.travel1 = "Board the Skytrain"
-        SkytrainDock.travel2 = "-"
-        SkytrainDock.travel3 = "Head to the Power Station"
-        SkytrainDock.option1 = "Talk to the dock porter"
-        SkytrainDock.option2 = "Approach the homeless guy"
-        SkytrainDock.option3 = "-"
-        SkytrainDock.selecttravel1 = Train.Area
-        SkytrainDock.selecttravel2 = "-"
-        SkytrainDock.selecttravel3 = PowerStationGrounds.Area
-        SkytrainDock.selectoption1 = DockPorter.Talk
-        SkytrainDock.selectoption2 = HomelessGuy.Talk
-        SkytrainDock.selectoption3 = "-"
+        PowerStationDock.describe1 = LocationIntroduction.PowerStationDock1
+        PowerStationDock.describe2 = LocationIntroduction.PowerStationDock2
+        PowerStationDock.travel1 = "Approach the Field Infirmary"
+        PowerStationDock.travel2 = "Visit the Makeshift Bazaar"
+        PowerStationDock.travel3 = "Board the Skytrain"
+        PowerStationDock.option1 = "Talk to the Station Boss"
+        PowerStationDock.option2 = "Talk to the Dock Porter"
+        PowerStationDock.option3 = "Talk to the Homeless Guy"
+        PowerStationDock.selecttravel1 = PowerStationMedicArea.Area
+        PowerStationDock.selecttravel2 = PowerStationBazaar.Area
+        PowerStationDock.selecttravel3 = Train.Area
+        PowerStationDock.selectoption1 = PowerStationBoss.Talk
+        PowerStationDock.selectoption2 = DockPorter.Talk
+        PowerStationDock.selectoption3 = HomelessGuy.Talk
 
-        PowerStationGrounds.describe1 = LocationIntroduction.PowerStationGrounds1
-        PowerStationGrounds.describe2 = LocationIntroduction.PowerStationGrounds2
-        PowerStationGrounds.travel1 = "-"
-        PowerStationGrounds.travel2 = "Visit the Bazaar"
-        PowerStationGrounds.travel3 = "Head to the Skytrain Dock"
-        PowerStationGrounds.option1 = "Talk to the Station Boss"
-        PowerStationGrounds.option2 = "Approach the Medic Station"
-        PowerStationGrounds.option3 = "-"
-        PowerStationGrounds.selecttravel1 = "-"
-        PowerStationGrounds.selecttravel2 = PowerStationBazaar.Area
-        PowerStationGrounds.selecttravel3 = SkytrainDock.Area
-        PowerStationGrounds.selectoption1 = PowerStationBoss.Talk
-        PowerStationGrounds.selectoption2 = PowerStationMedicArea.Area
-        PowerStationGrounds.selectoption3 = "-"
 
         PowerStationMedicArea.describe1 = LocationIntroduction.PowerStationMedicArea1
         PowerStationMedicArea.describe2 = LocationIntroduction.PowerStationMedicArea2
         PowerStationMedicArea.travel1 = "-"
         PowerStationMedicArea.travel2 = "-"
-        PowerStationMedicArea.travel3 = "Back to the Power Station Entrance"
+        PowerStationMedicArea.travel3 = "Back to the Power Station Dock"
         PowerStationMedicArea.option1 = "Talk to the Medic"
         PowerStationMedicArea.option2 = "Approach the Field Droid"
         PowerStationMedicArea.option3 = "-"
         PowerStationMedicArea.selecttravel1 = "-"
         PowerStationMedicArea.selecttravel2 = "-"
-        PowerStationMedicArea.selecttravel3 = PowerStationGrounds.Area
+        PowerStationMedicArea.selecttravel3 = PowerStationDock.Area
         PowerStationMedicArea.selectoption1 = MedicFella.Talk
         PowerStationMedicArea.selectoption2 = FieldDroid.Talk
         PowerStationMedicArea.selectoption3 = "-"
-        if FieldDroid.droidclearancegranted == True:
-            FieldDroid.talkoption1 = "Do you need me to grant access each time I visit?"
-            FieldDroid.talkselect1 = Interactions.FieldDroidAlreadyCleared
-            FieldDroid.talkoption2 = "Can you fix me up?"
-            FieldDroid.talkselect2 = FieldDroid.Healing
 
         PowerStationBazaar.describe1 = LocationIntroduction.PowerStationBazaar1
         PowerStationBazaar.describe2 = LocationIntroduction.PowerStationBazaar2
-        PowerStationBazaar.travel1 = "Go back to the Power Station entrance"
+        PowerStationBazaar.travel1 = "Go back to the Power Station Dock"
         PowerStationBazaar.travel2 = "-"
         PowerStationBazaar.travel3 = "-"
         PowerStationBazaar.option1 = "Approach the Items stall"
         PowerStationBazaar.option2 = "Talk to the Weapons trader"
         PowerStationBazaar.option3 = "Examine the Armatek stand"
-        PowerStationBazaar.selecttravel1 = PowerStationGrounds.Area
+        PowerStationBazaar.selecttravel1 = PowerStationDock.Area
         PowerStationBazaar.selecttravel2 = "-"
         PowerStationBazaar.selecttravel3 = "-"
-        PowerStationBazaar.selectoption1 = VendorItem.Talk
-        PowerStationBazaar.selectoption2 = VendorPhysical.Talk
-        PowerStationBazaar.selectoption3 = VendorArmatek.Talk
+        PowerStationBazaar.selectoption1 = VendorItem.SaleDisplay
+        PowerStationBazaar.selectoption2 = VendorWeapon.SaleDisplay
+        PowerStationBazaar.selectoption3 = VendorArmatek.SaleDisplay
         
         PowerStationArena.describe1 = LocationIntroduction.PowerStationArena1
         PowerStationArena.describe2 = LocationIntroduction.PowerStationArena2
-        PowerStationArena.travel1 = "Head back to the Power Station entrance"
+        PowerStationArena.travel1 = "Head back to the Power Station Dock"
         PowerStationArena.travel2 = "-"
         PowerStationArena.travel3 = "-"
         PowerStationArena.option1 = "Approach the Arena Cage"
         PowerStationArena.option2 = "-"
         PowerStationArena.option3 = "-"
-        PowerStationArena.selecttravel1 = PowerStationGrounds.Area
+        PowerStationArena.selecttravel1 = PowerStationDock.Area
         PowerStationArena.selecttravel2 = "-"
         PowerStationArena.selecttravel3 = "-"
         PowerStationArena.selectoption1 = Battles.ArenaFightStart
         PowerStationArena.selectoption2 = "-"
         PowerStationArena.selectoption3 = "-"
 
-    def NPCUpdate():
+    def CharacterBuilder():
 
         # FRAMEWORK FOR FUTURE NPC INFO ADDITION AT RUNTIME 
         # xinfo.gmintro1 = ""
@@ -1471,15 +1499,17 @@ class WorldBuilding:
         VendorItem.talkselect1 = ""
         VendorItem.talkselect2 = ""
         VendorItem.talkselect3 = VendorItem.SaleDisplay
+        VendorItem.items[HPup1] += 2
+        VendorItem.items[APup1] += 2
 
-        VendorPhysical.gmintro1 = Interactions.VendorGreeting
-        VendorPhysical.gmintro2 = Interactions.VendorGreeting
-        VendorPhysical.talkoption1 = ""
-        VendorPhysical.talkoption2 = ""
-        VendorPhysical.talkoption3 = "I need a better weapon"
-        VendorPhysical.talkselect1 = ""
-        VendorPhysical.talkselect2 = ""
-        VendorPhysical.talkselect3 = VendorPhysical.SaleDisplay
+        VendorWeapon.gmintro1 = Interactions.VendorGreeting
+        VendorWeapon.gmintro2 = Interactions.VendorGreeting
+        VendorWeapon.talkoption1 = ""
+        VendorWeapon.talkoption2 = ""
+        VendorWeapon.talkoption3 = "I need a better weapon"
+        VendorWeapon.talkselect1 = ""
+        VendorWeapon.talkselect2 = ""
+        VendorWeapon.talkselect3 = VendorWeapon.SaleDisplay
 
         VendorArmatek.gmintro1 = Interactions.VendorGreeting
         VendorArmatek.gmintro2 = Interactions.VendorGreeting
@@ -1490,20 +1520,45 @@ class WorldBuilding:
         VendorArmatek.talkselect2 = ""
         VendorArmatek.talkselect3 = VendorArmatek.SaleDisplay
 
-    def VendorUpdate():
-        if MainCharacter.arenawins == 0:
-            VendorItem.items[HPup1] += 2
-            VendorItem.items[HPup2] += 1
-            VendorItem.items[APup1] += 2
-            VendorItem.items[APup2] += 1
-            VendorArmatek.items[ScanningGlove] += 1
-            VendorPhysical.items[Knife] += 1
-    
+    def WorldUpdater():
+        if MainCharacter.currentlocation == TutorialWorld.Area:
+            if TutorialCharacter.firstmeet:
+                TutorialWorld.describe2 = LocationIntroduction.TutorialWorld1
+                TutorialWorld.travel1 = "Go to another location"
+            elif not TutorialCharacter.firstmeet:
+                TutorialWorld.firstvisit = False
+                TutorialWorld.describe2 = LocationIntroduction.TutorialWorld2
+                TutorialWorld.travel1 = "Continue the story"
+                TutorialWorld.selecttravel1 = StoryEvent.Introduction_AboardTheSkytrain
+            else:pass
+        
+        elif MainCharacter.currentlocation == Train.Area:
+            if MainCharacter.arenawins == 0:
+                pass
+            elif MainCharacter.arenawins == 5:
+                StoryEvent.FinalBossIntro()
+            elif MainCharacter.combatarea == "Final Boss":
+                StoryEvent.HellOuttaDodge()
+            else:pass
+        
+        elif MainCharacter.currentlocation == PowerStationDock.Area:
+            if MainCharacter.arenawins == 5:
+                PowerStationDock.option1 = "-"
+                PowerStationDock.selectoption1 = "-"
+            else:pass
+        
+        elif MainCharacter.currentlocation == PowerStationMedicArea.Area:
+            if FieldDroid.droidclearancegranted == True:
+                FieldDroid.talkoption1 = "Do you need me to grant access each time I visit?"
+                FieldDroid.talkselect1 = Interactions.FieldDroidAlreadyCleared
+                FieldDroid.talkoption2 = "Can you fix me up?"
+                FieldDroid.talkselect2 = FieldDroid.Healing
+            else:pass
+        else:pass
+
     def ThisFunctionTookGodSixWholeDays():
-        MainCharacter.physequip = [BareKnuckles]
-        MainCharacter.moveset = [Attack,Punches,"-"]
-        WorldBuilding.NPCUpdate()
-        WorldBuilding.LocationUpdate()
+        WorldBuilding.LocationBuilder()
+        WorldBuilding.CharacterBuilder()
 
 ############################
 ############################
@@ -1537,9 +1592,9 @@ class LocationIntroduction:
     def SkytrainDock2():
         GMnarrate.write("SKYTRAIN DOCK PLACEHOLDER DESCRIPTION 2")
 
-    def PowerStationGrounds1():
+    def PowerStationDock1():
         GMnarrate.write ("POWER STATION GROUNDS PLACEHOLDER DESCRIPTION 1")
-    def PowerStationGrounds2():
+    def PowerStationDock2():
         GMnarrate.write ("POWER STATION GROUNDS PLACEHOLDER DESCRIPTION 2")
 
     def PowerStationMedicArea1():
@@ -1643,7 +1698,7 @@ While looking out the brass port hole you notice the stranger opposite peering a
             pass
         GMnarrate.write ("Armish leans back in his chair and studies you")
         NPCtalk.write ('''
-    ... Yer never been ter Piston, have yer? Rough place, no Alliance peacekeepers around this far out. I gotta spare knife. Not much, but it's better than yer fists. A healing salve too, in case someone manages to get too close.
+    ... Yer never been ter Piston, have yer? Rough place, no Alliance peacekeepers around this far out. I gotta spare knife. Not much, but it's better than yer fists. A Field Dressing too, in case someone manages to get too close.
     ''')
         GMnarrate.write ('''
 Armish hands you a knife. The blade is serrated, but rusted. Handle seems sturdy enough.
@@ -1653,7 +1708,7 @@ He also hands you a healing salve. Looks like a standard spray applicator.
         MainCharacter.items[HPup1] += 1
         GMtalk.write ('''
     A Knife has been added to your weapons list.
-    A Healing Salve has been added to your items list.
+    A Field Dressing has been added to your items list.
         ''')
         GMnarrate.write ('''
 Armish looks out the window. You are nearing Piston now, the gleaming metal superstructures piercing the clouds you are now descending towards.
@@ -1686,41 +1741,90 @@ You turn and walk through the rusted cabin door into the skytrain's passenger co
     def FirstArenaWin():
         print ("FIRST ROUND COMPLETE")
         GMnarrate.write ("Story beat for after the first round of combat goes here.")
-        VendorItem.items[HPup1] += 1
-        # VendorItem.items[MorphineShot] += 1
-        VendorArmatek.items[ScanningGlove] += 1
-        VendorPhysical.items[Knife] += 1
+        MainCharacter.credits += 200
+        VendorItem.items[HPup1] += 2
+        VendorItem.items[HPup2] += 2
+        VendorItem.items[APup1] += 2
+        VendorItem.items[APup2] += 2
+        VendorArmatek.items[ArmaGauntlet] += 1
+        VendorWeapon.items[Grenade] += 1
+        VendorWeapon.items[Grenade2] += 1
+        VendorWeapon.items[ArmaGrenade] += 1
+        VendorWeapon.items[Pistol] += 1
     
     def SecondArenaWin():
         print ("SECOND ROUND COMPLETE")
         GMnarrate.write ("Story beat for after the second round of combat goes here.")
-        VendorItem.items[HPup1] += 5
-        # VendorItem.items[MorphineShot] += 5
-        VendorArmatek.items[ArmaGauntlet] += 1
+        MainCharacter.credits += 400
+        VendorItem.items[HPup1] += 2
+        VendorItem.items[HPup2] += 2
+        VendorItem.items[APup1] += 2
+        VendorItem.items[APup2] += 2
+        VendorWeapon.items[Grenade] += 2
+        VendorWeapon.items[Grenade2] += 2
+        VendorWeapon.items[ArmaGrenade] += 2
+        VendorWeapon.items[ArmaGrenade2] +=1
+        VendorArmatek.items[DefBooster] += 1
+        VendorArmatek.items[ArmStrBooster] += 1
+        VendorArmatek.items[ScanningGlove] += 1
 
     def ThirdArenaWin():
         print ("THIRD ROUND COMPLETE")
         GMnarrate.write ("Story beat for after the third round of combat goes here.")
+        MainCharacter.credits += 600
+        VendorItem.items[HPup1] += 2
+        VendorItem.items[HPup2] += 2
+        VendorItem.items[HPup3] += 2
+        VendorItem.items[APup1] += 2
+        VendorItem.items[APup2] += 2
+        VendorItem.items[APup3] += 2
+        VendorWeapon.items[Grenade2] += 2
+        VendorWeapon.items[Grenade3] += 2
+        VendorWeapon.items[ArmaGrenade2] += 2
+        VendorWeapon.items[ArmaGrenade3] +=2
+        VendorArmatek.items[ArmDefBooster] += 1
 
     def FourthArenaWin():
         print ("FOURTH ROUND COMPLETE")
         GMnarrate.write ("Story beat for after the fourth round of combat goes here.")
+        MainCharacter.credits += 800
+        VendorItem.items[HPup1] += 3
+        VendorItem.items[HPup2] += 3
+        VendorItem.items[HPup3] += 3
+        VendorItem.items[APup1] += 2
+        VendorItem.items[APup2] += 2
+        VendorItem.items[APup3] += 3
+        VendorWeapon.items[Grenade2] += 2
+        VendorWeapon.items[Grenade3] += 2
+        VendorWeapon.items[ArmaGrenade2] += 2
+        VendorWeapon.items[ArmaGrenade3] +=2
+        VendorArmatek.items [ArmaRifle] += 1
+        VendorArmatek.items [ArmStrBooster] += 1
 
     def FifthArenaWin():
         print ("FIFTH ROUND COMPLETE")
         GMnarrate.write ("Story beat for after the fifth round of combat goes here.")
+        MainCharacter.credits += 1000
+        VendorItem.items[HPup1] += 3
+        VendorItem.items[HPup2] += 3
+        VendorItem.items[HPup3] += 3
+        VendorItem.items[APup1] += 2
+        VendorItem.items[APup2] += 2
+        VendorItem.items[APup3] += 3
+        VendorWeapon.items[Grenade2] += 2
+        VendorWeapon.items[Grenade3] += 2
+        VendorWeapon.items[ArmaGrenade2] += 2
+        VendorWeapon.items[ArmaGrenade3] +=2
 
     def FinalBossIntro():
         GMnarrate.write ("STORY BEAT TO INTRODUCE THE BADASS ARMA MECH TANK!!!!!!")
         PressEnterToContinue()
         Battles.FinalBossBattle()
 
-    def FinalBossDefeated():
-        GMnarrate.write ("Goodness knows how but you managed to survive your encounter with the Arma Mech.")
-        GMnarrate.write ("There's nothing left for you here, probably best to get outta here.")
-
     def HellOuttaDodge():
-        GMnarrate.write ("you board the Skytrain with a sigh of relief. \nIt was a struggle but you managed to endure - and now you have enough money and equipment to kickstart your new life as a wandering mercenary.")
+        PressEnterToContinue()
+        GMnarrate.write ("Goodness knows how but you managed to survive your encounter with the Arma Mech.")
+        GMnarrate.write ("You scramble your way aboard the Skytrain once more with a sigh of relief. \nIt was a struggle but you managed to endure - and now you have enough money and equipment to kickstart your new life as a wandering mercenary.")
         GMtalk.write ("Thank you for playing. If you managed to get this far - well done!")
         PressEnterToContinue()
         GMtalk.write ("The game will close itself in")
@@ -2053,4 +2157,10 @@ class MenuTitle(type):
 #######################
 
 WorldBuilding.ThisFunctionTookGodSixWholeDays()
+# MainCharacter.name = "Ash"
+# MainCharacter.job = "Medic"
+# MainCharacter.arenawins = 5
+# MainCharacter.combatarea = "Arena"
+# MainCharacter.phystr = 60
+# PowerStationDock.Area()
 StoryEvent.StartTheGame()
