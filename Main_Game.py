@@ -407,14 +407,14 @@ What was your role in the military? Enter a role number to view it's stats.
         elif DecisionMaker.menuselect == "4":
             self.job = "Officer"
             GMnarrate.write ("A former Officer in the Alliance Navy, you commanded SkyCruiser fleets against the Commonwealth. Your officer's training gave you increased defense against Armatek abilities.    \n")
-            MenuTitle.write ("Your stats will be:   \n10 Physical Strength    \n10 Physical Defense \n8  Armatek Strength \n13 Armatek Defense")
+            GMtalk.write ("Your stats will be:   \n10 Physical Strength    \n10 Physical Defense \n8  Armatek Strength \n13 Armatek Defense")
             self.ClassChoiceConfirm()
            
     def ClassChoiceConfirm(self):
                 PlayerInput.write ('''
-    Would you like to select this class, or view another?
-        1: Select Role
-        2: Go Back to select another Role''')
+Would you like to select this class, or view another?
+    1: Select Role
+    2: Go Back to select another Role''')
                 DecisionMaker.MenuSelection()
                 if DecisionMaker.menuselect == "1":
                     if self.job == "Soldier":
@@ -595,7 +595,7 @@ What was your role in the military? Enter a role number to view it's stats.
             listmoves += 1
             PlayerInput.write (f" {listmoves}: {elem} \n")
         listmoves+=1
-        PlayerInput.write(f"{listmoves}: Items")
+        PlayerInput.write(f" {listmoves}: Items")
         #get player selection
         DecisionMaker.MenuSelection()
 
@@ -749,7 +749,8 @@ class Vendor (NPC):
         GMtalk.write (f"You currently have {MainCharacter.credits} credits.")
         self.MenuSelection()
         if self.menuselect == "0":
-            NPCtalk.write ("No worries - later now.")
+            NPCtalk.write ('''
+    No worries - later now.''')
             PressEnterToGoBack()
             MainCharacter.currentlocation()
         else:
@@ -758,7 +759,9 @@ class Vendor (NPC):
         if self.menuselectint in range (1,listitem+1):
             itemsforsale = list(self.items)
             selecteditem = itemsforsale[self.menuselectint-1]
-            NPCtalk.write (f"You sure about that {selecteditem.name}?. The developer hasn't programmed me to buy it back!   \n")
+            NPCtalk.write (f'''
+    You sure about that {selecteditem.name}?. The developer hasn't programmed me to buy it back!
+    ''')
             PlayerInput.write ("1: I'm sure")
             PlayerInput.write ("2: Let me look again")
             self.MenuSelection()
@@ -789,15 +792,18 @@ class Vendor (NPC):
                     Interactions.VendorNoMoney()
                     self.SaleDisplay()
             elif self.menuselect == "2":
-                NPCtalk.write ("No worries - have a look at what I have.")
+                NPCtalk.write ('''
+    No worries - have a look at what I have''')
                 PressEnterToGoBack()
                 self.SaleDisplay()
             else:
-                NPCtalk.write ("What? I didn't quite catch that. Have another look and let me know if you need anything.    \n")
+                NPCtalk.write ('''
+    What? I didn't quite catch that. Have another look and let me know if you need anything.''')
                 InvalidChoice()
                 self.SaleDisplay()
         else:
-            NPCtalk.write ("What? I didn't quite catch that.    \n")
+            NPCtalk.write ('''
+    What? I didn't quite catch that.    ''')
             InvalidChoice()
             self.SaleDisplay()
 
@@ -1345,7 +1351,7 @@ class WorldBuilding:
         TutorialWorld.selectoption3 = "-"
         
         Train.describe1 = LocationIntroduction.Train1
-        Train.describe2 = LocationIntroduction.Train1
+        Train.describe2 = LocationIntroduction.Train2
         Train.travel1 = "Leave the Skytrain"
         Train.travel2 = "-"
         Train.travel3 = "-"
@@ -1364,13 +1370,13 @@ class WorldBuilding:
         PowerStationDock.travel1 = "Approach the Field Infirmary"
         PowerStationDock.travel2 = "Visit the Makeshift Bazaar"
         PowerStationDock.travel3 = "Board the Skytrain"
-        PowerStationDock.option1 = "Talk to the Station Boss"
+        PowerStationDock.option1 = "-"
         PowerStationDock.option2 = "Talk to the Dock Porter"
         PowerStationDock.option3 = "Talk to the Homeless Guy"
         PowerStationDock.selecttravel1 = PowerStationMedicArea.Area
         PowerStationDock.selecttravel2 = PowerStationBazaar.Area
         PowerStationDock.selecttravel3 = Train.Area
-        PowerStationDock.selectoption1 = PowerStationBoss.Talk
+        PowerStationDock.selectoption1 = "-"
         PowerStationDock.selectoption2 = DockPorter.Talk
         PowerStationDock.selectoption3 = HomelessGuy.Talk
 
@@ -1444,21 +1450,23 @@ class WorldBuilding:
 
         DockPorter.gmintro1 = Interactions.DockPorter1
         DockPorter.gmintro2 = Interactions.DockPorter2
-        DockPorter.talkoption1 = ""
-        DockPorter.talkoption2 = ""
+        DockPorter.talkoption1 = "Who are you?"
+        DockPorter.talkoption2 = "What is this place?"
         DockPorter.talkoption3 = ""
-        DockPorter.talkselect1 = ""
-        DockPorter.talkselect2 = ""
+        DockPorter.talkselect1 = Interactions.DockPorterWhoAreYou
+        DockPorter.talkselect2 = Interactions.DockPorterWhatIsThisPlace
         DockPorter.talkselect3 = ""
 
         HomelessGuy.gmintro1 = Interactions.HomelessGuy1
         HomelessGuy.gmintro2 = Interactions.HomelessGuy2
-        HomelessGuy.talkoption1 = ""
+        HomelessGuy.talkoption1 = "Who are you?"
         HomelessGuy.talkoption2 = ""
         HomelessGuy.talkoption3 = ""
-        HomelessGuy.talkselect1 = ""
+        HomelessGuy.talkselect1 = Interactions.HomelessGuyWhoAreYou
         HomelessGuy.talkselect2 = ""
         HomelessGuy.talkselect3 = ""
+        HomelessGuy.askedabouthimself = False
+        HomelessGuy.askedaboutboss = False
 
         MedicFella.gmintro1 = Interactions.Medic1
         MedicFella.gmintro2 = Interactions.Medic2
@@ -1491,8 +1499,6 @@ class WorldBuilding:
         PowerStationBoss.talkselect2 = ""
         PowerStationBoss.talkselect3 = ""
 
-        VendorItem.gmintro1 = Interactions.VendorGreeting
-        VendorItem.gmintro2 = Interactions.VendorGreeting
         VendorItem.talkoption1 = ""
         VendorItem.talkoption2 = ""
         VendorItem.talkoption3 = "Show me what you're selling"
@@ -1502,8 +1508,6 @@ class WorldBuilding:
         VendorItem.items[HPup1] += 2
         VendorItem.items[APup1] += 2
 
-        VendorWeapon.gmintro1 = Interactions.VendorGreeting
-        VendorWeapon.gmintro2 = Interactions.VendorGreeting
         VendorWeapon.talkoption1 = ""
         VendorWeapon.talkoption2 = ""
         VendorWeapon.talkoption3 = "I need a better weapon"
@@ -1511,8 +1515,6 @@ class WorldBuilding:
         VendorWeapon.talkselect2 = ""
         VendorWeapon.talkselect3 = VendorWeapon.SaleDisplay
 
-        VendorArmatek.gmintro1 = Interactions.VendorGreeting
-        VendorArmatek.gmintro2 = Interactions.VendorGreeting
         VendorArmatek.talkoption1 = ""
         VendorArmatek.talkoption2 = ""
         VendorArmatek.talkoption3 = "I'm looking for some new hardware"
@@ -1542,6 +1544,12 @@ class WorldBuilding:
             else:pass
         
         elif MainCharacter.currentlocation == PowerStationDock.Area:
+            if HomelessGuy.askedabouthimself == True:
+                HomelessGuy.talkoption2 = "Who's the mean looking fella that keeps looking my way?"
+                HomelessGuy.talkselect2 = Interactions.HomelessGuyAskAboutBoss
+            if HomelessGuy.askedaboutboss == True:
+                PowerStationDock.option1 = "Talk to the Station Boss"
+                PowerStationDock.selectoption1 = PowerStationBoss.Talk
             if MainCharacter.arenawins == 5:
                 PowerStationDock.option1 = "-"
                 PowerStationDock.selectoption1 = "-"
@@ -1583,34 +1591,43 @@ class LocationIntroduction:
         GMnarrate.write("Welcome Back to the tutorial area.")
 
     def Train1():
-        GMnarrate.write ("SKYTRAIN PLACEHOLDER DESCRIPTION 1")
+        GMnarrate.write ("Looking around the Skytrain, you can see the battered leather seats haven't been fixed in years, and the once polished brass has started to rust in places.")
     def Train2():
-        GMnarrate.write ("SKYTRAIN PLACEHOLDER DESCRIPTION 2")
-
-    def SkytrainDock1():
-        GMnarrate.write("SKYTRAIN DOCK PLACEHOLDER DESCRIPTION 1")
-    def SkytrainDock2():
-        GMnarrate.write("SKYTRAIN DOCK PLACEHOLDER DESCRIPTION 2")
+        GMnarrate.write ("The Skytrain vibrates under the power of it's huge engines. It isn't due to leave yet.")
 
     def PowerStationDock1():
-        GMnarrate.write ("POWER STATION GROUNDS PLACEHOLDER DESCRIPTION 1")
+        GMnarrate.write('''
+You take a look around through the smoke and fog:
+    There's an old Porter that looks to be keeping himself busy and a homeless guy loafing around near the tracks.
+        A burly, mean looking guy is watching you from a distance. He doesn't look friendly.
+            There's an old Field Station for medics from during the war and what looks to be a makeshift bazaar in the old vehicle compound area.
+            ''')
     def PowerStationDock2():
-        GMnarrate.write ("POWER STATION GROUNDS PLACEHOLDER DESCRIPTION 2")
+        GMnarrate.write("The Dock area is full of acrid smoke from the Power Station and visiting Skytrains. There haven't been any personal vehicles around here since the war.")
 
     def PowerStationMedicArea1():
-        GMnarrate.write ("POWER STATION MEDIC AREA PLACEHOLDER DESCRIPTION 1")
+        GMnarrate.write ('''
+An old man, dressed in a wartime Medic's uniform, is relaxing near the Field Tent. 
+    An old Field Droid is wandering around by itself.''')
     def PowerStationMedicArea2():
-        GMnarrate.write ("POWER STATION MEDIC AREA PLACEHOLDER DESCRIPTION 2")
+        GMnarrate.write ("The old man smiles at your approach, the Field Droid barely notices you.")
 
     def PowerStationBazaar1():
-        GMnarrate.write ("POWER STATION BAZAAR PLACEHOLDER DESCRIPTION 1")
+        GMnarrate.write ('''
+Entering the Bazaar area, you make out three stands:
+    They looks to be selling Weapons, Armatek gear and other items.
+        All the vendors look at you judgingly - they know you're broke and new here, for sure.
+        ''')
     def PowerStationBazaar2():
-        GMnarrate.write ("POWER STATION BAZAAR PLACEHOLDER DESCRIPTION 2")
+        GMnarrate.write ("The Bazaar vendors tend to their stocks and busy themselves while glancing over to you, checking for any interest in their offerings.")
 
     def PowerStationArena1():
-        GMnarrate.write ("POWER STATION ARENA PLACEHOLDER DESCRIPTION 1")
+        GMnarrate.write ('''
+You are shown the way to the Power Station workfloor.
+    A large cage arena has been constructed in the centre
+        ...last chance to go back now, or you can go forward and fight this round.''')
     def PowerStationArena2():
-        GMnarrate.write ("POWER STATION ARENA PLACEHOLDER DESCRIPTION 2")
+        GMnarrate.write ("The cage arena stands before you, large and imposing. Your selected opponent glares at you from within the cage...")
 
 # STORY EVENT FUNCTIONS RUN AT KEY POINTS IN THE GAME. THEY CAN BE CALLED WHENEVER NEEDED, USUALLY BY THE WORLDBUILDING FUNCTION WHEN CERTAIN PARAMTERS ARE MET 
 class StoryEvent:
@@ -1663,17 +1680,17 @@ class StoryEvent:
 
         GMnarrate.write ('''
 You're riding the skytrain to Piston, a city on the Southern Alliance's edge. You served the Alliance during it's last war against the Northern Commonwealth. 
-The Empire won, but you were cast aside afterwards, just like the rest of the conscriptions.
-Now you're barely getting by - but an underground fight tournament in Piston may give you just enough fortune to start the new life you deserve...
-While looking out the brass port hole you notice the stranger opposite peering at you through his goggles. After meeting your eyes, he introduces himself with a familiar Pistonian drawl:
+    The Empire won, but you were cast aside afterwards, just like the rest of the conscriptions.
+        Now you're barely getting by - but an underground fight tournament in Piston may give you just enough fortune to start the new life you deserve...
+            While looking out the brass port hole you notice the stranger opposite peering at you through his goggles. After meeting your eyes, he introduces himself with a familiar Pistonian drawl:
         ''')
         NPCtalk.write ('''
-    'Well hey there friend, Armish Cornwall's the name - Who do I got the pleasure of acquantancin' today?'
+    Well hey there friend, Armish Cornwall's the name - Who do I got the pleasure of acquantancin' today?
         ''')
         MainCharacter.Naming()
         NPCtalk.write (f'''
-    'Howdy, {MainCharacter.name} - a pleasure. You go' dat stern look about yer feller, one only an Alliance vet could git. 
-    I were a low rank soldier in the war, how'd they git you to serve?'
+    Howdy, {MainCharacter.name} - a pleasure. You go' dat stern look about yer feller, one only an Alliance vet could git. 
+    I were a low rank soldier in the war, how'd they git you to serve?
         ''')
         MainCharacter.ClassChoice()
         if MainCharacter.job == "Soldier":
@@ -1696,34 +1713,24 @@ While looking out the brass port hole you notice the stranger opposite peering a
         ''')
         else:
             pass
-        GMnarrate.write ("Armish leans back in his chair and studies you")
+        GMnarrate.write ('''
+Armish leans back in his chair and studies you''')
         NPCtalk.write ('''
-    ... Yer never been ter Piston, have yer? Rough place, no Alliance peacekeepers around this far out. I gotta spare knife. Not much, but it's better than yer fists. A Field Dressing too, in case someone manages to get too close.
-    ''')
+    ... Yer never been ter Piston, have yer? Rough place, no Alliance peacekeepers around this far out. I gotta spare knife. Not much, but it's better than yer fists. A Field Dressing too, in case someone manages to get too close.''')
         GMnarrate.write ('''
 Armish hands you a knife. The blade is serrated, but rusted. Handle seems sturdy enough.
-He also hands you a healing salve. Looks like a standard spray applicator.
-        ''')
+He also hands you a healing salve. Looks like a standard spray applicator.''')
         MainCharacter.phyweapons.append (Knife)
         MainCharacter.items[HPup1] += 1
         GMtalk.write ('''
     A Knife has been added to your weapons list.
-    A Field Dressing has been added to your items list.
-        ''')
+    A Field Dressing has been added to your items list.''')
         GMnarrate.write ('''
 Armish looks out the window. You are nearing Piston now, the gleaming metal superstructures piercing the clouds you are now descending towards.
-He stands to leave and turns to you:
-        ''')
+He stands to leave and turns to you:''')
         NPCtalk.write (f'''
     It were good makin' yer acquaintanceship the day, friend - maybe we'll see each other round the way.
-    Stay safe, now, {MainCharacter.name}.
-        ''')
-        GMnarrate.write (f'''
-After watching Armish leave, you look around the skytrain cabin. 
-The battered leather seats haven't been fixed in years, and the once polished brass has started to rust in places.
-You glance out of the port hole one last time at the incoming city - the skytrain is on it's landing approach. 
-You turn and walk through the rusted cabin door into the skytrain's passenger corridor...
-        ''')
+    Stay safe, now, {MainCharacter.name}.''')
         PressEnterToContinue()
         Train.Area()
 
@@ -1739,9 +1746,13 @@ You turn and walk through the rusted cabin door into the skytrain's passenger co
         MainCharacter.currentlocation()
 
     def FirstArenaWin():
-        print ("FIRST ROUND COMPLETE")
-        GMnarrate.write ("Story beat for after the first round of combat goes here.")
-        MainCharacter.credits += 200
+        GMnarrate.write ('''
+It was a slight challenge, but nothing too drastic for someone with your military experience.
+    The people watching seem surprised, they clearly don't see many winners here. 
+        A few of them glower at you... some bets were lost, it seems.''')
+        GMtalk.write ("As you leave, the cage guard hands you 400 credits in winnings")
+
+        MainCharacter.credits += 400
         VendorItem.items[HPup1] += 2
         VendorItem.items[HPup2] += 2
         VendorItem.items[APup1] += 2
@@ -1753,9 +1764,12 @@ You turn and walk through the rusted cabin door into the skytrain's passenger co
         VendorWeapon.items[Pistol] += 1
     
     def SecondArenaWin():
-        print ("SECOND ROUND COMPLETE")
-        GMnarrate.write ("Story beat for after the second round of combat goes here.")
-        MainCharacter.credits += 400
+        GMnarrate.write ('''
+Your second ordeal was more to handle, but you kept your wits and pulled through.
+    A few of the onlookers look extra happy...
+        ...maybe they tried their luck betting on the challenger for once.''')
+        GMtalk.write ("As you leave, the cage guard hands you 600 credits in winnings")
+        MainCharacter.credits += 600
         VendorItem.items[HPup1] += 2
         VendorItem.items[HPup2] += 2
         VendorItem.items[APup1] += 2
@@ -1769,9 +1783,13 @@ You turn and walk through the rusted cabin door into the skytrain's passenger co
         VendorArmatek.items[ScanningGlove] += 1
 
     def ThirdArenaWin():
-        print ("THIRD ROUND COMPLETE")
-        GMnarrate.write ("Story beat for after the third round of combat goes here.")
-        MainCharacter.credits += 600
+        GMnarrate.write ('''
+You're starting to feel beaten... 
+    ...but after three wins you can almost feel your goal coming into reach.
+        Climbing back out of the cage, you can hear some of the crowd cheering you on.
+            They're starting to root for you.''')
+        GMtalk.write ("As you leave, the cage guard hands you 800 credits in winnings")
+        MainCharacter.credits += 800
         VendorItem.items[HPup1] += 2
         VendorItem.items[HPup2] += 2
         VendorItem.items[HPup3] += 2
@@ -1785,8 +1803,13 @@ You turn and walk through the rusted cabin door into the skytrain's passenger co
         VendorArmatek.items[ArmDefBooster] += 1
 
     def FourthArenaWin():
-        print ("FOURTH ROUND COMPLETE")
-        GMnarrate.write ("Story beat for after the fourth round of combat goes here.")
+        GMnarrate.write ('''
+This is starting to get difficult.
+    The guard looks at you with a mixture of fear and respect.''')
+        NPCtalk.write ('''
+    You're doing well, stranger - the boss is starting to get pissed though - 
+        - you aren't meant to keep winning.''')
+        GMtalk.write ("As you leave, the cage guard hands you 1000 credits in winnings")
         MainCharacter.credits += 800
         VendorItem.items[HPup1] += 3
         VendorItem.items[HPup2] += 3
@@ -1802,9 +1825,15 @@ You turn and walk through the rusted cabin door into the skytrain's passenger co
         VendorArmatek.items [ArmStrBooster] += 1
 
     def FifthArenaWin():
-        print ("FIFTH ROUND COMPLETE")
-        GMnarrate.write ("Story beat for after the fifth round of combat goes here.")
-        MainCharacter.credits += 1000
+        GMnarrate.write ('''
+Battered and almost broken, you manage to climb out of the arena cage.
+    The guard looks worried...''')
+        NPCtalk.write ('''
+    Look, I know you deserve to win, but you gotta get out of here.
+        The boss is furious - he paid a fortune for this guy to kill you.
+            I heard him saying something about a Mech - just run, stranger. Take your winnings and get the hell outta dodge.''')
+        GMtalk.write ("As you leave, the cage guard hands you 2000 credits in winnings")
+        MainCharacter.credits += 2000
         VendorItem.items[HPup1] += 3
         VendorItem.items[HPup2] += 3
         VendorItem.items[HPup3] += 3
@@ -1817,7 +1846,20 @@ You turn and walk through the rusted cabin door into the skytrain's passenger co
         VendorWeapon.items[ArmaGrenade3] +=2
 
     def FinalBossIntro():
-        GMnarrate.write ("STORY BEAT TO INTRODUCE THE BADASS ARMA MECH TANK!!!!!!")
+        GMnarrate.write ('''
+As you attempt to board the Skytrain, you hear a familiar clanking of metal and gears behind you.
+    This isn't good...
+        Turning around, a sight you'd hoped long gone stands before you.
+            A war-era Arma Mech, these things were what your side used to win the war.
+                Three seperate mech sections commanded by individual pilots - this one looks old and worn, but fully operational.
+                    The Station Boss roars out over the mech's comm speakers:''')
+        NPCtalk.write ('''
+    DO YOU HAVE ANY IDEA HOW MUCH YOU'VE COST ME, YOU LITTLE TWERP!?!
+        YEARS OF THAT ARENA BRINGING IN MONEY, AND YOU JUST SHOW UP AND TAKE OUT MY BEST GUYS???
+            WELL EAT THIS, COS I'M NOT LETTING YOU GET OUT OF HERE WITH MY GODDAMN MONEY!!!!''')
+        GMnarrate.write ('''
+Bracing yourself for the fight ahead, you pull together your remaining strength and ready your weapon...''')
+        
         PressEnterToContinue()
         Battles.FinalBossBattle()
 
@@ -1836,32 +1878,84 @@ class Interactions:
 
     def TutorialCharacterGreet1():
         GMtalk.write("When talking to NPCs, You'll see an introduction by me and a greeting from the NPC. Selecting conversation options is the same as before.\n")
-        GMnarrate.write ("The NPC greets you:")
-        NPCtalk.write("Hey, when NPCs are talking to you - our speech will appear like this!")
+        GMnarrate.write ("The NPC greets you:   \n")
+        NPCtalk.write('''
+    Hey, when NPCs are talking to you - our speech will appear like this!
+    ''')
     def TutorialCharacterGreet2():
         if TutorialCharacter.askedwhatnext:
-            NPCtalk.write ("What're you doing back here? I told you already, bloke calling himself Game Master will take you from the here.")
+            NPCtalk.write ('''
+    What're you doing back here? I told you already, bloke calling himself Game Master will take you from here.''')
             PressEnterToContinue()
             TutorialWorld.Area()
         else:
             Interactions.TutorialCharacterGreet1()
     def TutorialCharacter_WhatNext():
-        GMnarrate.write("The NPC chuckles at your brusque response  \n")
-        NPCtalk.write("What you do now mate, is get on with the story! Bloke calling himself Game Master will take care of you from here.   \n")
+        GMnarrate.write('''
+The NPC chuckles at your brusque response
+        ''')
+        NPCtalk.write('''
+    What you do now mate, is get on with the story! Bloke calling himself Game Master will take care of you from here.
+    ''')
         TutorialCharacter.askedwhatnext = True
         PressEnterToContinue()
         TutorialWorld.Area()
     
     def DockPorter1():
-        GMnarrate.write ("DOCK PORTER PLACEHOLDER DESCRIPTION 1")
+        GMnarrate.write ("The Dock Porter busies himself working a control panel on the side of the Skytrain's engine.")
     def DockPorter2():
-        GMnarrate.write ("DOCK PORTER PLACEHOLDER DESCRIPTION 2")
+        GMnarrate.write ("The Dock Porter looks hard at work")
+    def DockPorterWhoAreYou():
+        GMnarrate.write ("The Porter smiles at you")
+        NPCtalk.write('''
+    Oh, I'm the Porter here - I take care of servicin' the Skytrains that come through here. 
+        There's not usually many people drop by here, so it's safe to work on the engines.
+            Those guys holed up in the Power Station don't really bother us none. ''')
+        PressEnterToGoBack()
+        DockPorter.Talk()
+    def DockPorterWhatIsThisPlace():
+        GMnarrate.write("The Porter looks around at the abandoned waste of what used to be a stronghold during the war")
+        NPCtalk.write('''
+    Well see, this area round here used to be a Power Station before the war.
+        After it got damaged by shelling, it was turned into a stronghold base for military supplies and troops
+            Since the war ended it's just been left. A gang of guys holed up in there since, they keep to themselves mostly. 
+                I still get paid to show up and fix the engines, so, I'm still here.''')
+        PressEnterToGoBack()
+        DockPorter.Talk()
 
     def HomelessGuy1():
-        GMnarrate.write ("HOMELESS GUY PLACEHOLDER DESCRIPTION 1")
+        GMnarrate.write ("The old homeless man glances up at you from his destitute position on the ground")
     def HomelessGuy2():
-        GMnarrate.write ("HOMELESS GUY PLACEHOLDER DESCRIPTION 2")
-    
+        GMnarrate.write ("The old  guy is just loafing around...")
+    def HomelessGuyWhoAreYou():
+        if HomelessGuy.askedabouthimself == False:
+            HomelessGuy.askedabouthimself = True
+            GMnarrate.write("The man seems grateful for the attention, but doesn't seem much interested in talking.")
+            NPCtalk.write ('''
+    Ah'm just an old man, kid... Lost my ways a long time ago. I don't like to talk bout mah past...''')
+            PressEnterToGoBack()
+            HomelessGuy.Talk()
+        else:
+            GMnarrate.write ("The old man furrows his brow")
+            NPCtalk.write ('''
+    come on now, kid - I already said to leave me be bout mah past...''')
+            PressEnterToGoBack()
+            HomelessGuy.Talk()
+    def HomelessGuyAskAboutBoss():
+        if HomelessGuy.askedaboutboss == False:
+            HomelessGuy.askedaboutboss = True
+            GMnarrate.write ("The old man looks at you with a nervous expression")
+            NPCtalk.write ('''
+    He's the gang boss round here - him and his boys moved in at the end of the war, see. 
+        I think they run some kind operation in there. Keep seein' folk goin' in, but not so many come out you get meh?''')
+            PressEnterToGoBack()
+            HomelessGuy.Talk()
+        else:
+            GMnarrate.write ("The old man looks at you quizzically")
+            NPCtalk.write ("    Yer hearin' not so good, huh? He's BAD NEWS, kid. Just leave it alone, is mah advice...")
+            PressEnterToGoBack()
+            HomelessGuy.Talk()
+
     def Medic1():
         GMnarrate.write ("MEDIC PLACEHOLDER DESCRIPTION 1")
     def Medic2():
@@ -1869,14 +1963,20 @@ class Interactions:
         MedicFella.Healing
     def MedicAskAboutDroid():
         if MedicFella.askedaboutdroid == False:
-            GMnarrate.write("STORY BEAT ABOUT DROID ORIGIN  \n")
-            NPCtalk.write("NPC speech goes here for story beat.")
+            GMnarrate.write("The Medic looks over at the old droid \n")
+            NPCtalk.write('''
+    That old useless lunk? Old war droid.
+        It still works, or it reckons it does -
+            - seems like it's stuck in it's wartime configuration, must be have been seperated from the military comm servers.
+                If you got a real Medic's ID from back then, it might actually be of some use to you''')
             MedicFella.askedaboutdroid = True
             PressEnterToGoBack()
             MedicFella.Talk()
         else:
-            GMnarrate.write("CONFIRMS STORY BEAT DONE  \n")
-            NPCtalk.write("We already spoke about the droid.")
+            GMnarrate.write("The Medic rolls his eyes at you  \n")
+            NPCtalk.write('''
+    I already done told you - 
+        - damn thing won't work without a wartime Medic's ID''')
             PressEnterToGoBack()
             MedicFella.Talk()
     def MedicHealing():
@@ -1954,25 +2054,26 @@ class Interactions:
             FieldDroid.Talk()
 
     def PowerStationBoss1():
-        GMnarrate.write ("POWER STATION BOSS PLACEHOLDER DESCRIPTION 1")
+        GMnarrate.write ("The Power Station Boss looks at you with disdain. He doesn't think you can handle yourself, much less take on his challengers. \n")
+        NPCtalk.write("    ...What do you want?")
     def PowerStationBoss2():
         if MainCharacter.arenawins == 0:
-            GMnarrate.write("The Boss Man asks")
-            NPCtalk.write("You sure you wanna go in?")
+            GMnarrate.write("The Boss Man laughs at you  \n")
+            NPCtalk.write("    You sure you wanna go in? These aren't playfights kid. If you lose, you die. Game Over, as they say, hehe...")
         elif MainCharacter.arenawins == 1:
-            GMnarrate.write("The Boss Man asks")
-            NPCtalk.write("You won one round - let's see how you handle someone capable.") 
+            GMnarrate.write("The Boss Man looks at you with a smile  \n")
+            NPCtalk.write("    Alright, you won one round - let's see how you handle someone capable.") 
         elif MainCharacter.arenawins == 2:
-            GMnarrate.write ("The Boss looks almost amused - it must be a while since he saw anyone winning fights here.")
-            NPCtalk.write ("Alright then, you've got something. I've got something better...")
+            GMnarrate.write ("The Boss looks almost amused - it must be a while since he saw anyone winning fights here.    \n")
+            NPCtalk.write ("    Alright then, you've got something. I've got something better...")
         elif MainCharacter.arenawins == 3:
-                    GMnarrate.write ("The Boss is pleased with you - perhaps he's been making more money from this than usual.")
-                    NPCtalk.write ("Right, I figure you for an ex military sort - I've got someone you might know this time")
+                    GMnarrate.write ("The Boss looks fairly pleased with himself. Like he knows something he shouldn't.  \n")
+                    NPCtalk.write ("    Right, I figure you for an ex military sort - I've got someone that can take you on now")
         elif MainCharacter.arenawins == 4:
-                    GMnarrate.write ("For once the Boss isn't beaming at you - he may not have banked on anyone ever getting this far.")
-                    NPCtalk.write ("Got a special surprise for you... can't have you winning too many times or you'll start to make us look bad. ")
+                    GMnarrate.write ("For once the Boss isn't beaming at you - he may not have banked on anyone ever getting this far.\n")
+                    NPCtalk.write ("    Got a special surprise for you... can't have you winning too many times or you'll start to make us look bad. ")
     def PowerStationBossConfirmArena():
-        PowerStationBoss.talkoption1 = "Yes"
+        PowerStationBoss.talkoption1 = "I'm ready."
         PowerStationBoss.talkoption2 = "No, I'll come back later."
         PowerStationBoss.talkselect1 = Interactions.PowerStationBossArenaConfirmed
         PowerStationBoss.talkselect2 = MainCharacter.currentlocation
@@ -1982,38 +2083,39 @@ class Interactions:
         MainCharacter.arenaroundcomplete = False
         PowerStationArena.Area()
 
-    def VendorGreeting():
-        greeting = random.randint(1,3)
-        if greeting == 1:
-            GMnarrate.write ("You are greeted with a friendly smile \n")
-            NPCtalk.write ("Well howdy there! What can I get ya")
-        elif greeting == 2:
-            GMnarrate.write ("You are quickly examined, presumably for trouble, before being greeted    \n")
-            NPCtalk.write ("Hey there, how can I help you?")
-        else:
-            GMnarrate.write ("The individual looks at you with a vacant expression... they look like they've been here a while  \n")
-            NPCtalk.write ("Hey, uhh... what's up?")
     def VendorPresentItems():
         option = random.randint(1,4)
         if option == 1:
-            NPCtalk.write ("So what'll it be?  \n")
+            GMnarrate.write ("You are greeted with a friendly smile ")
+            NPCtalk.write ('''
+    Got some good stuff for sale!  \n''')
         elif option ==2:
-            NPCtalk.write ("Anything take your fancy?  \n")
+            GMnarrate.write ("The Vendor looks over from whatever they're messing with    ")
+            NPCtalk.write ('''
+    Anything take your fancy?  \n''')
         elif option == 3:
-            NPCtalk.write ("What catches your eye there?  \n")
+            GMnarrate.write ("You are quickly examined, presumably for trouble, before being greeted    ")
+            NPCtalk.write ('''
+    What catches your eye there?  \n''')
         else:
-            NPCtalk.write ("Got some good stuff for sale!  \n")
+            GMnarrate.write ("The individual looks at you with a vacant expression... they look like they've been here a while  ")
+            NPCtalk.write ('''
+    So what'll it be?  \n''')
+    
     def VendorNoMoney():
         greeting = random.randint(1,13)
         if greeting in range (1,5):
             GMnarrate.write ("The Vendor shakes their head...  \n")
-            NPCtalk.write ("No creds, no goods I'm afraid... maybe come back when you've got something for me  \n")
+            NPCtalk.write ('''
+    No creds, no goods... come back when you've got something for me  \n''')
         elif greeting in range (5,10):
             GMnarrate.write ("The Vendor glances at you with an annoyed expression  \n")
-            NPCtalk.write ("... and what exactly are you going to be paying me with? Come on now.  \n")
+            NPCtalk.write ('''
+    ... and what exactly are you going to be paying me with? Come on now.  \n''')
         else:
             GMnarrate.write ("The Vendor looks kind of angry, perhaps you upset them…  \n")
-            NPCtalk.write ("Do I look like a damn charity to you? Get the hell outta here until you've got soemthing WORTH MY TIME!!!  \n")
+            NPCtalk.write ('''
+    Do I look like a damn charity to you? Get the hell outta here until you've got soemthing WORTH MY TIME!!!  \n''')
         PressEnterToGoBack()
 
 ####################################
