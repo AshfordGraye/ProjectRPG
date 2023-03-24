@@ -353,6 +353,10 @@ class Player(Character):
             self.arenaroundcomplete = False
 
             self.handholding = ""
+            self.equipmenttutorial = False
+            self.statstutorial = False
+            self.itemstutorial = False
+            self.combattutorial = False
 
 
     def Naming(self):
@@ -434,11 +438,16 @@ Would you like to select this class, or view another?
                     GMtalk.write ("Please enter the number of your selection")
                     MainCharacter.ClassChoiceConfirm()
 
-
     # NON COMBAT EQUIPMENT FUNCTIONS
 
     def ShowStats(self):
         ClearScreen()
+        if MainCharacter.handholding == True and MainCharacter.statstutorial == False:
+            MainCharacter.statstutorial = True
+            GMtalk.write('''
+Here you can view your stats and how many credits you have. 
+    Remember, there will be items you can acquire in the world to improve these stats...
+        ''')
         MenuTitle.write("Credits:")
         GMtalk.write(f"{MainCharacter.credits}  \n")
         for elem in BattleSystem.party:
@@ -462,6 +471,15 @@ Would you like to select this class, or view another?
         
     def ShowWeapons(self):
         ClearScreen()
+        if MainCharacter.handholding == True and MainCharacter.equipmenttutorial == False:
+            GMtalk.write ('''
+Welcome to the Equipment screen. From here, you will be able to view and change your equipped items.
+    Items that you equip will change your abilities in combat. 
+        You'll be able to see what the ability is and how much AP it costs when viewing the items.
+            Selecting menu items here works the same as everywhere else.
+                ''')
+            MainCharacter.equipmenttutorial = True
+        else:pass
         MenuTitle.write ("Equipment Menu:   \n")
         MenuTitle.write("Physical Weapon:")
         if len(self.physequip) == 0:
@@ -553,6 +571,11 @@ Would you like to select this class, or view another?
 
     # COMBAT ABILITY AND ITEM FUNCTIONS - ITEM FUNCTIONS ARE DESIGNED TO WORK INSIDE AND OUTSIDE OF COMBAT
     def PlayerTurnDisplay(self):
+        if MainCharacter.handholding == True and MainCharacter.combattutorial == False:
+            MainCharacter.combattutorial = True
+            GMtalk.write(f'''
+Welcome to combat, {MainCharacter.name}... select your moves and items in combat the same way you would anywhere else.''')
+        else:pass
         MenuTitle.write("Your Turn: \n")
         # for elem in BattleSystem.enemies:
         #     if elem.hp > (elem.hpmax /100 *70):
@@ -1217,6 +1240,12 @@ class ConsumableSystem:
     
     def ShowConsumables():
         #list the consumable items available
+        if MainCharacter.handholding == True and MainCharacter.itemstutorial == False:
+            MainCharacter.itemstutorial = True
+            GMtalk.write('''
+Here, you can select and use items in or out of combat. 
+    Remember though, you won't be able to use combat items when in the main game world!
+    ''')
         listconsumables = 0
         MenuTitle.write("Items:")
         PlayerInput.write ("\n0: Cancel   \n") 
@@ -1578,7 +1607,12 @@ class LocationIntroduction:
 
     def TutorialWorld1():
         GMtalk.write("In order to select something, just type in the number of the list item and hit enter. It's that easy! If a listed item shows a '-' symbol, there's nothing to select there.")
-        GMtalk.write("First, let's try talking to an NPC. Try selecting the option for 'Talk to an NPC' from the menu.\n")
+        GMtalk.write('''
+First, let's try talking to an NPC. 
+    Try selecting the option for 'Talk to an NPC' from the menu.
+        You can try looking at the items, weapons or stats menus if you like
+            Or if you prefer, I can explain those later.
+                ''')
         GMnarrate.write("This is how I will narrate the scene to you, with my words appearing like this.")
     def TutorialWorld2():
         GMtalk.write("Sometimes, the options available to you will change. See below? That first option will now allow you to continue the story.  \nAlso, you can check your current inventory, equipped items and current stats anytime you're travelling around the world. You can try that now, or continue forward with the story\n")
@@ -1635,12 +1669,12 @@ class StoryEvent:
         answer = input ()
         print()
         if answer == "1":
-            Player.handholding = True
+            MainCharacter.handholding = True
             GMtalk.write (f"Okay {MainCharacter.name} - Let's start with the basics.  \nFrom time to time I'll appear whenever new information about how the game becomes needed.   \n")
             PressEnterToContinue()
             StoryEvent.IntroductionTutorial()
         elif answer == "2":
-            Player.handholding = False
+            MainCharacter.handholding = False
             GMtalk.write ("Alright, let's jump right into the story. Starting in")
             CountDown()
             StoryEvent.Introduction_AboardTheSkytrain()
@@ -1651,22 +1685,11 @@ class StoryEvent:
     # runs when the player dies to end the game. 
     def EndTheGame():
         GMnarrate.write("With a final blow, your enemy dispatches your soul to the next life.   \n\n")
-        GMtalk.write("Would you like to start again?")
-        PlayerInput.write("1: Yes   \n2: No \n")
-        selection = input("")
-        print()
-        if selection == "1":
-            GMtalk.write ("Okay, the game will start again in   \n")
-            CountDown()
-            StoryEvent.StartTheGame()
-        elif selection == "2":
-            GMtalk.write ("Thank you for playing. The game will close itself in \n")
-            CountDown()
-            quit()
-        else:
-            InvalidChoice()
-            StoryEvent.EndTheGame()
-
+        GMtalk.write("Thank you for playing. Sadly, you were not able to overcome the foes which awaited you in the Piston Power Station.")
+        PressEnterToContinue()
+        GMtalk.write ("The game will close itself in:")
+        CountDown()
+    
     def IntroductionTutorial():
         TutorialWorld.Area()
 
