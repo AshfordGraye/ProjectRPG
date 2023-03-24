@@ -496,10 +496,10 @@ Welcome to the Equipment screen. From here, you will be able to view and change 
     def ChangeEquipment(self):
         GMtalk.write("Would you like to change any of your current equipment?")
         PlayerInput.write ("1: Yes \n2: No")
-        self.MenuSelection()
-        if self.menuselect == "1":
+        DecisionMaker.MenuSelection()
+        if DecisionMaker.menuselect == "1":
             self.SelectEquipment()
-        elif self.menuselect == "2":
+        elif DecisionMaker.menuselect == "2":
             pass
         else:
             InvalidChoice()
@@ -509,11 +509,11 @@ Welcome to the Equipment screen. From here, you will be able to view and change 
         listorder = 0
         GMtalk.write ("Select an equipment type to change")
         PlayerInput.write("0: Cancel    \n1: Physical Equipment \n2: Armatek")
-        self.MenuSelection()
-        if self.menuselect =="0":
+        DecisionMaker.MenuSelection()
+        if DecisionMaker.menuselect =="0":
             pass
         #if player selected physical weapons
-        elif self.menuselect == "1":
+        elif DecisionMaker.menuselect == "1":
             if len (self.phyweapons) == 0:
                 GMtalk.write( "You do not have another weapon to equip. \n")
                 PressEnterToGoBack()
@@ -523,11 +523,11 @@ Welcome to the Equipment screen. From here, you will be able to view and change 
                 for elem in self.phyweapons:
                     listorder += 1
                     PlayerInput.write(f"{listorder}: {elem}")
-                self.MenuSelection()
-                if self.menuselectint in range (1, listorder+1):
+                DecisionMaker.MenuSelection()
+                if DecisionMaker.menuselectint in range (1, listorder+1):
                     removeditem = self.physequip.pop (0)
                     # self.menuselect = int(self.menuselect)
-                    selecteditem = self.phyweapons.pop (self.menuselectint-1)
+                    selecteditem = self.phyweapons.pop (DecisionMaker.menuselectint-1)
                     self.phyweapons.append (removeditem)
                     self.physequip.append (selecteditem)
                     self.moveset[1] = self.physequip[0].special
@@ -536,7 +536,7 @@ Welcome to the Equipment screen. From here, you will be able to view and change 
                     InvalidChoice()
                     self.ShowWeapons()
         #if player selected armatek
-        elif self.menuselect == "2":
+        elif DecisionMaker.menuselect == "2":
             if len (self.armweapons) == 0:
                 GMtalk.write("You do not have any Armatek Gear to equip")
                 PressEnterToGoBack()
@@ -546,22 +546,22 @@ Welcome to the Equipment screen. From here, you will be able to view and change 
                 for elem in self.armweapons:
                     listorder += 1
                     PlayerInput.write(f"{listorder}: {elem}")
-                self.MenuSelection()
-                if self.menuselectint in range (1,listorder+1):
+                DecisionMaker.MenuSelection()
+                if DecisionMaker.menuselectint in range (1,listorder+1):
                     if len (self.armequip) == 0:
                         # self.menuselect = int(self.menuselect)
-                        selecteditem = self.armweapons.pop (self.menuselectint-1)
+                        selecteditem = self.armweapons.pop (DecisionMaker.menuselectint-1)
                         print (selecteditem.name)
                         self.armequip.append (selecteditem)
                         self.moveset[2] = self.armequip[0].special
                         GMtalk.write (f"You now have the {self.armequip[0].name} equipped. \nYou can now use the {self.moveset[2].name} ability!")
                     else:
                         removeditem = self.armequip.pop (0)
-                        selecteditem = self.armweapons.pop (self.menuselectint-1)
+                        selecteditem = self.armweapons.pop (DecisionMaker.menuselectint-1)
                         self.armweapons.append (removeditem)
                         self.armequip.append (selecteditem)
-                        self.moveset[1] = self.physequip[0].special
-                        GMtalk.write (f"You now have the {self.physequip[0].name} equipped. \nYou can now use the {self.moveset[1].name} ability!")
+                        self.moveset[2] = self.armequip[0].special
+                        GMtalk.write (f"You now have the {self.armequip[0].name} equipped. \nYou can now use the {self.moveset[2].name} ability!")
                 else:
                     InvalidChoice()
                     self.ShowWeapons()
@@ -2278,4 +2278,7 @@ class MenuTitle(type):
 #######################
 
 WorldBuilding.ThisFunctionTookGodSixWholeDays()
+MainCharacter.phyweapons.append (Pistol)
+MainCharacter.armweapons.append (ScanningGlove)
+MainCharacter.armweapons.append (ArmaRifle)
 StoryEvent.StartTheGame()
