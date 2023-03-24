@@ -175,19 +175,19 @@ class ItemEffects(Item):
         BattleSystem.selectedtarget.hp -= (ConsumableSystem.selectedconsumable.totaleffect - BattleSystem.selectedtarget.armdef)
         GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name} to cause {ConsumableSystem.selectedconsumable.totaleffect} damage.")
 
-    def PhyDefBoost():
+    def PhyDefBuff():
         BattleSystem.selectedtarget.phydef += (ConsumableSystem.selectedconsumable.totaleffect)
         GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Physical Defense to {BattleSystem.selectedtarget.phydef}.")
 
-    def PhyStrBoost():
+    def PhyStrBuff():
         BattleSystem.selectedtarget.phystr += (ConsumableSystem.selectedconsumable.totaleffect)
         GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Physical Defense to {BattleSystem.selectedtarget.phystr}.")
 
-    def ArmDefBoost():
+    def ArmDefBuff():
         BattleSystem.selectedtarget.armdef += (ConsumableSystem.selectedconsumable.totaleffect)
         GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Physical Defense to {BattleSystem.selectedtarget.armdef}.")
 
-    def ArmStrBoost():
+    def ArmStrBuff():
         BattleSystem.selectedtarget.armstr += (ConsumableSystem.selectedconsumable.totaleffect)
         GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Physical Defense to {BattleSystem.selectedtarget.armstr}.")
 
@@ -236,10 +236,10 @@ APup2 = Item ("Hi Adreno Shot", "AP Buff", ItemEffectsList.APBuff, 2, 20, 1, 20)
 APup3 = Item ("Mega Adreno Shot", "AP Buff", ItemEffectsList.APBuff, 3, 20, 1, 60)
 
 
-DefBooster = Item ("PhyDef Booster", "Physical Defense Boost", ItemEffectsList.PhyDefBoost, 1, 20, 1, 200)
-StrBooster = Item ("PhyStr Booster", "Physical Strength Boost", ItemEffectsList.PhyStrBoost, 1, 20, 1, 200)
-ArmDefBooster = Item ("ArmDef Booster", "Armatek Defense Boost", ItemEffectsList.ArmDefBoost, 1, 20, 1, 200)
-ArmStrBooster = Item ("ArmStr Booster", "Armatek Strength Boost", ItemEffectsList.ArmStrBoost, 1, 20, 1, 200)
+DefBooster = Item ("PhyDef Booster", "Physical Defense Buff", ItemEffectsList.PhyDefBuff, 1, 20, 1, 200)
+StrBooster = Item ("PhyStr Booster", "Physical Strength Buff", ItemEffectsList.PhyStrBuff, 1, 20, 1, 200)
+ArmDefBooster = Item ("ArmDef Booster", "Armatek Defense Buff", ItemEffectsList.ArmDefBuff, 1, 20, 1, 200)
+ArmStrBooster = Item ("ArmStr Booster", "Armatek Strength Buff", ItemEffectsList.ArmStrBuff, 1, 20, 1, 200)
 
 ################
 # DEBUFF ITEMS #
@@ -819,56 +819,56 @@ class Enemy(Character):
         self.job = job
 
         if self.job == "Vagrant":
-            self.hpmax = 250
-            self.hp = 250
+            self.hpmax = 80
+            self.hp = 80
             self.phystr = 5
             self.phydef = 5
             self.armstr = 5
             self.armdef = 5
             self.moveset = [Lunge, KnifeCuts]
         elif self.job == "Bouncer":
-            self.hpmax = 300
-            self.hp = 350
+            self.hpmax = 120
+            self.hp = 120
             self.phystr = 12
             self.phydef = 10
             self.armstr = 10
             self.armdef = 8
             self.moveset = [Punches, ArmaFist]
         elif self.job == "Docker":
-            self.hpmax = 350
-            self.hp = 250
+            self.hpmax = 150
+            self.hp = 150
             self.phystr = 10
             self.phydef = 10
             self.armstr = 12
             self.armdef = 8
             self.moveset = [AnchorStrike, LoaderFist]
         elif self.job == "Officer":
-            self.hpmax = 400
-            self.hp = 450
+            self.hpmax = 175
+            self.hp = 175
             self.phystr = 10
             self.phydef = 10
             self.armstr = 8
             self.armdef = 14
             self.moveset = [PistolShot, ArmaScopeShot]
         elif self.job == "Assassin":
-            self.hpmax = 450
-            self.hp = 450
+            self.hpmax = 200
+            self.hp = 200
             self.phystr = 14
             self.phydef = 8
             self.armstr = 10
             self.armdef = 10
             self.moveset = [VibraSwordSlice, VibraSwordSlashes]
         elif self.job == "Arma Tank Arm":
-            self.hpmax = 300
-            self.hp = 300
+            self.hpmax = 150
+            self.hp = 150
             self.phystr = 18
             self.phydef = 18
             self.armstr = 15
             self.armdef = 15
             self.moveset = [ArmaMechArmLow, ArmaMechArmHigh]
         elif self.job == "Arma Tank Core":
-            self.hpmax = 500
-            self.hp = 500
+            self.hpmax = 200
+            self.hp = 200
             self.phystr = 20
             self.phydef = 20
             self.armstr = 20
@@ -990,58 +990,57 @@ class Location:
     # FACILITATES PLAYER SELECTION IN THE NAV SCREEN
     def Selection(self):
         GMtalk.write ("What would you like to do?   \n")
-        selection = input()
-        if selection == "1":
+        DecisionMaker.MenuSelection()
+        if DecisionMaker.menuselectint in range (1,10):
+            self.firstvisit = False
+        if DecisionMaker.menuselect == "1":
             if self.selecttravel1 == "-":
                 self.InvalidChoice()
             else:
                 ClearScreen()
-                self.firstvisit = False
                 MainCharacter.holdlocation = MainCharacter.currentlocation
                 self.selecttravel1()
-        elif selection == "2":
+        elif DecisionMaker.menuselect == "2":
             if self.selecttravel2 == "-":
                 self.InvalidChoice()
             else:
                 ClearScreen()
-                self.firstvisit = False
                 MainCharacter.holdlocation = MainCharacter.currentlocation
                 self.selecttravel2()
-        elif selection == "3":
+        elif DecisionMaker.menuselect == "3":
             if self.selecttravel3 == "-":
                 self.InvalidChoice()
             else:
                 ClearScreen()
-                self.firstvisit = False
                 MainCharacter.holdlocation = MainCharacter.currentlocation
                 self.selecttravel3()
-        elif selection == "4":
+        elif DecisionMaker.menuselect == "4":
             if self.selectoption1 == "-":
                 self.InvalidChoice()
             else:
                 ClearScreen()
                 self.selectoption1()
-        elif selection == "5":
+        elif DecisionMaker.menuselect == "5":
             if self.selectoption2 == "-":
                 self.InvalidChoice()
             else:
                 ClearScreen()
                 self.selectoption2()
-        elif selection == "6":
+        elif DecisionMaker.menuselect == "6":
             if self.selectoption3 == "-":
                 self.InvalidChoice()
             else:
                 ClearScreen()
                 self.selectoption3()
-        elif selection == "7":
+        elif DecisionMaker.menuselect == "7":
             ConsumableSystem.ShowConsumables()
             PressEnterToGoBack()
             self.Area()
-        elif selection == "8":
+        elif DecisionMaker.menuselect == "8":
             MainCharacter.ShowWeapons()
             PressEnterToGoBack()
             self.Area()
-        elif selection == "9":
+        elif DecisionMaker.menuselect == "9":
             MainCharacter.ShowStats()
             PressEnterToGoBack()
             self.Area()
@@ -1058,7 +1057,7 @@ class Location:
 #############
 TutorialWorld = Location("The name of your current location")
 Train = Location("Skytrain")
-# SkytrainDock = Location("Skytrain Dock")
+# SkytrainDock =DecisionMaker.menuselect Location("Skytrain Dock")
 PowerStationDock = Location("Power Station - Dock Area")
 PowerStationMedicArea = Location("Power Station - Medic's Station")
 PowerStationBazaar = Location("PowerStation - Bazaar")
@@ -1716,7 +1715,7 @@ Armish leans back in his chair and studies you''')
             A Field Dressing too, in case someone manages to get too close.''')
         GMnarrate.write ('''
 Armish hands you a knife. The blade is serrated, but rusted. Handle seems sturdy enough.
-He also hands you a healing salve. Looks like a standard spray applicator.''')
+The field dressing doesn't look used, at least.''')
         MainCharacter.phyweapons.append (Knife)
         MainCharacter.items[HPup1] += 1
         GMtalk.write ('''
@@ -2122,7 +2121,7 @@ The NPC chuckles at your brusque response
 ####################################
         
 class type():
-    def write(text, speed=0.01):
+    def write(text, speed=0.0):
         for char in text:
             sys.stdout.write(char)
             sys.stdout.flush()
