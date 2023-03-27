@@ -117,7 +117,7 @@ ArmaMechChestHigh = Ability ("Arma Beam Bomb", AbilityEffectsList.ArmatekDamage,
 # LIMIT BREAK IS FOR PLAYER ONLY, REPLACES STANDARD ATTACK WHEN HEALTH IS LOW
 LimitBreak = Ability ("Limit Break", AbilityEffectsList.Legendary, 10, 1,0, 0)
 
-# FAR LESS USEFUL THAN I'D LIKE... I SHOULD HAVE DONE SOME SORT OF SPECIAL ABILITIES SYSTEM WHERE WEAPON ABILTIES ARE EQUIPPED WITH WEAPONS AND ARMATEK ABILITES ARE ACQUIRED... MAYBE IN THE NEXT EDITION. I DOUBT V1.0 IS GONNA BE WHAT I HAND IN FOR THE ASSIGNMENT. 
+# FAR LESS USEFUL THAN I'D LIKE... I SHOULD HAVE DONE SOME SORT OF SPECIAL ABILITIES SYSTEM WHERE WEAPON ABILTIES ARE EQUIPPED WITH WEAPONS AND ARMATEK ABILITES ARE ACQUIRED... MAYBE IN THE NEXT EDITION.
 Scan = Ability ("Scan", AbilityEffectsList.Scan, 0, 1,5, 0)
 
 ################################################
@@ -244,9 +244,9 @@ ArmStrBooster = Item ("ArmStr Booster", "Armatek Strength Buff", ItemEffectsList
 ################
 # DEBUFF ITEMS #
 ################
-Grenade = Item ("Grenade", "Physical Damage", ItemEffects.PhysicalDamage, 1, 200, 1, 50)
-Grenade2 = Item ("Hi Grenade", "Physical Damage", ItemEffects.PhysicalDamage, 1, 375, 1, 75)
-Grenade3 = Item ("Mega Grenade", "Physical Damage", ItemEffects.PhysicalDamage, 1, 500, 1, 100)
+Grenade = Item ("Grenade", "Physical Damage", ItemEffectsList.PhysicalDamage, 1, 200, 1, 50)
+Grenade2 = Item ("Hi Grenade", "Physical Damage", ItemEffectsList.PhysicalDamage, 1, 375, 1, 75)
+Grenade3 = Item ("Mega Grenade", "Physical Damage", ItemEffectsList.PhysicalDamage, 1, 500, 1, 100)
 
 ArmaGrenade = Item ("Arma Grenade", "Armatek Damage", ItemEffectsList.ArmatekDamage, 1, 200, 1, 50 )
 ArmaGrenade2 = Item ("Hi Arma Grenade", "Armatek Damage", ItemEffectsList.ArmatekDamage, 1, 375, 1, 75 )
@@ -330,8 +330,8 @@ class Player(Character):
             
             self.job = ""
 
-            self.hpmax = 1000
-            self.hp = 1000
+            self.hpmax = 500
+            self.hp = 500
             self.apmax = 100
             self.ap = 100
 
@@ -2119,8 +2119,7 @@ The NPC chuckles at your brusque response
         else:
             GMnarrate.write ("The individual looks at you with a vacant expression... they look like they've been here a while  ")
             NPCtalk.write ('''
-    So what'll it be?  \n''')
-    
+    So what'll it be?  \n''')    
     def VendorNoMoney():
         greeting = random.randint(1,13)
         if greeting in range (1,5):
@@ -2278,7 +2277,4 @@ class MenuTitle(type):
 #######################
 
 WorldBuilding.ThisFunctionTookGodSixWholeDays()
-MainCharacter.phyweapons.append (Pistol)
-MainCharacter.armweapons.append (ScanningGlove)
-MainCharacter.armweapons.append (ArmaRifle)
 StoryEvent.StartTheGame()
