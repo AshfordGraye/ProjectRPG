@@ -181,15 +181,15 @@ class ItemEffects(Item):
 
     def PhyStrBuff():
         BattleSystem.selectedtarget.phystr += (ConsumableSystem.selectedconsumable.totaleffect)
-        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Physical Defense to {BattleSystem.selectedtarget.phystr}.")
+        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Physical Strength to {BattleSystem.selectedtarget.phystr}.")
 
     def ArmDefBuff():
         BattleSystem.selectedtarget.armdef += (ConsumableSystem.selectedconsumable.totaleffect)
-        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Physical Defense to {BattleSystem.selectedtarget.armdef}.")
+        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Armatek Defense to {BattleSystem.selectedtarget.armdef}.")
 
     def ArmStrBuff():
         BattleSystem.selectedtarget.armstr += (ConsumableSystem.selectedconsumable.totaleffect)
-        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Physical Defense to {BattleSystem.selectedtarget.armstr}.")
+        GMnarrate.write(f"{ConsumableSystem.selectedconsumable.name} used on {BattleSystem.selectedtarget.name}. Permanently raised Armatek Strength to {BattleSystem.selectedtarget.armstr}.")
 
 class Weapon:
     def __init__(self, name, effect, damage, special, value):
