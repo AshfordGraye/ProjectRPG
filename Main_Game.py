@@ -332,8 +332,8 @@ class Player(Character):
 
             self.hpmax = 500
             self.hp = 500
-            self.apmax = 100
-            self.ap = 100
+            self.apmax = 200
+            self.ap = 200
 
             self.phystr = 10
             self.phydef = 10
@@ -1189,14 +1189,10 @@ class Battles:
     def ArenaFightStart():
         if MainCharacter.arenaroundcomplete == False:
             if MainCharacter.arenawins == 0:
-                BattleSystem.enemies = [Vagrant]
-            elif MainCharacter.arenawins == 1:
-                BattleSystem.enemies = [Bouncer]
-            elif MainCharacter.arenawins == 2:
                 BattleSystem.enemies = [Docker]
-            elif MainCharacter.arenawins == 3:
+            elif MainCharacter.arenawins == 1:
                 BattleSystem.enemies = [Officer]
-            elif MainCharacter.arenawins == 4: 
+            elif MainCharacter.arenawins == 2:
                 BattleSystem.enemies = [Assassin]
             else:
                 pass
@@ -1217,10 +1213,6 @@ class Battles:
             StoryEvent.SecondArenaWin()
         elif MainCharacter.arenawins == 3:
             StoryEvent.ThirdArenaWin()
-        elif MainCharacter.arenawins == 4:
-            StoryEvent.FourthArenaWin()
-        elif MainCharacter.arenawins == 5:
-            StoryEvent.FifthArenaWin()
         PressEnterToContinue()
         MainCharacter.activecombat = False
         MainCharacter.currentlocation()
@@ -1560,7 +1552,7 @@ class WorldBuilding:
         elif MainCharacter.currentlocation == Train.Area:
             if MainCharacter.arenawins == 0:
                 pass
-            elif MainCharacter.arenawins == 5:
+            elif MainCharacter.arenawins == 3:
                 StoryEvent.FinalBossIntro()
             elif MainCharacter.combatarea == "Final Boss":
                 StoryEvent.HellOuttaDodge()
@@ -1655,7 +1647,7 @@ You are shown the way to the Power Station workfloor.
     A large cage arena has been constructed in the centre
         ...last chance to go back now, or you can go forward and fight this round.''')
     def PowerStationArena2():
-        GMnarrate.write ("The cage arena stands before you, large and imposing. Your selected opponent glares at you from within the cage...")
+        GMnarrate.write ("The cage arena stands before you, large and imposing. The cage floor is dirtied with the dried blood and sweat of previous combatants.")
 
 # STORY EVENT FUNCTIONS RUN AT KEY POINTS IN THE GAME. THEY CAN BE CALLED WHENEVER NEEDED, USUALLY BY THE WORLDBUILDING FUNCTION WHEN CERTAIN PARAMTERS ARE MET 
 class StoryEvent:
@@ -1689,6 +1681,7 @@ class StoryEvent:
         PressEnterToContinue()
         GMtalk.write ("The game will close itself in:")
         CountDown()
+        quit()
     
     def IntroductionTutorial():
         TutorialWorld.Area()
@@ -1766,12 +1759,12 @@ He stands to leave and turns to you:''')
 
     def FirstArenaWin():
         GMnarrate.write ('''
-It was a slight challenge, but nothing too drastic for someone with your military experience.
-    The people watching seem surprised, they clearly don't see many winners here. 
-        A few of them glower at you... some bets were lost, it seems.''')
-        GMtalk.write ("As you leave, the cage guard hands you 400 credits in winnings")
+Your first ordeal was hard to handle, but you kept your wits and pulled through.
+    A few of the onlookers look extra happy...
+        ...maybe they tried their luck betting on the challenger for once.''')
+        GMtalk.write ("As you leave, the cage guard hands you 500 credits in winnings")
 
-        MainCharacter.credits += 400
+        MainCharacter.credits += 500
         VendorItem.items[HPup1] += 2
         VendorItem.items[HPup2] += 2
         VendorItem.items[APup1] += 2
@@ -1784,10 +1777,11 @@ It was a slight challenge, but nothing too drastic for someone with your militar
     
     def SecondArenaWin():
         GMnarrate.write ('''
-Your second ordeal was more to handle, but you kept your wits and pulled through.
-    A few of the onlookers look extra happy...
-        ...maybe they tried their luck betting on the challenger for once.''')
-        GMtalk.write ("As you leave, the cage guard hands you 600 credits in winnings")
+You're starting to feel worn... 
+    ...but after three wins you can almost feel your goal coming into reach.
+        Climbing back out of the cage, you can hear some of the crowd cheering you on.
+            They're starting to root for you.''')
+        GMtalk.write ("As you leave, the cage guard hands you 1000 credits in winnings")
         MainCharacter.credits += 600
         VendorItem.items[HPup1] += 2
         VendorItem.items[HPup2] += 2
@@ -1798,16 +1792,18 @@ Your second ordeal was more to handle, but you kept your wits and pulled through
         VendorWeapon.items[ArmaGrenade] += 2
         VendorWeapon.items[ArmaGrenade2] +=1
         VendorArmatek.items[DefBooster] += 1
-        VendorArmatek.items[ArmStrBooster] += 1
+        VendorArmatek.items[StrBooster] += 1
         VendorArmatek.items[ScanningGlove] += 1
 
     def ThirdArenaWin():
         GMnarrate.write ('''
-You're starting to feel beaten... 
-    ...but after three wins you can almost feel your goal coming into reach.
-        Climbing back out of the cage, you can hear some of the crowd cheering you on.
-            They're starting to root for you.''')
-        GMtalk.write ("As you leave, the cage guard hands you 800 credits in winnings")
+Battered and almost broken, you manage to climb out of the arena cage.
+    The guard looks worried...''')
+        NPCtalk.write ('''
+    Look, I know you deserve to win, but you gotta get out of here.
+        The boss is furious - he paid a fortune for this guy to kill you.
+            I heard him saying something about a Mech - just run, stranger. Take your winnings and get the hell outta dodge.''')
+        GMtalk.write ("As you leave, the cage guard hands you 2000 credits in winnings")
         MainCharacter.credits += 800
         VendorItem.items[HPup1] += 2
         VendorItem.items[HPup2] += 2
@@ -1820,49 +1816,8 @@ You're starting to feel beaten...
         VendorWeapon.items[ArmaGrenade2] += 2
         VendorWeapon.items[ArmaGrenade3] +=2
         VendorArmatek.items[ArmDefBooster] += 1
-
-    def FourthArenaWin():
-        GMnarrate.write ('''
-This is starting to get difficult.
-    The guard looks at you with a mixture of fear and respect.''')
-        NPCtalk.write ('''
-    You're doing well, stranger - the boss is starting to get pissed though - 
-        - you aren't meant to keep winning.''')
-        GMtalk.write ("As you leave, the cage guard hands you 1000 credits in winnings")
-        MainCharacter.credits += 800
-        VendorItem.items[HPup1] += 3
-        VendorItem.items[HPup2] += 3
-        VendorItem.items[HPup3] += 3
-        VendorItem.items[APup1] += 2
-        VendorItem.items[APup2] += 2
-        VendorItem.items[APup3] += 3
-        VendorWeapon.items[Grenade2] += 2
-        VendorWeapon.items[Grenade3] += 2
-        VendorWeapon.items[ArmaGrenade2] += 2
-        VendorWeapon.items[ArmaGrenade3] +=2
-        VendorArmatek.items [ArmaRifle] += 1
         VendorArmatek.items [ArmStrBooster] += 1
-
-    def FifthArenaWin():
-        GMnarrate.write ('''
-Battered and almost broken, you manage to climb out of the arena cage.
-    The guard looks worried...''')
-        NPCtalk.write ('''
-    Look, I know you deserve to win, but you gotta get out of here.
-        The boss is furious - he paid a fortune for this guy to kill you.
-            I heard him saying something about a Mech - just run, stranger. Take your winnings and get the hell outta dodge.''')
-        GMtalk.write ("As you leave, the cage guard hands you 2000 credits in winnings")
-        MainCharacter.credits += 2000
-        VendorItem.items[HPup1] += 3
-        VendorItem.items[HPup2] += 3
-        VendorItem.items[HPup3] += 3
-        VendorItem.items[APup1] += 2
-        VendorItem.items[APup2] += 2
-        VendorItem.items[APup3] += 3
-        VendorWeapon.items[Grenade2] += 2
-        VendorWeapon.items[Grenade3] += 2
-        VendorWeapon.items[ArmaGrenade2] += 2
-        VendorWeapon.items[ArmaGrenade3] +=2
+        VendorArmatek.items [ArmaRifle] += 1
 
     def FinalBossIntro():
         GMnarrate.write ('''
@@ -1976,9 +1931,11 @@ The NPC chuckles at your brusque response
             HomelessGuy.Talk()
 
     def Medic1():
-        GMnarrate.write ("MEDIC PLACEHOLDER DESCRIPTION 1")
+        GMnarrate.write ("The Medic notices your arrival")
+        NPCtalk.write ("Well, hey there!")
     def Medic2():
-        GMnarrate.write ("MEDIC PLACEHOLDER DESCRIPTION 2")
+        GMnarrate.write ("The Medic waves to you")
+        NPCtalk.write("Well, hey again there! You need some patching up?")
         MedicFella.Healing
     def MedicAskAboutDroid():
         if MedicFella.askedaboutdroid == False:
@@ -2143,7 +2100,7 @@ The NPC chuckles at your brusque response
 ####################################
         
 class type():
-    def write(text, speed=0.0):
+    def write(text, speed=0.01):
         for char in text:
             sys.stdout.write(char)
             sys.stdout.flush()
