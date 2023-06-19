@@ -1,7 +1,8 @@
 # ProjectRPG
 ## School Assignment Project
 
-> Project RPG is a text-based adventure game in Python using Object Oriented Programming. You, the player, take on the role of a former soldier, seeking to take part in an underground fighting ring.
+> Project RPG is a text-based adventure game in Python using Object Oriented Programming. 
+> You, the player, take on the role of a former soldier, seeking to take part in an underground fighting ring.
 
 Through a menu system that can be navigated using only numbers and the enter key, the following functionality has been implemented:
 - Navigation
