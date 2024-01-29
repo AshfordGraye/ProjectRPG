@@ -265,7 +265,7 @@ Pistol = Weapon ("Pistol", "Physical", 50, PistolShot, 150)
 ScanningGlove = Armatek ("Scanning Glove", "Armatek", 0, Scan, 100)
 ArmaGauntlet = Armatek ("Mecha Gauntlet", "Armatek", 18, ArmaFist, 100)
 ArmaRifle = Armatek ("Arma Rifle", "Armatek", 30, ArmaScopeShot, 100)
-NanoTransfusers = Armatek ("", "", 0, "", 0) 
+NanoTransfuser = Armatek ("Nano Transfuser", "Armatek", 0, "", 100) 
 
 ################################
 ################################
@@ -1719,7 +1719,7 @@ You're riding the skytrain to Piston, a city on the Southern Alliance's edge. Yo
             NPCtalk.write ('''
     Hell, you boys were all whut kept us going some days... thank you, brother.
         ''')
-            ArmishGift = NanoTransfusers
+            ArmishGift = NanoTransfuser
         elif MainCharacter.job == "Officer":
             NPCtalk.write ('''
     Officer, huh... higher ups always lookin' down on us rank and file...
