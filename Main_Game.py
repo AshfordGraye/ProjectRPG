@@ -265,6 +265,7 @@ Pistol = Weapon ("Pistol", "Physical", 50, PistolShot, 150)
 ScanningGlove = Armatek ("Scanning Glove", "Armatek", 0, Scan, 100)
 ArmaGauntlet = Armatek ("Mecha Gauntlet", "Armatek", 18, ArmaFist, 100)
 ArmaRifle = Armatek ("Arma Rifle", "Armatek", 30, ArmaScopeShot, 100)
+NanoTransfusers = Armatek ("", "", 0, "", 0) 
 
 ################################
 ################################
@@ -1707,36 +1708,40 @@ You're riding the skytrain to Piston, a city on the Southern Alliance's edge. Yo
             NPCtalk.write ('''
     Well I'll be, I had feelings yer might be a brother in arms
         ''')
+            ArmishGift = ArmaRifle
         elif MainCharacter.job == "Scientist":
             NPCtalk.write ('''
     Shoot, you one o' dem fancy science types huh?
     Well I'm grateful fer the tech you nerds done worked up fer us!
         ''')
+            ArmishGift = ScanningGlove
         elif MainCharacter.job == "Medic":
             NPCtalk.write ('''
     Hell, you boys were all whut kept us going some days... thank you, brother.
         ''')
+            ArmishGift = NanoTransfusers
         elif MainCharacter.job == "Officer":
             NPCtalk.write ('''
     Officer, huh... higher ups always lookin' down on us rank and file...
     I suppose yer orders kept us alive.
         ''')
+            ArmishGift = ArmaGauntlet
         else:
             pass
         GMnarrate.write ('''
 Armish leans back in his chair and studies you''')
-        NPCtalk.write ('''
+        NPCtalk.write (f'''
     ... Yer never been ter Piston, have yer? Rough place, no Alliance peacekeepers around this far out. 
-        I gotta spare knife. Not much, but it's better than yer fists. 
+        I got somethin' yer might fight useful in a fight - a {ArmishGift.name} - never could figure out this Arma crap.
             A Field Dressing too, in case someone manages to get too close.''')
-        GMnarrate.write ('''
-Armish hands you a knife. The blade is serrated, but rusted. Handle seems sturdy enough.
+        GMnarrate.write (f'''
+Armish hands you the {ArmishGift.name}. Sure, you remember how to use this.
 The field dressing doesn't look used, at least.''')
-        MainCharacter.phyweapons.append (Knife)
+        MainCharacter.phyweapons.append (ArmishGift)
         MainCharacter.items[HPup1] += 1
-        GMtalk.write ('''
-    A Knife has been added to your weapons list.
-    A Field Dressing has been added to your items list.''')
+        GMtalk.write (f'''
+    {ArmishGift.name} has been added to your Armatek list.
+    Field Dressing has been added to your items list.''')
         GMnarrate.write ('''
 Armish looks out the window. You are nearing Piston now, the gleaming metal superstructures piercing the clouds you are now descending towards.
 He stands to leave and turns to you:''')
@@ -2100,7 +2105,7 @@ The NPC chuckles at your brusque response
 ####################################
         
 class type():
-    def write(text, speed=0.01):
+    def write(text, speed=0.0):
         for char in text:
             sys.stdout.write(char)
             sys.stdout.flush()
