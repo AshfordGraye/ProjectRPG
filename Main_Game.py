@@ -100,10 +100,10 @@ AnchorStrike = Ability ("Anchor Strike", AbilityEffectsList.PhysicalDamage, 15, 
 PistolShot = Ability ("Pistol Shot", AbilityEffectsList.PhysicalDamage, 60, 1, 10, 10)
 VibraSwordSlice = Ability ("VibraSword Slice", AbilityEffectsList.PhysicalDamage, 40, 1, 20, 10)
 VibraSwordSlashes = Ability ("VibraSword Slashes", AbilityEffectsList.PhysicalDamage, 25, 3, 30, 20)
-ArmaFist = Ability ("Arma Fist", AbilityEffectsList.PhysicalDamage, 50, 1, 10, 10)
+LoaderFist = Ability ("Loader Fist", AbilityEffectsList.PhysicalDamage, 25, 2,25, 30)
 
-LoaderFist = Ability ("Loader Fist", AbilityEffectsList.ArmatekDamage, 25, 2,25, 30)
-ArmaScopeShot = Ability ("ArmaScope Shot", AbilityEffectsList.ArmatekDamage, 40, 1,30, 1)
+ArmaScopeShot = Ability ("ArmaScope Shot", AbilityEffectsList.ArmatekDamage, 50, 1, 15, 5)
+ArmaFist = Ability ("Arma Fist", AbilityEffectsList.ArmatekDamage, 30, 2, 20, 10)
 
 ArmaMechArmLow = Ability ("Pneumatic Fist", AbilityEffectsList.PhysicalDamage, 40, 1, 0, 10)
 ArmaMechArmHigh = Ability ("Grand Slam", AbilityEffectsList.PhysicalDamage, 30, 2, 0, 20)
@@ -263,7 +263,7 @@ Pistol = Weapon ("Pistol", "Physical", 50, PistolShot, 150)
 # ARMATEK #
 ###########
 ScanningGlove = Armatek ("Scanning Glove", "Armatek", 0, Scan, 100)
-ArmaGauntlet = Armatek ("Mecha Gauntlet", "Armatek", 18, ArmaFist, 10)
+ArmaGauntlet = Armatek ("Mecha Gauntlet", "Armatek", 18, ArmaFist, 100)
 ArmaRifle = Armatek ("Arma Rifle", "Armatek", 30, ArmaScopeShot, 100)
 
 ################################
